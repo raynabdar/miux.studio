@@ -1,0 +1,27 @@
+# Miux Studio
+
+> Miux Studio is a selective creative studio and engineering lab crafting high-converting websites, digital brands, and custom platforms for startups and digital businesses across Asia and the UAE.
+
+## Core Services
+- **Brand Design & Identity**: Complete visual systems, brand strategy, design systems, and identity assets.
+- **Web Design & UI/UX**: Conversion-engineered interfaces, interactive prototyping, and modern dark-mode aesthetic design.
+- **Web Development**: Ultra-fast Next.js, React, Tailwind CSS, TypeScript, and fluid Framer Motion animations.
+- **Campaigns & Growth Platforms**: High-converting landing pages, marketing funnels, and enterprise SaaS websites.
+
+## Pricing & Engagement Models
+- **Free**: Open-source starter templates, blocks, and custom animations.
+- **Pro ($99)**: Lifetime access to custom templates, blocks, illustrations, and animations with free updates.
+- **Pro Team ($499)**: Complete access for agencies and engineering teams to all templates, design systems, and section libraries.
+- **Custom Client Partnerships**: Dedicated design & development sprints starting with a discovery consultation.
+
+## Key Links
+- Homepage: https://miux.studio/
+- Work Portfolio: https://miux.studio/#work
+- Pricing & Plans: https://miux.studio/#pricing
+- Client Testimonials: https://miux.studio/#testimonials
+- Frequently Asked Questions: https://miux.studio/#faq
+- Contact & Discovery Call: https://www.miux.studio/45-min
+
+## Contact & Inquiries
+- Email: hello@miux.studio
+- Location: Serving clients across Asia and the United Arab Emirates

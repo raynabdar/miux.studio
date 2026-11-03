@@ -1,0 +1,31 @@
+# Miux Studio — Full Documentation & Index for AI Agents
+
+## Overview
+Miux Studio (https://miux.studio) is a boutique digital design and web engineering studio founded to create standout digital platforms for ambitious startups and businesses. The studio combines dark-aesthetic visual craftsmanship with performance engineering (Next.js, React, Tailwind CSS, TypeScript, and Framer Motion).
+
+## Studio Philosophy
+"Build great stuff." — The Miux Studio Standard.
+Every client engagement focuses on conversion rate optimization, distinct brand differentiation, fluid motion, accessibility, and high performance.
+
+## Portfolio & Case Studies
+1. **Nova Finance**: Institutional DeFi dashboard with sub-second websocket charts and sleek dark interface.
+2. **Kintsugi AI**: Brand identity & design system for an autonomous code review engine.
+3. **Aura Health**: Minimalist wellness platform with interactive 3D anatomy models and subscription engine.
+4. **Spectra OS**: Developer experience landing page with terminal simulators and interactive code snippets.
+5. **Veloce Labs**: High-frequency trading marketing platform with animated particle visualization.
+6. **Zenith Protocol**: Cross-chain governance portal with interactive voting charts and wallet connectivity.
+
+## Technology Stack
+- Next.js 16 (Turbopack, App Router, React Server Components)
+- React 19
+- Tailwind CSS
+- TypeScript
+- Framer Motion
+- Lenis Smooth Scroll
+- Radix UI Primitives & shadcn UI
+
+## Frequently Asked Questions
+- **Turnaround Time**: Standard websites take 2-4 weeks; larger custom platforms take 4-8 weeks.
+- **Tech Stack Flexibility**: Next.js and Tailwind are primary, but we integrate with headless CMSs (Sanity, Contentful) and backend APIs.
+- **Ongoing Support**: Retainers and maintenance sprints are available post-launch.
+- **Booking a Call**: Potential clients can schedule a 45-minute discovery consultation directly at https://www.miux.studio/45-min.
