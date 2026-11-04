@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { Navbar, Footer } from '@/components/site-shell'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Miux Studio',
-  description: 'Terms of Service governing the use of Miux Studio websites and design services.',
+  title: 'Terms of Service | MIUX STUDIO',
+  description: 'Terms of Service governing the use of MIUX STUDIO websites and design services.',
   alternates: {
     canonical: '/terms',
   },
@@ -23,7 +23,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="mt-4 text-xs text-[#707070]">
-            Last updated: January 2026
+            Last updated: November 2026 &bull; &copy; 2016–2026 MIUX STUDIO
           </p>
 
           <div className="mt-12 space-y-8 text-base leading-relaxed text-[#A3A3A3]">

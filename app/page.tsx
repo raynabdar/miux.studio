@@ -2,7 +2,15 @@
 
 import Image from 'next/image'
 import { useEffect, useState, useRef, type MouseEvent as ReactMouseEvent } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform, type Variants } from 'framer-motion'
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useInView,
+  type Variants,
+  type MotionValue,
+} from 'framer-motion'
 import {
   ArrowUpRight,
   Check,
@@ -17,7 +25,6 @@ import { NoiseBackground } from '@/components/ui/noise-background'
 import {
   projects,
   projectCategories,
-  aboutHistory,
   type Project,
   type ProjectCategory,
 } from '@/lib/data'
@@ -350,20 +357,66 @@ function Hero() {
 /*  3. ABOUT (id="about")                                                */
 /* ───────────────────────────────────────────────────────────────────── */
 
+const ABOUT_STATEMENT_WORDS = [
+  "We", "are", "the", "#1", "premier", "creative", "agency", "in", "Bangladesh.",
+  "We", "help", "businesses", "to", "build", "their", "brand", "identity,",
+  "we", "bridge", "the", "gap", "between", "premium", "visual", "design",
+  "and", "technical", "excellence."
+]
+
+function ScrollWord({
+  word,
+  index,
+  total,
+  progress,
+}: {
+  word: string
+  index: number
+  total: number
+  progress: MotionValue<number>
+}) {
+  const start = 0.12 + (index / total) * 0.48
+  const end = Math.min(start + 0.08, 0.95)
+  const opacity = useTransform(progress, [start, end], [0.18, 1])
+  const blurPx = useTransform(progress, [start, end], [10, 0])
+  const filter = useTransform(blurPx, (v) => `blur(${v}px)`)
+  const y = useTransform(progress, [start, end], [8, 0])
+
+  const isGradient =
+    word.includes('#1') ||
+    word.includes('premier') ||
+    word.includes('Bangladesh') ||
+    word.includes('excellence')
+
+  return (
+    <motion.span
+      style={{ opacity, filter, y }}
+      className={cn(
+        "inline-block mr-[0.24em] transition-colors will-change-[transform,opacity,filter]",
+        isGradient
+          ? "text-transparent bg-clip-text bg-gradient-to-r from-white via-orange-100 via-55% to-orange-400 font-semibold"
+          : "text-white"
+      )}
+    >
+      {word}
+    </motion.span>
+  )
+}
+
 function About() {
   const aboutRef = useRef<HTMLElement>(null)
   const lineRef = useRef<HTMLDivElement>(null)
   const [lineInView, setLineInView] = useState(false)
 
-  // Orange glow scroll synchronization: only sticks & appears during the About section on the home page
   const { scrollYProgress } = useScroll({
     target: aboutRef,
     offset: ['start end', 'end start'],
   })
 
-  // Smooth appearance: fades in as About enters viewport, remains active throughout, and cleanly fades out upon exiting
-  const glowOpacity = useTransform(scrollYProgress, [0.05, 0.25, 0.75, 0.95], [0, 1, 1, 0])
-  const glowScale = useTransform(scrollYProgress, [0.05, 0.5, 0.95], [0.85, 1.08, 0.85])
+  // Dynamic zoom: scale increases as user approaches the section center, and scales back as they scroll away
+  const zoomScale = useTransform(scrollYProgress, [0.08, 0.48, 0.58, 0.95], [0.92, 1.1, 1.1, 0.92])
+  const glowOpacity = useTransform(scrollYProgress, [0.05, 0.3, 0.7, 0.95], [0, 1, 1, 0])
+  const glowScale = useTransform(scrollYProgress, [0.05, 0.5, 0.95], [0.85, 1.15, 0.85])
 
   useEffect(() => {
     if (!lineRef.current) return
@@ -382,49 +435,33 @@ function About() {
       ref={aboutRef}
       id="about"
       aria-label="About Miux Studio"
-      className="relative bg-[#141414] px-5 pt-4 sm:pt-8 pb-20 sm:pb-28 overflow-hidden"
+      className="relative bg-[#141414] px-5 py-28 sm:py-36 overflow-hidden"
     >
       <div className="relative z-10 mx-auto max-w-[1200px]">
-        {/* Orange Glow positioned right at the corner of the "About" text */}
-        <div className="pointer-events-none absolute -top-14 -left-10 sm:-left-16 sm:-top-16 z-0 overflow-visible">
+        {/* Ambient warm orange glow */}
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 overflow-visible">
           <motion.div
             style={{ opacity: glowOpacity, scale: glowScale }}
             aria-hidden="true"
             className="pointer-events-none"
           >
-            <div className="h-[260px] w-[260px] sm:h-[360px] sm:w-[360px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.22)_0%,rgba(249,115,22,0.06)_45%,transparent_70%)] blur-[70px]" />
+            <div className="h-[320px] w-[320px] sm:h-[500px] sm:w-[500px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.22)_0%,rgba(249,115,22,0.05)_50%,transparent_70%)] blur-[90px]" />
           </motion.div>
         </div>
 
-        {/* Section header */}
-        <div className="overflow-hidden">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-          >
-            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-[#707070]">
-              01 / Studio History & Philosophy
-            </p>
-            <h2 className="text-4xl font-semibold tracking-[-0.06em] text-white sm:text-6xl">
-              About
-            </h2>
-          </motion.div>
-        </div>
-
-        {/* 2 to 3 paragraph history */}
+        {/* Zooming statement with word-by-word lazy blur load */}
         <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="mt-12 grid gap-8 text-base leading-relaxed text-[#A3A3A3] md:grid-cols-3 sm:text-lg"
+          style={{ scale: zoomScale }}
+          className="mx-auto max-w-4xl text-center text-3xl font-semibold tracking-[-0.04em] sm:text-5xl md:text-6xl lg:text-[62px] lg:leading-[1.18] text-white will-change-transform"
         >
-          {aboutHistory.map((paragraph, index) => (
-            <motion.p key={index} variants={fadeUp}>
-              {paragraph}
-            </motion.p>
+          {ABOUT_STATEMENT_WORDS.map((word, i) => (
+            <ScrollWord
+              key={`${word}-${i}`}
+              word={word}
+              index={i}
+              total={ABOUT_STATEMENT_WORDS.length}
+              progress={scrollYProgress}
+            />
           ))}
         </motion.div>
 
@@ -457,7 +494,7 @@ function About() {
 }
 
 /* ───────────────────────────────────────────────────────────────────── */
-/*  4. WORK (id="work")                                                  */
+/*  4. WORK (id="work") — Horizontal Pinned Scroll with Dark Fog         */
 /* ───────────────────────────────────────────────────────────────────── */
 
 function ProjectCard({
@@ -480,7 +517,6 @@ function ProjectCard({
   return (
     <motion.button
       ref={cardRef}
-      layout
       type="button"
       onClick={onClick}
       onMouseMove={handleMouseMove}
@@ -489,10 +525,10 @@ function ProjectCard({
       whileTap={{ scale: 0.98 }}
       aria-label={`View case study for ${project.title} (${project.category})`}
       title={`View case study: ${project.title}`}
-      className="group relative w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-2xl"
+      className="group relative w-[310px] sm:w-[460px] md:w-[520px] shrink-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-2xl select-none"
     >
       <div
-        className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-[#161616] p-7 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:border-orange-500/40 min-h-[380px]"
+        className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-[#161616] p-6 sm:p-7 transition-all duration-300 md:group-hover:-translate-y-1.5 md:group-hover:border-orange-500/40 min-h-[380px] sm:min-h-[420px]"
         style={
           isHovered
             ? {
@@ -507,38 +543,38 @@ function ProjectCard({
             src={project.image || '/placeholder.jpg'}
             alt={project.title}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover opacity-[0.14] transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-[0.24]"
+            sizes="(max-width: 768px) 310px, 520px"
+            className="object-cover opacity-[0.14] transition-all duration-700 ease-out md:group-hover:scale-105 md:group-hover:opacity-[0.24]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/75 to-[#141414]/40" />
         </div>
 
         {/* Top Badges */}
         <div className="relative z-10 flex items-center justify-between">
-          <span className="rounded-full border border-white/[0.12] bg-[#141414]/60 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-[#A3A3A3] backdrop-blur-sm transition-colors group-hover:border-orange-500/30 group-hover:text-orange-200">
+          <span className="rounded-full border border-white/[0.12] bg-[#141414]/60 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-[#A3A3A3] backdrop-blur-sm transition-colors md:group-hover:border-orange-500/30 md:group-hover:text-orange-200">
             {project.category}
           </span>
 
-          {/* "View project" chip on Work cards (fade in on hover with warm orange glow) */}
-          <span className="rounded-full border border-orange-500/40 bg-orange-500/15 px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-orange-200 opacity-0 backdrop-blur-md transition-all duration-300 group-hover:opacity-100">
+          {/* "View project" chip on Work cards */}
+          <span className="rounded-full border border-orange-500/40 bg-orange-500/15 px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-orange-200 opacity-0 backdrop-blur-md transition-all duration-300 md:group-hover:opacity-100">
             View project
           </span>
         </div>
 
         {/* Bottom Content */}
-        <div className="relative z-10 mt-24">
-          <h3 className="text-2xl font-semibold tracking-[-0.04em] text-white transition-colors duration-200 group-hover:text-white sm:text-3xl">
+        <div className="relative z-10 mt-20 sm:mt-24">
+          <h3 className="text-2xl font-semibold tracking-[-0.04em] text-white transition-colors duration-200 sm:text-3xl">
             {project.title}
           </h3>
           <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[#A3A3A3]">
             {project.description}
           </p>
 
-          <div className="mt-5 flex flex-wrap gap-2 border-t border-white/[0.08] pt-4 transition-colors group-hover:border-orange-500/20">
+          <div className="mt-5 flex flex-wrap gap-2 border-t border-white/[0.08] pt-4 transition-colors md:group-hover:border-orange-500/20">
             {project.services.slice(0, 3).map((service) => (
               <span
                 key={service}
-                className="text-xs text-[#707070] transition-colors group-hover:text-[#A3A3A3]"
+                className="text-xs text-[#707070] transition-colors md:group-hover:text-[#A3A3A3]"
               >
                 {service}
               </span>
@@ -553,6 +589,15 @@ function ProjectCard({
 function Work() {
   const [filter, setFilter] = useState<ProjectCategory | 'All'>('All')
   const [selected, setSelected] = useState<Project | null>(null)
+  const targetRef = useRef<HTMLDivElement>(null)
+
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ['start start', 'end end'],
+  })
+
+  // Horizontal motion: right to left as user scrolls down, left to right when user scrolls up
+  const x = useTransform(scrollYProgress, [0, 1], ['2%', '-65%'])
 
   const filteredProjects =
     filter === 'All'
@@ -561,53 +606,67 @@ function Work() {
 
   return (
     <section
+      ref={targetRef}
       id="work"
       aria-label="Selected work"
-      className="bg-[#141414] px-5 py-24 sm:py-32"
+      className="relative h-[280vh] sm:h-[300vh] bg-[#141414]"
     >
-      <div className="mx-auto max-w-[1200px]">
+      {/* Sticky viewport pinned while scrolling through all projects */}
+      <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden">
+        {/* Left Dark Fog Overlay */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 sm:w-44 z-20 bg-gradient-to-r from-[#141414] via-[#141414]/90 to-transparent backdrop-blur-[1px]"
+        />
+
+        {/* Right Dark Fog Overlay */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 sm:w-44 z-20 bg-gradient-to-l from-[#141414] via-[#141414]/90 to-transparent backdrop-blur-[1px]"
+        />
+
         {/* Section Header */}
-        <div className="overflow-hidden">
+        <div className="relative z-10 mx-auto max-w-[1200px] w-full px-5 mb-8 sm:mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div>
+              <p className="mb-2 text-xs uppercase tracking-[0.3em] text-[#707070]">
+                02 / Portfolio
+              </p>
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-semibold tracking-[-0.06em] text-white">
+                Work
+              </h2>
+            </div>
+
+            {/* Category Filter Tabs */}
+            <div className="flex flex-wrap gap-2" role="tablist" aria-label="Portfolio category filter tabs">
+              {projectCategories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === cat}
+                  aria-label={`Filter projects by ${cat}`}
+                  title={`Show ${cat} projects`}
+                  onClick={() => setFilter(cat)}
+                  className={`rounded-full px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-medium transition-all duration-200 ${
+                    filter === cat
+                      ? 'border border-white bg-white text-[#141414]'
+                      : 'border border-white/[0.12] bg-white/[0.02] text-[#A3A3A3] hover:border-white/30 hover:text-white'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Horizontal Moving Row: cards smoothly glide from right to left */}
+        <div className="relative z-10 w-full overflow-visible">
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
+            style={{ x }}
+            className="flex gap-6 sm:gap-8 pl-5 sm:pl-16 pr-16 items-stretch will-change-transform"
           >
-            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-[#707070]">
-              02 / Portfolio
-            </p>
-            <h2 className="text-4xl font-semibold tracking-[-0.06em] text-white sm:text-6xl">
-              Work
-            </h2>
-          </motion.div>
-        </div>
-
-        {/* Category Filter Tabs */}
-        <div className="mt-10 flex flex-wrap gap-2" role="tablist" aria-label="Portfolio category filter tabs">
-          {projectCategories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              role="tab"
-              aria-selected={filter === cat}
-              aria-label={`Filter projects by ${cat}`}
-              title={`Show ${cat} projects`}
-              onClick={() => setFilter(cat)}
-              className={`rounded-full px-4 py-2 text-xs font-medium transition-all duration-200 ${
-                filter === cat
-                  ? 'border border-white bg-white text-[#141414]'
-                  : 'border border-white/[0.12] bg-white/[0.02] text-[#A3A3A3] hover:border-white/30 hover:text-white'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* 2-Column Grid of 6 Projects */}
-        <motion.div layout className="mt-12 grid gap-6 md:grid-cols-2">
-          <AnimatePresence mode="popLayout">
             {filteredProjects.map((project) => (
               <ProjectCard
                 key={project.id}
@@ -615,8 +674,8 @@ function Work() {
                 onClick={() => setSelected(project)}
               />
             ))}
-          </AnimatePresence>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
 
       {/* Project Detail Modal (shadcn Dialog) */}
@@ -637,7 +696,6 @@ function Work() {
             </DialogDescription>
           </DialogHeader>
 
-          {/* Larger image area */}
           <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/[0.08] bg-gradient-to-br from-white/10 to-[#141414]">
             <Image
               src={selected?.image || '/placeholder.jpg'}
@@ -649,7 +707,6 @@ function Work() {
             />
           </div>
 
-          {/* Services Used */}
           <div className="space-y-3 pt-2 text-sm">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-[#707070]">
@@ -667,7 +724,6 @@ function Work() {
               </div>
             </div>
 
-            {/* Result Summary (No exact numbers) */}
             <div className="border-t border-white/[0.08] pt-3">
               <p className="text-xs font-semibold uppercase tracking-wider text-[#707070]">
                 Result Summary
@@ -678,7 +734,6 @@ function Work() {
             </div>
           </div>
 
-          {/* Visit Project Button */}
           <div className="mt-4 flex justify-end">
             <a
               href="/meeting"
@@ -692,6 +747,107 @@ function Work() {
           </div>
         </DialogContent>
       </Dialog>
+    </section>
+  )
+}
+
+/* ───────────────────────────────────────────────────────────────────── */
+/*  4.5 STATS (Impact Numbers with Animated Counters)                    */
+/* ───────────────────────────────────────────────────────────────────── */
+
+function AnimatedCounter({
+  value,
+  suffix = '',
+  duration = 2.2,
+}: {
+  value: number
+  suffix?: string
+  duration?: number
+}) {
+  const [count, setCount] = useState(0)
+  const ref = useRef<HTMLSpanElement>(null)
+  const isInView = useInView(ref, { once: true, margin: '-50px' })
+
+  useEffect(() => {
+    if (!isInView) return
+    let startTime: number | null = null
+    let animationFrame: number
+
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1)
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress)
+      setCount(Math.floor(easeProgress * value))
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(step)
+      } else {
+        setCount(value)
+      }
+    }
+
+    animationFrame = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(animationFrame)
+  }, [isInView, value, duration])
+
+  return (
+    <span ref={ref} className="tabular-nums">
+      {count}
+      {suffix}
+    </span>
+  )
+}
+
+function Stats() {
+  return (
+    <section
+      aria-label="Studio impact numbers"
+      className="relative bg-[#141414] py-20 sm:py-28 px-5 border-y border-white/[0.08] overflow-hidden"
+    >
+      {/* Warm Ambient Glow */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[340px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.12)_0%,rgba(234,88,12,0.03)_45%,transparent_70%)] blur-[90px]" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 divide-y md:divide-y-0 md:divide-x divide-white/[0.08]">
+          {/* Stat 1: 150+ */}
+          <div className="text-center pt-6 md:pt-0 md:px-6">
+            <h3 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white">
+              <span className="bg-gradient-to-r from-white via-white to-orange-400 bg-clip-text text-transparent">
+                <AnimatedCounter value={150} suffix="+" />
+              </span>
+            </h3>
+            <p className="mt-3 text-sm sm:text-base text-[#A3A3A3] max-w-xs mx-auto leading-relaxed">
+              projects delivered for ambitious APAC teams
+            </p>
+          </div>
+
+          {/* Stat 2: 40+ */}
+          <div className="text-center pt-8 md:pt-0 md:px-6">
+            <h3 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white">
+              <span className="bg-gradient-to-r from-white via-white to-orange-400 bg-clip-text text-transparent">
+                <AnimatedCounter value={40} suffix="+" />
+              </span>
+            </h3>
+            <p className="mt-3 text-sm sm:text-base text-[#A3A3A3] max-w-xs mx-auto leading-relaxed">
+              industries served across web, app, and AI media
+            </p>
+          </div>
+
+          {/* Stat 3: 100% */}
+          <div className="text-center pt-8 md:pt-0 md:px-6">
+            <h3 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white">
+              <span className="bg-gradient-to-r from-white via-white to-orange-400 bg-clip-text text-transparent">
+                <AnimatedCounter value={100} suffix="%" />
+              </span>
+            </h3>
+            <p className="mt-3 text-sm sm:text-base text-[#A3A3A3] max-w-xs mx-auto leading-relaxed">
+              projects delivered by our in-house team
+            </p>
+          </div>
+        </div>
+      </div>
     </section>
   )
 }
@@ -712,6 +868,17 @@ function Work() {
 /*  8. FINAL CTA                                                         */
 /* ───────────────────────────────────────────────────────────────────── */
 
+const CTA_PARTICLES = Array.from({ length: 24 }).map((_, i) => ({
+  id: i,
+  left: `${(i * 19) % 92 + 4}%`,
+  top: `${(i * 23) % 82 + 9}%`,
+  size: (i % 3) + 2,
+  duration: 6.5 + (i % 6) * 1.5,
+  delay: (i % 8) * 0.6,
+  driftX: (i % 2 === 0 ? 1 : -1) * (10 + (i % 4) * 6),
+  driftY: -30 - (i % 4) * 10,
+}))
+
 function FinalCTA() {
   return (
     <section
@@ -719,6 +886,50 @@ function FinalCTA() {
       aria-label="Call to action"
       className="relative bg-[#141414] px-5 py-28 text-center sm:py-36 overflow-hidden"
     >
+      {/* Slow, shining ambient pulsing glow */}
+      <motion.div
+        animate={{
+          scale: [1, 1.16, 1],
+          opacity: [0.22, 0.38, 0.22],
+        }}
+        transition={{
+          duration: 7.5,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[450px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.26)_0%,rgba(251,146,60,0.12)_40%,transparent_70%)] blur-[90px]"
+        aria-hidden="true"
+      />
+
+      {/* Slow, smooth animated little particles */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        {CTA_PARTICLES.map((p) => (
+          <motion.div
+            key={p.id}
+            style={{
+              left: p.left,
+              top: p.top,
+              width: p.size,
+              height: p.size,
+              boxShadow: '0 0 8px 1.5px rgba(249, 115, 22, 0.75)',
+            }}
+            className="absolute rounded-full bg-gradient-to-tr from-orange-400 via-amber-300 to-white"
+            animate={{
+              y: [0, p.driftY, 0],
+              x: [0, p.driftX, 0],
+              opacity: [0.15, 0.85, 0.15],
+              scale: [0.75, 1.3, 0.75],
+            }}
+            transition={{
+              duration: p.duration,
+              delay: p.delay,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+      </div>
+
       <div className="relative z-10 mx-auto max-w-4xl">
         <div className="overflow-hidden">
           <motion.h2
@@ -776,6 +987,7 @@ export default function HomePage() {
         <Hero />
         <About />
         <Work />
+        <Stats />
         <Pricing />
         <Testimonials />
         <FAQs />

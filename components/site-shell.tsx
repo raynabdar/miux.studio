@@ -447,6 +447,13 @@ const FOOTER_SERVICES = [
   'Ads and Other Campaigns',
 ]
 
+const FOOTER_OTHERS = [
+  { label: 'Client Terms', href: '/client-terms' },
+  { label: 'Privacy', href: '/privacy-policy' },
+  { label: 'Terms', href: '/terms' },
+  { label: 'Sitemap', href: '/sitemap' },
+]
+
 const FOOTER_SOCIALS = [
   { label: 'Facebook', href: 'https://facebook.com/Miuxstudio', Icon: FacebookIcon },
   { label: 'LinkedIn', href: '#', Icon: LinkedInIcon },
@@ -458,11 +465,30 @@ export function Footer() {
   const [giantHovered, setGiantHovered] = useState(false)
 
   return (
-    <footer className="relative overflow-hidden bg-[#141414] border-t border-white/[0.08]">
-      {/* 4-Column Grid */}
-      <div className="mx-auto grid max-w-[1200px] gap-12 px-5 py-20 md:grid-cols-4">
+    <footer
+      className="relative overflow-hidden border-t border-white/[0.14] transition-all duration-300"
+      style={{
+        backgroundColor: 'rgba(20, 20, 20, 0.45)',
+        backdropFilter: 'blur(24px) saturate(190%)',
+        WebkitBackdropFilter: 'blur(24px) saturate(190%)',
+        boxShadow: 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.16)',
+      }}
+    >
+      {/* Soft inner top specular highlight line */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"
+      />
+
+      {/* Subtle liquid background ambient glow */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] h-[350px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08)_0%,transparent_70%)] blur-[90px]" />
+      </div>
+
+      {/* 5-Column Grid */}
+      <div className="relative z-10 mx-auto grid max-w-[1200px] gap-10 px-5 py-20 sm:grid-cols-2 lg:grid-cols-5">
         {/* Brand */}
-        <div>
+        <div className="sm:col-span-2 lg:col-span-1">
           <span className="text-lg font-semibold tracking-tight text-white">
             Miux Studio
           </span>
@@ -508,6 +534,26 @@ export function Footer() {
           </ul>
         </div>
 
+        {/* Others */}
+        <div>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#707070]">
+            Others
+          </h2>
+          <nav className="mt-4 flex flex-col gap-3" aria-label="Other resources">
+            {FOOTER_OTHERS.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                aria-label={`Go to ${item.label}`}
+                title={`Visit ${item.label}`}
+                className="text-sm text-[#A3A3A3] transition-colors hover:text-white"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+
         {/* Connect */}
         <div>
           <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#707070]">
@@ -540,7 +586,7 @@ export function Footer() {
       </div>
 
       {/* Centered "Book a Call" button directly above the giant text */}
-      <div className="flex justify-center pb-8 pt-4">
+      <div className="relative z-10 flex justify-center pb-8 pt-4">
         <a
           href="/meeting"
           aria-label="Book a 45-minute discovery call with Miux Studio"
@@ -553,14 +599,20 @@ export function Footer() {
       </div>
 
       {/* Bottom row */}
-      <div className="mx-auto flex max-w-[1200px] flex-col justify-between gap-4 border-t border-white/[0.08] px-5 py-6 text-xs text-[#707070] sm:flex-row sm:items-center">
-        <span>© 2026 Miux Studio. All rights reserved.</span>
-        <div className="flex gap-6">
-          <a href="/privacy" className="transition-colors hover:text-[#A3A3A3]">
-            Privacy Policy
+      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col justify-between gap-4 border-t border-white/[0.08] px-5 py-6 text-xs text-[#707070] sm:flex-row sm:items-center">
+        <span>&copy; 2016–2026 MIUX STUDIO. All rights reserved.</span>
+        <div className="flex flex-wrap gap-5 sm:gap-6">
+          <a href="/client-terms" className="transition-colors hover:text-[#A3A3A3]">
+            Client Terms
+          </a>
+          <a href="/privacy-policy" className="transition-colors hover:text-[#A3A3A3]">
+            Privacy
           </a>
           <a href="/terms" className="transition-colors hover:text-[#A3A3A3]">
             Terms
+          </a>
+          <a href="/sitemap" className="transition-colors hover:text-[#A3A3A3]">
+            Sitemap
           </a>
         </div>
       </div>
