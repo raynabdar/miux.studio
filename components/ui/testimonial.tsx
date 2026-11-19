@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useRef, type MouseEvent as ReactMouseEvent } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ArrowUpRight, Globe } from "lucide-react";
+import { BlurRevealTitle } from "@/components/ui/blur-reveal-title";
 
 interface TestimonialItem {
   id: string;
@@ -16,7 +18,6 @@ interface TestimonialItem {
   profileUrl: string;
   avatar: string;
   variant?: "dark" | "orange";
-  flexRatio?: number;
 }
 
 const TESTIMONIALS_DATA: TestimonialItem[] = [
@@ -31,7 +32,6 @@ const TESTIMONIALS_DATA: TestimonialItem[] = [
     profileUrl: "https://x.com/rauchg",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces",
     variant: "dark",
-    flexRatio: 7,
   },
   {
     id: "2",
@@ -44,7 +44,6 @@ const TESTIMONIALS_DATA: TestimonialItem[] = [
     profileUrl: "https://x.com/rikashinoda",
     avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=faces",
     variant: "orange",
-    flexRatio: 3,
   },
   {
     id: "3",
@@ -61,12 +60,12 @@ const TESTIMONIALS_DATA: TestimonialItem[] = [
   {
     id: "4",
     quote: "Working with Miux Studio was effortless. Senior-level partners, zero fluff, and delivery that exceeded our expectations.",
-    name: "John",
-    handle: "@john",
-    role: "CEO",
+    name: "Johnathan Vance",
+    handle: "@jvance",
+    role: "Founder",
     company: "Labsbo",
     website: "https://labsbo.com",
-    profileUrl: "https://x.com/john",
+    profileUrl: "https://x.com/jvance",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces",
     variant: "dark",
   },
@@ -84,19 +83,6 @@ const TESTIMONIALS_DATA: TestimonialItem[] = [
   },
   {
     id: "6",
-    quote: "Miux Studio has been a pivotal growth driver for our enterprise web products.",
-    name: "Guillermo Rauch",
-    handle: "@rauchg",
-    role: "CEO",
-    company: "OdeaoLabs",
-    website: "https://odeaolabs.com",
-    profileUrl: "https://x.com/rauchg",
-    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces",
-    variant: "orange",
-    flexRatio: 3,
-  },
-  {
-    id: "7",
     quote: "Miux Studio has been a true partner. Their deep craftsmanship, high standards, and relentless commitment to measurable results set them completely apart.",
     name: "Paul Brauch",
     handle: "@paulbrauch",
@@ -105,132 +91,178 @@ const TESTIMONIALS_DATA: TestimonialItem[] = [
     website: "https://spectrum.chat",
     profileUrl: "https://x.com/paulbrauch",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces",
-    variant: "dark",
-    flexRatio: 7,
+    variant: "orange",
   },
 ];
 
-function TestimonialCard({ item }: { item: TestimonialItem }) {
-  const isOrange = item.variant === "orange";
+function Testimonial3DCard({ item }: { item: TestimonialItem }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [glarePos, setGlarePos] = useState({ x: 50, y: 50 });
+  const [isHovered, setIsHovered] = useState(false);
+  const [isTiltActive, setIsTiltActive] = useState(false);
+
+  const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const xPct = (mouseX / rect.width) * 100;
+    const yPct = (mouseY / rect.height) * 100;
+
+    // Smooth, organic 3D tilt
+    const rX = (mouseY / rect.height - 0.5) * -18;
+    const rY = (mouseX / rect.width - 0.5) * 18;
+
+    setRotateX(rX);
+    setRotateY(rY);
+    setGlarePos({ x: xPct, y: yPct });
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    // Small delay (140ms) before the 3D tilt effect starts
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsTiltActive(true);
+    }, 140);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setIsHovered(false);
+    setIsTiltActive(false);
+    setRotateX(0);
+    setRotateY(0);
+  };
 
   return (
-    <div
-      className={cn(
-        "group flex flex-col justify-between relative overflow-hidden rounded-2xl p-7 transition-all duration-300",
-        isOrange
-          ? "bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 text-white border border-orange-400/50 md:hover:border-orange-300 md:hover:-translate-y-1.5 md:hover:shadow-[0_0_35px_-5px_rgba(249,115,22,0.45)]"
-          : "bg-[#181512] text-white border border-orange-500/20 md:hover:border-orange-500/60 md:hover:-translate-y-1.5 md:hover:shadow-[0_0_30px_-5px_rgba(249,115,22,0.25)]"
-      )}
-      style={{
-        flex: item.flexRatio ? `${item.flexRatio}` : undefined,
-      }}
-    >
-      {/* Subtle grid mesh on dark cards with warm orange sheen */}
-      {!isOrange && (
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f973160a_1px,transparent_1px),linear-gradient(to_bottom,#f973160a_1px,transparent_1px)] bg-[size:48px_52px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] pointer-events-none" />
-      )}
+    <div style={{ perspective: "1000px" }} className="w-full select-none">
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transform: isTiltActive
+            ? `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.025, 1.025, 1.025) translateZ(14px)`
+            : "rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translateZ(0px)",
+          transition: isTiltActive
+            ? "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.7s cubic-bezier(0.22, 1, 0.36, 1)"
+            : "transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.7s cubic-bezier(0.22, 1, 0.36, 1)",
+          transformStyle: "preserve-3d",
+        }}
+        className="group relative overflow-hidden rounded-2xl p-7 bg-[#181512] text-white border border-orange-500/20 hover:border-orange-400/70 flex flex-col justify-between min-h-[270px]"
+      >
+        {/* Subtle background grid mesh on rest state */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f973160a_1px,transparent_1px),linear-gradient(to_bottom,#f973160a_1px,transparent_1px)] bg-[size:48px_52px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] pointer-events-none transition-opacity duration-700 group-hover:opacity-0" />
 
-      {/* Quote */}
-      <article className="mt-auto relative z-10">
-        <p
-          className={cn(
-            "leading-relaxed font-normal",
-            isOrange
-              ? "text-base text-white/95"
-              : "text-base sm:text-lg text-neutral-200"
-          )}
-        >
-          &ldquo;{item.quote}&rdquo;
-        </p>
-
-        {/* Author details with workable links */}
+        {/* Slow, smooth Orange Hover Fill Overlay */}
         <div
-          className={cn(
-            "flex justify-between items-center pt-6 mt-5 border-t transition-colors",
-            isOrange
-              ? "border-white/25"
-              : "border-white/[0.08] group-hover:border-orange-500/30"
-          )}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 opacity-0 transition-opacity duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 z-0"
+        />
+
+        {/* 3D Specular Shine & Glare Overlay following mouse on hover */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-700 z-20"
+          style={{
+            opacity: isHovered ? 1 : 0,
+            background: `radial-gradient(circle 320px at ${glarePos.x}% ${glarePos.y}%, rgba(255, 255, 255, 0.26) 0%, rgba(255, 140, 40, 0.12) 40%, transparent 75%)`,
+            mixBlendMode: "overlay",
+          }}
+        />
+
+        {/* Extra holographic light sheen */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-700 z-20"
+          style={{
+            opacity: isHovered ? 0.65 : 0,
+            background: `radial-gradient(circle 240px at ${glarePos.x}% ${glarePos.y}%, rgba(255, 255, 255, 0.2), transparent 70%)`,
+          }}
+        />
+
+        {/* Card Body Content with 3D Depth */}
+        <div
+          style={{ transform: "translateZ(18px)" }}
+          className="relative z-10 flex flex-col justify-between h-full space-y-6"
         >
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold lg:text-lg text-base text-white">
-                {item.name}
-              </h3>
-              {/* Clickable @username handle link */}
-              <a
-                href={item.profileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`View ${item.name}'s profile (${item.handle})`}
-                title={`Visit ${item.handle}`}
-                className={cn(
-                  "text-xs font-medium transition-colors hover:underline inline-flex items-center gap-0.5",
-                  isOrange
-                    ? "text-white/90 hover:text-white"
-                    : "text-orange-400 hover:text-orange-300"
-                )}
-              >
-                <span>{item.handle}</span>
-                <ArrowUpRight className="size-3 opacity-70" />
-              </a>
+          {/* Quote */}
+          <p className="leading-relaxed font-normal text-base sm:text-lg text-neutral-200 transition-colors duration-700 group-hover:text-white">
+            &ldquo;{item.quote}&rdquo;
+          </p>
+
+          {/* Author details */}
+          <div className="flex justify-between items-center pt-5 border-t border-white/[0.08] transition-colors duration-700 group-hover:border-white/25">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-base sm:text-lg text-white">
+                  {item.name}
+                </h3>
+                <a
+                  href={item.profileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${item.name}'s profile (${item.handle})`}
+                  title={`Visit ${item.handle}`}
+                  className="text-xs font-medium text-orange-400 transition-colors duration-700 group-hover:text-white/95 hover:underline inline-flex items-center gap-0.5"
+                >
+                  <span>{item.handle}</span>
+                  <ArrowUpRight className="size-3 opacity-70" />
+                </a>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-[#8A8A8A] transition-colors duration-700 group-hover:text-white/80">
+                  {item.role} of
+                </span>
+                <a
+                  href={item.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Visit ${item.company} website`}
+                  title={`Open ${item.company} website`}
+                  className="text-xs font-medium text-[#D4D4D4] transition-colors duration-700 group-hover:text-white underline decoration-dotted underline-offset-2 inline-flex items-center gap-1"
+                >
+                  <span>{item.company}</span>
+                  <Globe className="size-2.5 opacity-60" />
+                </a>
+              </div>
             </div>
 
-            {/* Clickable Company Website Link */}
-            <div className="flex items-center gap-1.5">
-              <span className={isOrange ? "text-xs text-white/80" : "text-xs text-[#8A8A8A]"}>
-                {item.role} of
-              </span>
-              <a
-                href={item.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Visit ${item.company} website`}
-                title={`Open ${item.company} website`}
-                className={cn(
-                  "text-xs font-medium transition-colors underline decoration-dotted underline-offset-2 inline-flex items-center gap-1",
-                  isOrange
-                    ? "text-white hover:text-white"
-                    : "text-[#D4D4D4] hover:text-orange-400"
-                )}
-              >
-                <span>{item.company}</span>
-                <Globe className="size-2.5 opacity-60" />
-              </a>
-            </div>
+            <a
+              href={item.profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`View ${item.name} avatar`}
+              className="shrink-0"
+            >
+              <Image
+                src={item.avatar}
+                alt={item.name}
+                width={120}
+                height={120}
+                loading="lazy"
+                className="w-9 h-9 rounded-full object-cover border border-orange-500/30 transition-colors duration-700 group-hover:border-white/50"
+              />
+            </a>
           </div>
-
-          <a
-            href={item.profileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`View ${item.name} avatar`}
-            className="shrink-0"
-          >
-            <Image
-              src={item.avatar}
-              alt={item.name}
-              width={200}
-              height={200}
-              loading="lazy"
-              className={cn(
-                "w-12 h-12 rounded-full object-cover transition-colors",
-                isOrange
-                  ? "border border-white/40"
-                  : "border border-orange-500/30 md:group-hover:border-orange-400"
-              )}
-            />
-          </a>
         </div>
-      </article>
+      </div>
     </div>
   );
 }
 
 function ClientFeedback({ className }: { className?: string }) {
   const col1 = [TESTIMONIALS_DATA[0], TESTIMONIALS_DATA[1]];
-  const col2 = [TESTIMONIALS_DATA[2], TESTIMONIALS_DATA[3], TESTIMONIALS_DATA[4]];
-  const col3 = [TESTIMONIALS_DATA[5], TESTIMONIALS_DATA[6]];
+  const col2 = [TESTIMONIALS_DATA[2], TESTIMONIALS_DATA[3]];
+  const col3 = [TESTIMONIALS_DATA[4], TESTIMONIALS_DATA[5]];
 
   return (
     <section
@@ -245,7 +277,6 @@ function ClientFeedback({ className }: { className?: string }) {
         <div className="absolute top-10 -left-20 w-[500px] h-[400px] rounded-full bg-[radial-gradient(circle_at_center,rgba(234,88,12,0.10)_0%,transparent_65%)] blur-[90px]" />
       </div>
 
-      {/* The entire section renders as a single unified block with smooth blur lazy load */}
       <motion.div
         initial={{ opacity: 0, y: 24, filter: "blur(14px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -253,48 +284,39 @@ function ClientFeedback({ className }: { className?: string }) {
         transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
         className="relative z-10 h-full max-w-7xl mx-auto rounded-2xl"
       >
-        <article className="max-w-screen-md mx-auto text-center space-y-3 mb-14">
-          <p className="text-xs uppercase tracking-[0.3em] text-orange-400 font-medium inline-flex items-center gap-2">
-            <span className="size-1.5 rounded-full bg-orange-500 animate-pulse" />
-            04 / Endorsements
-          </p>
-          <h2 className="xl:text-5xl md:text-4xl text-3xl font-semibold tracking-[-0.05em] leading-tight text-white">
+        <article className="max-w-screen-md mx-auto text-center space-y-3 mb-16">
+          <BlurRevealTitle className="xl:text-5xl md:text-4xl text-3xl font-semibold tracking-[-0.05em] leading-tight text-white">
             <span className="inline-block bg-gradient-to-r from-white via-orange-100 to-orange-400 bg-clip-text text-transparent font-semibold">
               Trusted by Startups and the world&apos;s largest companies.
             </span>
-          </h2>
+          </BlurRevealTitle>
           <p className="mx-auto text-base text-[#B3B3B3] max-w-xl leading-relaxed">
             How visionary leaders across Asia and the UAE accelerate their growth with Miux Studio.
           </p>
         </article>
 
-        {/* Responsive grid: all cards render together at once as a single block */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full pt-4 pb-12">
+        {/* Vertical Columns with 3D Holographic Card Shine */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full">
           {/* Column 1 */}
-          <div className="flex flex-col gap-6 lg:gap-8 h-full">
+          <div className="flex flex-col gap-6 lg:gap-8">
             {col1.map((item) => (
-              <TestimonialCard key={item.id} item={item} />
+              <Testimonial3DCard key={item.id} item={item} />
             ))}
           </div>
 
           {/* Column 2 */}
-          <div className="flex flex-col gap-6 lg:gap-8 h-full">
+          <div className="flex flex-col gap-6 lg:gap-8">
             {col2.map((item) => (
-              <TestimonialCard key={item.id} item={item} />
+              <Testimonial3DCard key={item.id} item={item} />
             ))}
           </div>
 
           {/* Column 3 */}
-          <div className="flex flex-col gap-6 lg:gap-8 h-full md:col-span-2 lg:col-span-1">
+          <div className="flex flex-col gap-6 lg:gap-8 md:col-span-2 lg:col-span-1">
             {col3.map((item) => (
-              <TestimonialCard key={item.id} item={item} />
+              <Testimonial3DCard key={item.id} item={item} />
             ))}
           </div>
-        </div>
-
-        {/* Decorative framed line with warm glow accents */}
-        <div className="relative border-b border-orange-500/20 mt-6 h-8 z-[2] w-full">
-          <div className="w-full h-full relative before:absolute before:-left-1 before:-bottom-1 before:w-2 before:h-2 before:bg-[#202020] before:border before:border-orange-500/40 after:absolute after:-right-1 after:-bottom-1 after:w-2 after:h-2 after:bg-[#202020] after:border after:border-orange-500/40" />
         </div>
       </motion.div>
     </section>

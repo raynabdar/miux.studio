@@ -4,9 +4,11 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ArrowUpRight, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, AlertCircle, Loader2, Phone } from 'lucide-react'
 import { Navbar, Footer } from '@/components/site-shell'
 import { MagneticButton } from '@/components/magnetic-button'
+import { COMPANY_PHONE, COMPANY_PHONE_TEL } from '@/lib/data'
+import Map from '@/components/ui/contact-map'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Please enter your full name'),
@@ -108,7 +110,18 @@ export default function ContactPage() {
     <div className="min-h-screen bg-[#141414] text-white">
       <Navbar />
 
-      <main className="px-5 pb-28 pt-36 sm:pt-44">
+      <main className="relative px-5 pb-28 pt-36 sm:pt-44 overflow-hidden">
+        {/* Background Map with Blur (Contact section) */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden flex items-start justify-center pt-24 opacity-35 filter blur-[3px]"
+        >
+          <div className="w-full max-w-[1000px] h-[600px] relative">
+            <Map />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#141414]/90 via-[#141414]/40 to-[#141414]" />
+        </div>
+
         <div className="mx-auto max-w-[1200px]">
           <div className="grid gap-16 lg:grid-cols-[1.3fr_0.7fr]">
             {/* Form Column */}
@@ -343,7 +356,11 @@ export default function ContactPage() {
             </div>
 
             {/* Info Block Column */}
-            <aside className="self-start rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 lg:mt-24">
+            <aside className="relative overflow-hidden self-start rounded-2xl border border-white/[0.08] bg-[#171717]/85 backdrop-blur-md p-6 sm:p-8 lg:mt-24">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
+              />
               <h2 className="text-xs uppercase tracking-[0.25em] text-[#707070]">
                 Direct Contact
               </h2>
@@ -360,13 +377,23 @@ export default function ContactPage() {
                 </div>
 
                 <div>
+                  <p className="text-xs text-[#707070]">Phone</p>
+                  <a
+                    href={`tel:${COMPANY_PHONE_TEL}`}
+                    className="animated-link mt-1 text-base font-medium text-white"
+                  >
+                    {COMPANY_PHONE}
+                  </a>
+                </div>
+
+                <div>
                   <p className="text-xs text-[#707070]">Response Time</p>
                   <p className="mt-1 text-white/90">
                     We reply within one business day.
                   </p>
                 </div>
 
-                <div className="border-t border-white/[0.08] pt-6">
+                <div className="pt-2">
                   <p className="text-xs text-[#707070]">Regional Scope</p>
                   <p className="mt-1 font-medium text-white">
                     Serving Asia and the UAE
@@ -377,6 +404,21 @@ export default function ContactPage() {
                 </div>
               </div>
             </aside>
+          </div>
+
+          {/* Bottom Tap to Call Button (Mobile & Desktop Friendly) */}
+          <div className="mt-16 sm:mt-20 pt-6 text-center">
+            <p className="text-xs uppercase tracking-[0.25em] text-[#707070] mb-4">
+              Prefer to speak directly?
+            </p>
+            <a
+              href={`tel:${COMPANY_PHONE_TEL}`}
+              aria-label={`Tap to Call ${COMPANY_PHONE}`}
+              className="group inline-flex min-h-[44px] items-center justify-center gap-3 rounded-full border border-white/20 bg-white/[0.06] px-8 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:border-orange-500/50 hover:bg-orange-500 hover:text-black focus:outline-none focus:ring-2 focus:ring-orange-500/40 active:scale-[0.98]"
+            >
+              <Phone className="size-4 transition-transform group-hover:rotate-12" />
+              <span>Tap to Call</span>
+            </a>
           </div>
         </div>
       </main>

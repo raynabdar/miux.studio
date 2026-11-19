@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { TimelineContent } from "@/components/ui/timeline-animation";
 import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
 import { cn } from "@/lib/utils";
+import { BlurRevealTitle } from "@/components/ui/blur-reveal-title";
+import { ProgressiveBlur } from "@/components/ProgressiveBlur";
 
 export interface PricingPlanFeature {
   text: string;
@@ -35,69 +37,66 @@ export interface PricingProps {
 const DEFAULT_PLANS: PricingPlan[] = [
   {
     name: "Starter",
-    description:
-      "Strategic clarity, brand identity, and focused web properties engineered for high-calibre execution.",
+    description: "Brand identity and modern web build for emerging businesses.",
     price: 2400,
     yearlyPrice: 1950,
     buttonText: "Book a call",
     buttonVariant: "outline",
     features: [
-      { text: "Core Brand Identity & Web Property", icon: <Briefcase size={18} /> },
-      { text: "High-Performance Responsive Architecture", icon: <Database size={18} /> },
-      { text: "Integrated Analytics & SEO Tuning", icon: <Server size={18} /> },
+      { text: "Brand Identity & Design System", icon: <Briefcase size={18} /> },
+      { text: "Responsive Next.js Architecture", icon: <Database size={18} /> },
+      { text: "Core SEO & Speed Optimization", icon: <Server size={18} /> },
     ],
     includes: [
       "Starter includes:",
-      "End-to-end design system architecture",
-      "Fully responsive, accessible build",
-      "Integrated analytics & performance tuning",
-      "Direct senior partner collaboration",
-      "Post-launch warranty & onboarding",
+      "Custom brand system & UI kit",
+      "Full responsive web build",
+      "Analytics & performance tuning",
+      "Direct senior partner lead",
+      "30-day post-launch support",
     ],
   },
   {
     name: "Growth",
-    description:
-      "Comprehensive design and engineering engineered to accelerate market capture and conversion.",
+    description: "Full-scale web platform engineered to drive conversions and growth.",
     price: 4800,
     yearlyPrice: 3900,
     buttonText: "Book a call",
     buttonVariant: "default",
     popular: true,
     features: [
-      { text: "Complete Brand & Multi-Surface Platform", icon: <Briefcase size={18} /> },
-      { text: "Custom CMS & Headless Architecture", icon: <Database size={18} /> },
-      { text: "Targeted Campaign Rollout & Ads", icon: <Server size={18} /> },
+      { text: "Full Brand & Web Application", icon: <Briefcase size={18} /> },
+      { text: "Custom CMS & API Integrations", icon: <Database size={18} /> },
+      { text: "Conversion Optimization & Motion", icon: <Server size={18} /> },
     ],
     includes: [
       "Everything in Starter, plus:",
-      "Multi-surface web application platform",
-      "Advanced interactive motions & micro-interactions",
-      "Conversion rate optimization (CRO) setup",
-      "Targeted campaign collateral & ad creatives",
-      "Bi-weekly strategic sprint reviews",
+      "Multi-page custom platform",
+      "Interactive motion design",
+      "CRO & funnel setup",
+      "Campaign assets & templates",
+      "Bi-weekly strategic reviews",
     ],
   },
   {
     name: "Enterprise",
-    description:
-      "Embedded creative and engineering partnership for global brands demanding category dominance.",
+    description: "Dedicated design and engineering squad for category leaders.",
     price: 8900,
     yearlyPrice: 7200,
     buttonText: "Book a call",
     buttonVariant: "outline",
     features: [
-      { text: "Full-Spectrum Design & Dev Squad", icon: <Briefcase size={18} /> },
-      { text: "High-Velocity Custom Software Engineering", icon: <Database size={18} /> },
-      { text: "Priority SLA & Multi-Region Support", icon: <Server size={18} /> },
+      { text: "Dedicated Product Team", icon: <Briefcase size={18} /> },
+      { text: "Custom Software Engineering", icon: <Database size={18} /> },
+      { text: "24/7 Priority SLA & Support", icon: <Server size={18} /> },
     ],
     includes: [
       "Everything in Growth, plus:",
-      "Omnichannel performance ads & campaign rollout",
-      "Multi-region localization across Asia and UAE",
-      "Priority SLA with 24/7 dedicated support",
-      "Continuous optimization & iteration sprints",
-      "Direct Slack/Teams private studio channel",
+      "Custom application build",
+      "Multi-region localization",
+      "24/7 priority SLA support",
+      "Continuous sprint iteration",
+      "Private studio Slack channel",
     ],
   },
 ];
@@ -201,20 +200,20 @@ export default function PricingSection5({
       id="pricing"
       aria-label="Pricing and plans"
       className={cn(
-        "relative bg-[#141414] py-24 sm:py-32 px-5 text-white overflow-hidden border-t border-white/[0.04]",
+        "relative bg-[#141414] py-24 sm:py-32 px-5 text-white overflow-hidden",
         className
       )}
       ref={pricingRef}
     >
       <div className="mx-auto max-w-7xl">
-        <article className="text-left mb-12 sm:mb-16 space-y-5 max-w-3xl">
-          <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
+        <article className="text-center mx-auto mb-12 sm:mb-16 space-y-5 max-w-3xl flex flex-col items-center justify-center">
+          <BlurRevealTitle className="text-3xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl text-center flex justify-center">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.12}
               staggerFrom="first"
               reverse={true}
-              containerClassName="justify-start"
+              containerClassName="justify-center"
               transition={{
                 type: "spring",
                 stiffness: 250,
@@ -224,7 +223,7 @@ export default function PricingSection5({
             >
               {title}
             </VerticalCutReveal>
-          </h2>
+          </BlurRevealTitle>
 
           <TimelineContent
             as="p"
@@ -246,7 +245,13 @@ export default function PricingSection5({
           </TimelineContent>
         </article>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
+          {/* Warm ambient mesh lighting behind glass plan cards */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[760px] h-[420px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.16)_0%,rgba(234,88,12,0.04)_50%,transparent_75%)] blur-[100px] -z-10"
+          />
+
           {plans.map((plan, index) => {
             const isPopular = plan.popular;
             const currentPrice = isYearly ? plan.yearlyPrice : plan.price;
@@ -258,17 +263,48 @@ export default function PricingSection5({
                 animationNum={2 + index}
                 timelineRef={pricingRef}
                 customVariants={revealVariants}
-                className="h-full"
+                className="relative h-full"
               >
                 <Card
                   className={cn(
-                    "relative flex h-full flex-col justify-between rounded-2xl p-6 sm:p-8 transition-all duration-300",
+                    "group/plan relative flex h-full flex-col justify-between overflow-hidden rounded-3xl p-6 sm:p-8 backdrop-blur-2xl transition-all duration-500",
                     isPopular
-                      ? "border border-white/[0.22] bg-[#202020] text-white ring-1 ring-white/[0.15]"
-                      : "border border-white/[0.08] bg-[#1A1A1A] text-white hover:border-white/[0.16]"
+                      ? "border border-orange-500/40 bg-white/[0.06] text-white ring-1 ring-orange-400/20 hover:border-orange-400/60"
+                      : "border border-white/[0.12] bg-white/[0.03] text-white hover:border-orange-500/35 hover:bg-white/[0.05]"
                   )}
                 >
-                  <CardHeader className="p-0 text-left mb-6">
+                  {/* Top Specular Glass Rim */}
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent z-10"
+                  />
+
+                  {/* Top Progressive Blur inside Glass Plan Card */}
+                  <ProgressiveBlur
+                    direction="top"
+                    blurLayers={6}
+                    blurIntensity={0.55}
+                    className="pointer-events-none absolute inset-x-0 top-0 h-24 rounded-t-3xl z-0"
+                  />
+
+                  {/* Bottom Progressive Blur inside Glass Plan Card */}
+                  <ProgressiveBlur
+                    direction="bottom"
+                    blurLayers={7}
+                    blurIntensity={0.7}
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-32 rounded-b-3xl z-0"
+                  />
+
+                  {/* Ambient Orange Glass Corner Glow */}
+                  <div
+                    aria-hidden="true"
+                    className={cn(
+                      "pointer-events-none absolute -right-16 -bottom-16 w-56 h-56 rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.18)_0%,transparent_70%)] blur-2xl transition-opacity duration-500 z-0",
+                      isPopular ? "opacity-90" : "opacity-40 group-hover/plan:opacity-90"
+                    )}
+                  />
+
+                  <CardHeader className="relative z-10 p-0 text-left mb-6">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
                         {plan.name}
@@ -307,7 +343,7 @@ export default function PricingSection5({
                     </div>
                   </CardHeader>
 
-                  <CardContent className="p-0 flex flex-col flex-1 justify-between">
+                  <CardContent className="relative z-10 p-0 flex flex-col flex-1 justify-between">
                     <div>
                       {/* CTA Button -> Links to /meeting */}
                       <a

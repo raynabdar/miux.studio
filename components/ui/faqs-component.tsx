@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import Link from 'next/link'
+import { BlurRevealTitle } from '@/components/ui/blur-reveal-title'
 import { cn } from '@/lib/utils'
 
 export interface FAQItem {
@@ -74,14 +75,11 @@ export default function FAQs({
       </div>
 
       <div className="relative z-10 mx-auto max-w-5xl">
-        <div>
-          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-[#707070]">
-            05 / Clarifications
-          </p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.05em] text-white">
+        <div className="text-center flex flex-col items-center">
+          <BlurRevealTitle className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.05em] text-white text-center">
             {title}
-          </h2>
-          <p className="mt-4 text-base sm:text-lg text-[#A3A3A3] max-w-2xl leading-relaxed">
+          </BlurRevealTitle>
+          <p className="mt-4 text-base sm:text-lg text-[#A3A3A3] max-w-2xl leading-relaxed text-center">
             {description}
           </p>
         </div>
@@ -116,7 +114,7 @@ export default function FAQs({
             </Accordion>
           </div>
 
-          <p className="mt-6 text-sm sm:text-base text-[#A3A3A3]">
+          <p className="mt-8 text-center text-sm sm:text-base text-[#A3A3A3]">
             Can&apos;t find what you&apos;re looking for? Contact our{' '}
             <Link
               href="/contact"

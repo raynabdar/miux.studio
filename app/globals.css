@@ -73,6 +73,13 @@
   --radius-xl: calc(var(--radius) * 1.4);
 }
 
+/* ── Geist Pixel Utilities ─────────────────────────────────── */
+@utility font-pixel-square   { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 1;  }
+@utility font-pixel-circle   { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 20; }
+@utility font-pixel-grid     { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 40; }
+@utility font-pixel-triangle { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 60; }
+@utility font-pixel-line     { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 80; }
+
 /* ── Base resets ───────────────────────────────────────────── */
 
 * {
@@ -207,6 +214,34 @@ body::after {
   to {
     height: 0;
   }
+}
+
+/* ── Marquee Keyframes ─────────────────────────────────────── */
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee var(--duration, 30s) linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse var(--duration, 30s) linear infinite;
 }
 
 /* ── Reduced motion compliance ─────────────────────────────── */

@@ -1,30 +1,47 @@
-'use client'
+"use client";
 
-import { useEffect, useState, useRef, useCallback, type MouseEvent as ReactMouseEvent } from 'react'
-import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { MeltingFooterText } from "@/components/ui/melting-footer-text";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 
 /* ─── Social Icons (Custom SVG) ─────────────────────────────────────── */
 
-function FacebookIcon({ className = 'size-5' }: { className?: string }) {
+function FacebookIcon({ className = "size-5" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
     </svg>
-  )
+  );
 }
 
-function LinkedInIcon({ className = 'size-5' }: { className?: string }) {
+function LinkedInIcon({ className = "size-5" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
       <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
     </svg>
-  )
+  );
 }
 
-function InstagramIcon({ className = 'size-5' }: { className?: string }) {
+function InstagramIcon({ className = "size-5" }: { className?: string }) {
   return (
     <svg
       className={className}
@@ -40,106 +57,124 @@ function InstagramIcon({ className = 'size-5' }: { className?: string }) {
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
       <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
     </svg>
-  )
+  );
 }
 
-function XIcon({ className = 'size-5' }: { className?: string }) {
+function XIcon({ className = "size-5" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
-  )
+  );
 }
 
 /* ─── Constants ─────────────────────────────────────────────────────── */
 
 const NAV_LINKS = [
-  { label: 'Home', href: '#home' },
-  { label: 'About', href: '#about' },
-  { label: 'Work', href: '#work' },
-  { label: 'Pricing', href: '#pricing' },
-] as const
+  { label: "Home", href: "#home" },
+  { label: "About", href: "#about" },
+  { label: "Services", href: "#services" },
+  { label: "Work", href: "#work" },
+  { label: "Pricing", href: "#pricing" },
+] as const;
 
-const SECTION_IDS = ['home', 'about', 'work', 'pricing'] as const
+const SECTION_IDS = [
+  "home",
+  "about",
+  "services",
+  "work",
+  "approach",
+  "pricing",
+] as const;
 
 /* ─── Navbar ────────────────────────────────────────────────────────── */
 
 export function Navbar() {
-  const pathname = usePathname()
-  const isHomePage = pathname === '/'
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
-  const [scrolled, setScrolled] = useState(false)
-  const [activeSection, setActiveSection] = useState('home')
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
-  const navRef = useRef<HTMLElement>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const hamburgerRef = useRef<HTMLButtonElement>(null)
+  const navRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   const getHref = useCallback(
     (hash: string) => (isHomePage ? hash : `/${hash}`),
-    [isHomePage]
-  )
+    [isHomePage],
+  );
 
   /* ── Auto-shrink on scroll with hysteresis & RAF ────────────────── */
   useEffect(() => {
-    let ticking = false
+    let ticking = false;
     const onScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const y = window.scrollY
+          const y = window.scrollY;
           setScrolled((prev) => {
             // Hysteresis dead-zone prevents micro-stutter near the threshold
             if (prev) {
-              return y > 20
+              return y > 20;
             }
-            return y > 50
-          })
-          ticking = false
-        })
-        ticking = true
+            return y > 50;
+          });
+          ticking = false;
+        });
+        ticking = true;
       }
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   /* ── Active section on scroll ─────────────────────────────────────── */
   useEffect(() => {
-    if (!isHomePage) return
+    if (!isHomePage) return;
 
     const handleScroll = () => {
-      // Offset point inside the viewport (upper-middle area)
-      const viewportPoint = window.scrollY + window.innerHeight * 0.38
-      const sections = ['pricing', 'work', 'about', 'home'] as const
+      // Offset point inside the viewport (upper focal area)
+      const viewportPoint = window.scrollY + window.innerHeight * 0.38;
+      const sections = [
+        { id: "pricing", navId: "pricing" },
+        { id: "work", navId: "work" },
+        { id: "services", navId: "services" },
+        { id: "about", navId: "about" },
+        { id: "home", navId: "home" },
+      ] as const;
 
-      let matched = ''
-      for (const id of sections) {
-        const el = document.getElementById(id)
+      let matched = "home";
+      for (const s of sections) {
+        const el = document.getElementById(s.id);
         if (el) {
-          const top = el.offsetTop
-          const height = el.offsetHeight
+          const top = el.offsetTop - 100;
+          const height = el.offsetHeight;
           if (viewportPoint >= top && viewportPoint < top + height) {
-            matched = id
-            break
+            matched = s.navId;
+            break;
           }
         }
       }
 
-      // When scrolled past pricing (e.g. into testimonials, faq, or footer),
-      // matched is '' so pricing indicator turns off until user re-enters pricing
-      setActiveSection(matched)
-    }
+      setActiveSection(matched);
+    };
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    handleScroll()
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [isHomePage])
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHomePage]);
 
   /* ── Close mobile menu on outside click or Escape ─────────────────── */
   useEffect(() => {
-    if (!mobileOpen) return
+    if (!mobileOpen) return;
 
     const onClickOutside = (e: MouseEvent) => {
       if (
@@ -148,109 +183,112 @@ export function Navbar() {
         hamburgerRef.current &&
         !hamburgerRef.current.contains(e.target as Node)
       ) {
-        setMobileOpen(false)
+        setMobileOpen(false);
       }
-    }
+    };
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMobileOpen(false)
-    }
+      if (e.key === "Escape") setMobileOpen(false);
+    };
 
-    document.addEventListener('click', onClickOutside, true)
-    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener("click", onClickOutside, true);
+    document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.removeEventListener('click', onClickOutside, true)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [mobileOpen])
+      document.removeEventListener("click", onClickOutside, true);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileOpen]);
 
   /* ── Lock body scroll when mobile menu is open ────────────────────── */
   useEffect(() => {
     if (mobileOpen) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = ''
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = ''
-    }
-  }, [mobileOpen])
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   /* ── Focus trap inside mobile menu ────────────────────────────────── */
   useEffect(() => {
-    if (!mobileOpen || !menuRef.current) return
+    if (!mobileOpen || !menuRef.current) return;
 
     const focusable = menuRef.current.querySelectorAll<HTMLElement>(
-      'a, button, [tabindex]:not([tabindex="-1"])'
-    )
-    if (focusable.length === 0) return
+      'a, button, [tabindex]:not([tabindex="-1"])',
+    );
+    if (focusable.length === 0) return;
 
-    const first = focusable[0]
-    const last = focusable[focusable.length - 1]
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
 
     const trap = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return
+      if (e.key !== "Tab") return;
       if (e.shiftKey) {
         if (document.activeElement === first) {
-          e.preventDefault()
-          last.focus()
+          e.preventDefault();
+          last.focus();
         }
       } else {
         if (document.activeElement === last) {
-          e.preventDefault()
-          first.focus()
+          e.preventDefault();
+          first.focus();
         }
       }
-    }
+    };
 
-    document.addEventListener('keydown', trap)
-    first.focus()
-    return () => document.removeEventListener('keydown', trap)
-  }, [mobileOpen])
+    document.addEventListener("keydown", trap);
+    first.focus();
+    return () => document.removeEventListener("keydown", trap);
+  }, [mobileOpen]);
 
   /* ── Link click: smooth scroll & heading animation ────────────────── */
   const handleLinkClick = useCallback(
     (e: ReactMouseEvent<HTMLAnchorElement>, href: string) => {
-      if (!isHomePage) return // Allow full navigation to /#id
-      e.preventDefault()
-      const id = href.replace('#', '')
-      const el = document.getElementById(id)
+      if (!isHomePage) return; // Allow full navigation to /#id
+      e.preventDefault();
+      const id = href.replace("#", "");
+      const el = document.getElementById(id);
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth' })
+        el.scrollIntoView({ behavior: "smooth" });
         // Trigger heading subtle attention slide/fade if found
-        const heading = el.querySelector('h2, h1')
+        const heading = el.querySelector("h2, h1");
         if (heading) {
           heading.animate(
             [
-              { opacity: 0.6, transform: 'translateY(6px)' },
-              { opacity: 1, transform: 'translateY(0)' },
+              { opacity: 0.6, transform: "translateY(6px)" },
+              { opacity: 1, transform: "translateY(0)" },
             ],
-            { duration: 500, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
-          )
+            { duration: 500, easing: "cubic-bezier(0.16, 1, 0.3, 1)" },
+          );
         }
       }
-      setActiveSection(id)
-      setMobileOpen(false)
+      setActiveSection(id);
+      setMobileOpen(false);
     },
-    [isHomePage]
-  )
+    [isHomePage],
+  );
 
   return (
     <>
       <header
         ref={navRef}
         className={cn(
-          "fixed left-1/2 top-4 z-50 -translate-x-1/2 w-[calc(100%-2rem)] transition-[max-width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
-          scrolled ? "max-w-[760px]" : "max-w-[960px]"
+          "fixed left-1/2 top-4 z-50 -translate-x-1/2 w-[calc(100%-2rem)] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]",
+          scrolled ? "max-w-[760px] translate-y-0.5" : "max-w-[960px] translate-y-0",
         )}
       >
         <nav
-          className="relative overflow-hidden rounded-full border border-white/[0.16] py-2.5 px-4 sm:px-6 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          className="relative overflow-hidden rounded-full border border-white/[0.16] py-2.5 px-4 sm:px-6 transition-all duration-700 delay-75 ease-[cubic-bezier(0.25,1,0.5,1)]"
           style={{
-            backgroundColor: scrolled ? 'rgba(20, 20, 20, 0.42)' : 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(24px) saturate(190%)',
-            WebkitBackdropFilter: 'blur(24px) saturate(190%)',
-            boxShadow: 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.04)',
+            backgroundColor: scrolled
+              ? "rgba(20, 20, 20, 0.42)"
+              : "rgba(255, 255, 255, 0.05)",
+            backdropFilter: "blur(24px) saturate(190%)",
+            WebkitBackdropFilter: "blur(24px) saturate(190%)",
+            boxShadow:
+              "inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.04)",
           }}
         >
           {/* Soft inner top specular highlight line */}
@@ -267,16 +305,34 @@ export function Navbar() {
               title="Miux Studio - Digital Design & Web Development Studio"
               className="group flex items-center shrink-0 whitespace-nowrap font-semibold tracking-tight text-white transition-opacity hover:opacity-90"
             >
-              <span className="tracking-[-0.03em] flex items-center font-semibold text-white text-[15px] sm:text-base">
-                Miux Studio
-              </span>
+              {!logoError ? (
+                <img
+                  src="/logo.png"
+                  alt="Miux Studio"
+                  width={32}
+                  height={32}
+                  fetchPriority="high"
+                  loading="eager"
+                  decoding="sync"
+                  onError={() => setLogoError(true)}
+                  className="h-8 w-8 object-contain"
+                />
+              ) : (
+                <span className="tracking-[-0.03em] flex items-center font-semibold text-white text-[15px] sm:text-base">
+                  miux studio
+                </span>
+              )}
             </a>
 
             {/* Desktop Center Links */}
-            <div className="hidden shrink-0 items-center gap-1 md:flex" role="navigation" aria-label="Desktop navigation">
+            <div
+              className="hidden shrink-0 items-center gap-1 md:flex"
+              role="navigation"
+              aria-label="Desktop navigation"
+            >
               {NAV_LINKS.map((link) => {
-                const sectionId = link.href.replace('#', '')
-                const isActive = isHomePage && activeSection === sectionId
+                const sectionId = link.href.replace("#", "");
+                const isActive = isHomePage && activeSection === sectionId;
 
                 return (
                   <a
@@ -285,8 +341,10 @@ export function Navbar() {
                     onClick={(e) => handleLinkClick(e, link.href)}
                     aria-label={`Navigate to ${link.label} section`}
                     title={`Explore ${link.label}`}
-                    className={`relative rounded-full px-3.5 sm:px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${
-                      isActive ? 'text-white' : 'text-[#A3A3A3] hover:text-white'
+                    className={`relative inline-flex items-center justify-center text-center rounded-full px-3.5 sm:px-4 py-1.5 text-sm font-medium transition-colors duration-200 select-none ${
+                      isActive
+                        ? "text-white"
+                        : "text-[#A3A3A3] hover:text-white"
                     }`}
                   >
                     {/* Liquid glass highlight pill gliding between links */}
@@ -295,7 +353,7 @@ export function Navbar() {
                         layoutId="nav-highlight"
                         className="absolute inset-0 rounded-full border border-white/[0.18] bg-white/[0.10] backdrop-blur-md"
                         transition={{
-                          type: 'spring',
+                          type: "spring",
                           stiffness: 380,
                           damping: 26,
                           mass: 0.8,
@@ -304,26 +362,42 @@ export function Navbar() {
                     )}
                     <span className="relative z-10">{link.label}</span>
                   </a>
-                )
+                );
               })}
             </div>
 
-            {/* Desktop Right CTA */}
+            {/* Desktop Right CTA: Orange Gradient with White Text */}
             <a
               href="/meeting"
-              aria-label="Book a 45-minute discovery call with Miux Studio"
-              title="Schedule a consultation call with Miux Studio"
-              className="hidden shrink-0 whitespace-nowrap rounded-full bg-white font-semibold text-[#141414] transition-all duration-300 hover:bg-white/95 md:inline-flex items-center justify-center gap-2 h-9 px-4.5 text-xs sm:text-sm"
+              aria-label="Get Started with Miux Studio"
+              title="Get Started with Miux Studio"
+              className="relative group overflow-hidden hidden shrink-0 whitespace-nowrap rounded-full bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 border border-orange-400/40 font-semibold text-white transition-all duration-300 hover:brightness-110 active:scale-[0.98] md:inline-flex items-center justify-center gap-2 h-9 px-5 text-xs sm:text-sm shadow-[0_2px_12px_rgba(249,115,22,0.3)]"
             >
-              <span>Book a Call</span>
+              {/* Continuous Smooth Liquid Shine Sweep */}
+              <motion.span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-[-20deg]"
+                animate={{ translateX: ["-100%", "220%"] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 2.2,
+                  ease: "easeInOut",
+                  repeatDelay: 0.8,
+                }}
+              />
+              <span className="relative z-10 text-white font-semibold">Get Started</span>
             </a>
 
             {/* Mobile Hamburger Button */}
             <button
               ref={hamburgerRef}
               type="button"
-              aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              title={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-label={
+                mobileOpen ? "Close navigation menu" : "Open navigation menu"
+              }
+              title={
+                mobileOpen ? "Close navigation menu" : "Open navigation menu"
+              }
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav-panel"
               className="relative flex size-9 flex-col items-center justify-center gap-[5px] rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 md:hidden"
@@ -335,7 +409,7 @@ export function Navbar() {
                   rotate: mobileOpen ? 45 : 0,
                   y: mobileOpen ? 7 : 0,
                 }}
-                transition={{ type: 'spring', stiffness: 340, damping: 25 }}
+                transition={{ type: "spring", stiffness: 340, damping: 25 }}
               />
               <motion.span
                 className="block h-[2px] w-5 rounded-full bg-white origin-center"
@@ -348,7 +422,7 @@ export function Navbar() {
                   rotate: mobileOpen ? -45 : 0,
                   y: mobileOpen ? -7 : 0,
                 }}
-                transition={{ type: 'spring', stiffness: 340, damping: 25 }}
+                transition={{ type: "spring", stiffness: 340, damping: 25 }}
               />
             </button>
           </div>
@@ -366,16 +440,20 @@ export function Navbar() {
               initial={{ opacity: 0, y: -10, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.98 }}
-              transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+              transition={{ type: "spring", stiffness: 380, damping: 28 }}
               className="mt-2 origin-top overflow-hidden rounded-3xl border border-white/[0.16] p-5 md:hidden"
               style={{
-                backgroundColor: 'rgba(20, 20, 20, 0.52)',
-                backdropFilter: 'blur(28px) saturate(190%)',
-                WebkitBackdropFilter: 'blur(28px) saturate(190%)',
-                boxShadow: 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.18)',
+                backgroundColor: "rgba(20, 20, 20, 0.52)",
+                backdropFilter: "blur(28px) saturate(190%)",
+                WebkitBackdropFilter: "blur(28px) saturate(190%)",
+                boxShadow: "inset 0 1px 1px 0 rgba(255, 255, 255, 0.18)",
               }}
             >
-              <div className="flex flex-col gap-1.5" role="navigation" aria-label="Mobile navigation">
+              <div
+                className="flex flex-col gap-1.5"
+                role="navigation"
+                aria-label="Mobile navigation"
+              >
                 {NAV_LINKS.map((link, i) => (
                   <motion.a
                     key={link.label}
@@ -387,14 +465,14 @@ export function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
                       delay: i * 0.05,
-                      type: 'spring',
+                      type: "spring",
                       stiffness: 350,
                       damping: 26,
                     }}
                     className={`rounded-2xl px-4 py-3 text-base font-medium transition-colors ${
-                      isHomePage && activeSection === link.href.replace('#', '')
-                        ? 'bg-white/[0.08] text-white'
-                        : 'text-[#A3A3A3] hover:bg-white/[0.04] hover:text-white'
+                      isHomePage && activeSection === link.href.replace("#", "")
+                        ? "bg-white/[0.08] text-white"
+                        : "text-[#A3A3A3] hover:bg-white/[0.04] hover:text-white"
                     }`}
                   >
                     {link.label}
@@ -402,98 +480,113 @@ export function Navbar() {
                 ))}
               </div>
 
-              {/* Full-width CTA inside open menu only */}
+              {/* Full-width CTA inside open menu: Orange Gradient with Dark Mesh and White Text */}
               <motion.a
                 href="/meeting"
-                aria-label="Book a 45-minute discovery call with Miux Studio"
-                title="Schedule a consultation call with Miux Studio"
+                aria-label="Get Started with Miux Studio"
+                title="Get Started with Miux Studio"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
                   delay: NAV_LINKS.length * 0.05,
-                  type: 'spring',
+                  type: "spring",
                   stiffness: 350,
                   damping: 26,
                 }}
                 onClick={() => setMobileOpen(false)}
-                className="mt-4 block w-full rounded-full bg-white py-3.5 text-center text-sm font-semibold text-[#141414] transition-opacity hover:opacity-90"
+                className="relative group overflow-hidden mt-4 block w-full rounded-full bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 border border-orange-400/40 py-3.5 text-center text-sm font-semibold text-white shadow-[0_2px_12px_rgba(249,115,22,0.3)] transition-all hover:brightness-110 active:scale-[0.98]"
               >
-                Book a Call
+                {/* Continuous Smooth Liquid Shine Sweep */}
+                <motion.span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-[-20deg]"
+                  animate={{ translateX: ["-100%", "220%"] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 2.2,
+                    ease: "easeInOut",
+                    repeatDelay: 0.8,
+                  }}
+                />
+                <span className="relative z-10 text-white font-semibold">Get Started</span>
               </motion.a>
             </motion.div>
           )}
         </AnimatePresence>
       </header>
     </>
-  )
+  );
 }
 
 /* ─── Footer ────────────────────────────────────────────────────────── */
 
 const FOOTER_NAV = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/#about' },
-  { label: 'Work', href: '/#work' },
-  { label: 'Pricing', href: '/#pricing' },
-  { label: 'Book a Call', href: '/meeting' },
-  { label: 'Contact', href: '/contact' },
-]
+  { label: "Home", href: "/" },
+  { label: "About", href: "/#about" },
+  { label: "Services", href: "/#services" },
+  { label: "Work", href: "/#work" },
+  { label: "Approach", href: "/#approach" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Blogs", href: "/blogs" },
+  { label: "Contact", href: "/contact" },
+];
 
 const FOOTER_SERVICES = [
-  'Brand Design and Identity',
-  'Web Design',
-  'Web Development',
-  'UI/UX Design',
-  'Ads and Other Campaigns',
-]
+  "Brand Design and Identity",
+  "Web Design",
+  "Web Development",
+  "UI/UX Design",
+  "Ads and Other Campaigns",
+];
 
 const FOOTER_OTHERS = [
-  { label: 'Client Terms', href: '/client-terms' },
-  { label: 'Privacy', href: '/privacy-policy' },
-  { label: 'Terms', href: '/terms' },
-  { label: 'Sitemap', href: '/sitemap' },
-]
+  { label: "Client Terms", href: "/client-terms" },
+  { label: "Privacy", href: "/privacy-policy" },
+  { label: "Terms", href: "/terms" },
+  { label: "Sitemap", href: "/sitemap" },
+];
 
 const FOOTER_SOCIALS = [
-  { label: 'Facebook', href: 'https://facebook.com/Miuxstudio', Icon: FacebookIcon },
-  { label: 'LinkedIn', href: '#', Icon: LinkedInIcon },
-  { label: 'Instagram', href: '#', Icon: InstagramIcon },
-  { label: 'X', href: '#', Icon: XIcon },
-]
+  {
+    label: "Facebook",
+    href: "https://facebook.com/Miuxstudio",
+    Icon: FacebookIcon,
+  },
+  { label: "LinkedIn", href: "#", Icon: LinkedInIcon },
+  { label: "Instagram", href: "#", Icon: InstagramIcon },
+  { label: "X", href: "#", Icon: XIcon },
+];
 
 export function Footer() {
-  const [giantHovered, setGiantHovered] = useState(false)
-
   return (
     <footer
-      className="relative overflow-hidden border-t border-white/[0.14] transition-all duration-300"
+      className="relative overflow-hidden transition-all duration-300"
       style={{
-        backgroundColor: 'rgba(20, 20, 20, 0.45)',
-        backdropFilter: 'blur(24px) saturate(190%)',
-        WebkitBackdropFilter: 'blur(24px) saturate(190%)',
-        boxShadow: 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.16)',
+        backgroundColor: "rgba(20, 20, 20, 0.45)",
+        backdropFilter: "blur(24px) saturate(190%)",
+        WebkitBackdropFilter: "blur(24px) saturate(190%)",
       }}
     >
-      {/* Soft inner top specular highlight line */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"
-      />
-
       {/* Subtle liquid background ambient glow */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] h-[350px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08)_0%,transparent_70%)] blur-[90px]" />
+      <div
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+        aria-hidden="true"
+      >
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] h-[350px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.06)_0%,transparent_70%)] blur-[90px]" />
+        {/* Base background transition matching web's base colour (#141414) */}
+        <div className="absolute bottom-0 inset-x-0 h-[380px] bg-gradient-to-b from-transparent via-[#141414]/85 to-[#141414] pointer-events-none" />
       </div>
 
-      {/* 5-Column Grid */}
-      <div className="relative z-10 mx-auto grid max-w-[1200px] gap-10 px-5 py-20 sm:grid-cols-2 lg:grid-cols-5">
+      {/* Responsive 2-Col Mobile / 5-Col Desktop Grid */}
+      <div className="relative z-10 mx-auto grid max-w-[1200px] grid-cols-2 gap-8 sm:gap-10 px-5 py-16 sm:py-20 lg:grid-cols-5">
         {/* Brand */}
-        <div className="sm:col-span-2 lg:col-span-1">
+        <div className="col-span-2 lg:col-span-1">
           <span className="text-lg font-semibold tracking-tight text-white">
             Miux Studio
           </span>
-          <p className="mt-4 text-sm leading-relaxed text-[#A3A3A3]">
-            Selective creative studio engineering brand systems and high-converting digital platforms.
+          <p className="mt-4 text-sm leading-relaxed text-[#A3A3A3] max-w-sm">
+            Selective creative studio engineering brand systems and
+            high-converting digital platforms.
           </p>
           <p className="mt-4 text-xs tracking-wider uppercase text-[#707070]">
             Serving Asia and the UAE
@@ -505,7 +598,10 @@ export function Footer() {
           <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#707070]">
             Navigation
           </h2>
-          <nav className="mt-4 flex flex-col gap-3" aria-label="Footer navigation">
+          <nav
+            className="mt-4 flex flex-col gap-3"
+            aria-label="Footer navigation"
+          >
             {FOOTER_NAV.map((item) => (
               <a
                 key={item.label}
@@ -539,7 +635,10 @@ export function Footer() {
           <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#707070]">
             Others
           </h2>
-          <nav className="mt-4 flex flex-col gap-3" aria-label="Other resources">
+          <nav
+            className="mt-4 flex flex-col gap-3"
+            aria-label="Other resources"
+          >
             {FOOTER_OTHERS.map((item) => (
               <a
                 key={item.label}
@@ -575,8 +674,10 @@ export function Footer() {
                 aria-label={`Follow Miux Studio on ${label}`}
                 title={`Miux Studio on ${label}`}
                 className="text-[#A3A3A3] transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white"
-                target={href.startsWith('http') ? '_blank' : undefined}
-                rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                target={href.startsWith("http") ? "_blank" : undefined}
+                rel={
+                  href.startsWith("http") ? "noopener noreferrer" : undefined
+                }
               >
                 <Icon className="size-5" />
               </a>
@@ -599,13 +700,19 @@ export function Footer() {
       </div>
 
       {/* Bottom row */}
-      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col justify-between gap-4 border-t border-white/[0.08] px-5 py-6 text-xs text-[#707070] sm:flex-row sm:items-center">
+      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col justify-between gap-4 px-5 py-6 text-xs text-[#707070] sm:flex-row sm:items-center">
         <span>&copy; 2016–2026 MIUX STUDIO. All rights reserved.</span>
         <div className="flex flex-wrap gap-5 sm:gap-6">
-          <a href="/client-terms" className="transition-colors hover:text-[#A3A3A3]">
+          <a
+            href="/client-terms"
+            className="transition-colors hover:text-[#A3A3A3]"
+          >
             Client Terms
           </a>
-          <a href="/privacy-policy" className="transition-colors hover:text-[#A3A3A3]">
+          <a
+            href="/privacy-policy"
+            className="transition-colors hover:text-[#A3A3A3]"
+          >
             Privacy
           </a>
           <a href="/terms" className="transition-colors hover:text-[#A3A3A3]">
@@ -617,28 +724,8 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Giant MIUX Text: white-to-transparent gradient fading into #141414 via mask-image, slightly cut off, brightens on hover */}
-      <div
-        className="relative select-none overflow-hidden cursor-default"
-        onMouseEnter={() => setGiantHovered(true)}
-        onMouseLeave={() => setGiantHovered(false)}
-      >
-        <p
-          className="whitespace-nowrap text-center text-[28vw] font-bold leading-[0.68] tracking-[-0.08em] text-transparent transition-opacity duration-500 ease-out"
-          style={{
-            backgroundImage: 'linear-gradient(to bottom, #FFFFFF 0%, rgba(255,255,255,0.05) 75%, transparent 100%)',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            opacity: giantHovered ? 0.35 : 0.18,
-            maskImage: 'linear-gradient(to bottom, #141414 20%, transparent 95%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, #141414 20%, transparent 95%)',
-            marginBottom: '-0.12em',
-          }}
-          aria-hidden="true"
-        >
-          MIUX
-        </p>
-      </div>
+      {/* Interactive WebGL Melting Footer Text */}
+      <MeltingFooterText text="miux" />
     </footer>
-  )
+  );
 }

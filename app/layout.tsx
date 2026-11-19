@@ -1,12 +1,24 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import localFont from 'next/font/local'
 import { faqs } from '@/lib/data'
 import './globals.css'
+import { Geist, Geist_Mono, Geist_Pixel } from 'next/font/google'
 
-const geistSans = localFont({
-  src: './fonts/geist-sans.woff2',
+const geistSans = Geist({
+  subsets: ['latin'],
   variable: '--font-geist-sans',
+  display: 'swap',
+})
+
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
+  display: 'swap',
+})
+
+const geistPixel = Geist_Pixel({
+  subsets: ['latin'],
+  variable: '--font-geist-pixel',
   display: 'swap',
 })
 
@@ -52,6 +64,14 @@ export const metadata: Metadata = {
     siteName: 'Miux Studio',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: 'https://miux.studio/logo.png',
+        width: 800,
+        height: 800,
+        alt: 'Miux Studio',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
@@ -59,6 +79,7 @@ export const metadata: Metadata = {
     description:
       'Get a website or custom business website that fulfills your goals & drives sales. 48+ startups & founders choose miux.studio.',
     creator: '@miuxstudio',
+    images: ['https://miux.studio/logo.png'],
   },
 }
 
@@ -76,10 +97,17 @@ function buildJsonLd() {
     '@type': 'Organization',
     name: 'Miux Studio',
     url: 'https://miux.studio',
-    logo: 'https://miux.studio/icon.svg',
+    logo: 'https://miux.studio/logo.png',
     description:
       'Creative agency specialising in brand identity, web design, web development, UI/UX, and advertising campaigns.',
     sameAs: ['https://facebook.com/Miuxstudio'],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+1-800-555-0199',
+      contactType: 'customer service',
+      areaServed: ['Asia', 'United Arab Emirates', 'Worldwide'],
+      availableLanguage: ['English'],
+    },
   }
 
   const website = {
@@ -94,6 +122,7 @@ function buildJsonLd() {
     '@type': 'ProfessionalService',
     name: 'Miux Studio',
     url: 'https://miux.studio',
+    telephone: '+1-800-555-0199',
     description:
       'Brand design, web design, web development, UI/UX, and advertising campaigns.',
     areaServed: ['Asia', 'United Arab Emirates'],
@@ -124,7 +153,10 @@ export default function RootLayout({
   const { organization, website, professionalService, faqPage } = buildJsonLd()
 
   return (
-    <html lang="en" className={geistSans.variable}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${geistPixel.variable}`}>
+      <head>
+        <link rel="preload" as="image" href="/logo.png" fetchPriority="high" />
+      </head>
       <body className={`${geistSans.className} font-sans antialiased bg-[#141414] text-white selection:bg-white selection:text-black`}>
         {/* Structured data */}
         <script

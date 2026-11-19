@@ -1,28 +1,12 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import Lenis from 'lenis'
-import { CustomCursor } from '@/components/custom-cursor'
+import { SitePreloader } from '@/components/SitePreloader'
 
 export default function Template({ children }: { children: React.ReactNode }) {
-  const [showPreloader, setShowPreloader] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
-
-  /* ── Preloader (under 1.2s, once per session) ───────────── */
-  useEffect(() => {
-    try {
-      const seen = sessionStorage.getItem('miux_preloaded') === 'true'
-      if (!seen) {
-        sessionStorage.setItem('miux_preloaded', 'true')
-        setShowPreloader(true)
-        const timer = setTimeout(() => setShowPreloader(false), 1050)
-        return () => clearTimeout(timer)
-      }
-    } catch {
-      // sessionStorage unavailable
-    }
-  }, [])
 
   /* ── Lenis smooth scroll + scroll-progress ──────────────── */
   useEffect(() => {
@@ -55,36 +39,8 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <CustomCursor />
-
-      {/* ── Preloader ────────────────────────────────────────── */}
-      <AnimatePresence mode="wait">
-        {showPreloader && (
-          <motion.div
-            key="preloader"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease: 'easeInOut' }}
-            className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#141414]"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1.05, y: -20 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="text-center"
-            >
-              <span className="text-5xl font-bold tracking-[-0.08em] text-white sm:text-7xl">
-                MIUX
-              </span>
-              <p className="mt-3 text-[11px] uppercase tracking-[0.3em] text-[#707070]">
-                Creative Agency
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── Glass Preloader (Dark with Website Logo) ─────────── */}
+      <SitePreloader />
 
       {/* ── Thin white scroll progress bar at the very top ───── */}
       <div

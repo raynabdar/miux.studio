@@ -3,40 +3,39 @@ import { z } from 'zod'
 import { NextResponse } from 'next/server'
 
 export const onboardingSchema = z.object({
-  // Step 1: About you
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Valid email address is required'),
-  phone: z.string().min(1, 'Phone or WhatsApp number is required'),
-  country: z.string().min(1, 'Country is required'),
-  timeZone: z.string().min(1, 'Time zone is required'),
-  preferredContact: z.string().min(1, 'Preferred contact method is required'),
+  // Required 1-5
+  q1: z.string().min(1, 'Please provide company name and contact person.'),
+  q2: z.string().min(1, 'Please describe your business and customers.'),
+  q3: z.string().min(1, 'Please list your main competitors.'),
+  q4: z.string().min(1, 'Please share what you want to achieve in the next 6 to 12 months.'),
+  q5: z.string().min(1, 'Please provide your deadline or launch date.'),
 
-  // Step 2: Your business
-  company: z.string().min(1, 'Company name is required'),
-  role: z.string().min(1, 'Your role is required'),
-  website: z.string().optional(),
-  industry: z.string().min(1, 'Industry is required'),
-  companySize: z.string().min(1, 'Company size is required'),
-  socialLinks: z.string().optional(),
+  // Services needed (required array)
+  services: z.array(z.string()).min(1, 'Please select at least one service.'),
 
-  // Step 3: Your project
-  services: z.array(z.string()).min(1, 'Please select at least one service'),
-  goals: z.string().min(1, 'Main goals are required'),
-  problems: z.string().min(1, 'Current problems are required'),
-  audience: z.string().min(1, 'Target audience is required'),
-  competitors: z.string().optional(),
-  budget: z.string().min(1, 'Budget range is required'),
-  startDate: z.string().min(1, 'Start date is required'),
-  deadline: z.string().min(1, 'Deadline is required'),
+  // Required 6-7
+  q6: z.string().min(1, 'Please provide your budget range.'),
+  q7: z.string().min(1, 'Please provide your ideal timeline.'),
 
-  // Step 4: Brand and access
-  assets: z.string().optional(),
-  brand: z.string().optional(),
-  hosting: z.string().optional(),
-  callTime: z.string().min(1, 'Preferred call time is required'),
-  heard: z.string().min(1, 'Please tell us how you heard about us'),
-  agreement: z.literal(true),
+  // Optional 8-12: BRAND
+  q8: z.string().optional(),
+  q9: z.string().optional(),
+  q10: z.string().optional(),
+  q11: z.string().optional(),
+  q12: z.string().optional(),
+
+  // Optional 13-15: DIGITAL AND SOCIAL
+  q13: z.string().optional(),
+  q14: z.string().optional(),
+  q15: z.string().optional(),
+
+  // Optional 16-17: AI AUTOMATION
+  q16: z.string().optional(),
+  q17: z.string().optional(),
+
+  // Required 18-19
+  q18: z.string().min(1, 'Please let us know if there is anything else.'),
+  q19: z.string().min(1, 'Please indicate if you prefer a call or a written proposal next.'),
 })
 
 export async function POST(request: Request) {
@@ -49,8 +48,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: firstError }, { status: 400 })
     }
 
-    const { firstName, lastName, email, ...details } = parsed.data
-
+    const data = parsed.data
     const resendApiKey = process.env.RESEND_API_KEY
     const contactToEmail = process.env.CONTACT_TO_EMAIL
     const contactFromEmail = process.env.CONTACT_FROM_EMAIL
@@ -67,47 +65,78 @@ export async function POST(request: Request) {
     }
 
     const resend = new Resend(resendApiKey)
-    const subject = `New client onboarding: ${firstName} ${lastName}`
+    const subject = `New Client Onboarding: ${data.q1.slice(0, 50)}`
 
     const formattedDetails = [
-      `--- CLIENT DETAILS ---`,
-      `Name: ${firstName} ${lastName}`,
-      `Email: ${email}`,
-      `Phone/WhatsApp: ${details.phone}`,
-      `Country: ${details.country}`,
-      `Time Zone: ${details.timeZone}`,
-      `Preferred Contact: ${details.preferredContact}`,
+      `=== ONBOARDING QUESTIONS ===`,
+      `1. Company name and contact person?`,
+      `${data.q1}`,
       ``,
-      `--- BUSINESS DETAILS ---`,
-      `Company Name: ${details.company}`,
-      `Role: ${details.role}`,
-      `Website: ${details.website || 'Not provided'}`,
-      `Industry: ${details.industry}`,
-      `Company Size: ${details.companySize}`,
-      `Social Media Links: ${details.socialLinks || 'Not provided'}`,
+      `2. What does your business do, and who are your customers?`,
+      `${data.q2}`,
       ``,
-      `--- PROJECT DETAILS ---`,
-      `Services Needed: ${details.services.join(', ')}`,
-      `Main Goals: ${details.goals}`,
-      `Current Problems: ${details.problems}`,
-      `Target Audience: ${details.audience}`,
-      `Competitors / Reference Sites: ${details.competitors || 'Not provided'}`,
-      `Budget Range: ${details.budget}`,
-      `Preferred Start Date: ${details.startDate}`,
-      `Deadline: ${details.deadline}`,
+      `3. Who are your main competitors?`,
+      `${data.q3}`,
       ``,
-      `--- BRAND & ACCESS ---`,
-      `Brand Assets Link: ${details.assets || 'Not provided'}`,
-      `Brand Colors & Fonts: ${details.brand || 'Not provided'}`,
-      `Domain & Hosting Provider: ${details.hosting || 'Not provided'}`,
-      `Preferred Call Time: ${details.callTime}`,
-      `How they heard about us: ${details.heard}`,
+      `4. What do you want to achieve in the next 6 to 12 months?`,
+      `${data.q4}`,
+      ``,
+      `5. Is there a deadline or launch date?`,
+      `${data.q5}`,
+      ``,
+      `=== SERVICES NEEDED ===`,
+      data.services.join(', '),
+      ``,
+      `6. What is your budget range?`,
+      `${data.q6}`,
+      ``,
+      `7. What is your ideal timeline?`,
+      `${data.q7}`,
+      ``,
+      `=== BRAND (if you have one) ===`,
+      `8. Do you have a logo, colors, or fonts already?`,
+      `${data.q8 || 'Not specified'}`,
+      ``,
+      `9. What do you like or dislike about your current brand?`,
+      `${data.q9 || 'Not specified'}`,
+      ``,
+      `10. Which brands do you admire, inside or outside your industry?`,
+      `${data.q10 || 'Not specified'}`,
+      ``,
+      `11. Pick 3 words that describe how your brand should feel.`,
+      `${data.q11 || 'Not specified'}`,
+      ``,
+      `12. Do you have any must-keep elements?`,
+      `${data.q12 || 'Not specified'}`,
+      ``,
+      `=== DIGITAL AND SOCIAL (if relevant) ===`,
+      `13. Do you have a website or app? Share the link.`,
+      `${data.q13 || 'Not specified'}`,
+      ``,
+      `14. Which social platforms do you use or want to use?`,
+      `${data.q14 || 'Not specified'}`,
+      ``,
+      `15. Do you run ads now? If yes, what is your monthly budget?`,
+      `${data.q15 || 'Not specified'}`,
+      ``,
+      `=== AI AUTOMATION (if relevant) ===`,
+      `16. Which tasks take up the most time?`,
+      `${data.q16 || 'Not specified'}`,
+      ``,
+      `17. Which tools do you use today?`,
+      `${data.q17 || 'Not specified'}`,
+      ``,
+      `=== NEXT STEPS ===`,
+      `18. Anything else we should know?`,
+      `${data.q18}`,
+      ``,
+      `19. Would you prefer a call or a written proposal next?`,
+      `${data.q19}`,
     ].join('\n')
 
     const result = await resend.emails.send({
       from: contactFromEmail,
       to: [contactToEmail],
-      replyTo: email,
       subject,
       text: formattedDetails,
     })
@@ -120,7 +149,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true })
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: 'An unexpected error occurred during onboarding.' },
       { status: 500 }

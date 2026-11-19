@@ -2,6 +2,11 @@
    lib/data.ts — Central typed data for Miux Studio
    ───────────────────────────────────────────────────────────── */
 
+// ── Contact Constants ─────────────────────────────────────────
+export const COMPANY_PHONE = "+1 (800) 555-0199"
+export const COMPANY_PHONE_TEL = "+18005550199"
+export const COMPANY_EMAIL = "hello@miux.studio"
+
 // ── Types ─────────────────────────────────────────────────────
 
 export type TeamMember = {
@@ -174,6 +179,50 @@ export const projects: Project[] = [
       'The refreshed brand helped the company close its seed round and secure partnerships with several leading universities in the region.',
     services: ['Brand Identity', 'Web Design', 'Pitch Deck Design', 'Content Strategy'],
     image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&auto=format&fit=crop&q=80',
+  },
+  {
+    id: '7',
+    title: 'Solstice AI Engine',
+    category: 'Web Development',
+    description:
+      'Next-generation AI research platform with real-time model telemetry, interactive neural playground, and distributed compute dashboard.',
+    result:
+      'Over 120,000 developers onboarded within 60 days of launch with zero downtime under peak global inference workloads.',
+    services: ['Full-Stack Next.js', 'WebGL Shaders', 'Real-Time Telemetry', 'Design System'],
+    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80',
+  },
+  {
+    id: '8',
+    title: 'Aura Spatial Living',
+    category: 'Web Design',
+    description:
+      'Immersive e-commerce and 3D architectural showcase for a luxury Scandinavian interior design collective.',
+    result:
+      'Average order value grew by 48% following the launch of interactive 3D room styling and fluid motion navigations.',
+    services: ['E-Commerce UX', '3D Configurator', 'Motion Direction', 'Performance Tuning'],
+    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80',
+  },
+  {
+    id: '9',
+    title: 'Krypton Liquidity Protocol',
+    category: 'UI/UX',
+    description:
+      'Institutional decentralized trading interface engineering complex order book visualization into an effortless, ultra-responsive experience.',
+    result:
+      'Processed over $1.4B in quarterly transaction volume with flawless usability benchmarks across institutional trading desks.',
+    services: ['Trading Interface UI', 'Data Visualization', 'User Research', 'Mobile Responsive'],
+    image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=80',
+  },
+  {
+    id: '10',
+    title: 'Vanguard Electric Hypercar',
+    category: 'Ads and Campaigns',
+    description:
+      'Global teaser campaign, interactive digital reveal experience, and VIP reservation funnel for a next-gen electric hypercar launch.',
+    result:
+      'All 500 limited-edition launch tier allocations fully reserved within 18 minutes of global streaming premiere.',
+    services: ['Launch Campaign', 'Interactive 3D Reveal', 'Reservation Funnel', 'Motion Graphics'],
+    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format&fit=crop&q=80',
   },
 ]
 
@@ -397,3 +446,88 @@ export const contactInfo: ContactInfo = {
   replyTime: 'We reply within one business day.',
   region: 'Serving Asia and the UAE.',
 }
+
+// ── Blog Posts ────────────────────────────────────────────────
+
+export type BlogPost = {
+  id: string
+  slug: string
+  title: string
+  excerpt: string
+  date: string
+  readTime: string
+  category: string
+  image: string
+  author: {
+    name: string
+    role: string
+    avatar: string
+  }
+}
+
+export const blogPosts: BlogPost[] = [
+  {
+    id: '1',
+    slug: 'design-systems-that-scale',
+    title: 'Why Most Modern Design Systems Break at Scale (and How to Fix It)',
+    excerpt:
+      'A design system is only as valuable as its engineering velocity. Here is how we build living, tokenized component architectures that survive hypergrowth.',
+    date: 'Nov 12, 2026',
+    readTime: '6 min read',
+    category: 'Design Systems',
+    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&auto=format&fit=crop&q=80',
+    author: {
+      name: 'Arif Hasan',
+      role: 'Creative Director',
+      avatar: '/placeholder-user.jpg',
+    },
+  },
+  {
+    id: '2',
+    slug: 'crafting-high-conversion-websites',
+    title: 'The Anatomy of a High-Converting B2B & Startup Website in 2026',
+    excerpt:
+      'Flashy visuals alone do not drive pipeline. Discover the visual hierarchy, micro-interactions, and message architectures that turn passive visitors into qualified leads.',
+    date: 'Nov 08, 2026',
+    readTime: '8 min read',
+    category: 'Conversion & UX',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
+    author: {
+      name: 'Nadia Rahman',
+      role: 'Lead Designer',
+      avatar: '/placeholder-user.jpg',
+    },
+  },
+  {
+    id: '3',
+    slug: 'future-of-webgl-in-brand-storytelling',
+    title: 'Beyond the Gimmick: WebGL and Shaders for Meaningful Brand Identity',
+    excerpt:
+      'Interactive canvas experiences can feel heavy if not engineered carefully. We unpack performance budgets, GLSL tricks, and subtle storytelling mechanics.',
+    date: 'Oct 29, 2026',
+    readTime: '5 min read',
+    category: 'Creative Tech',
+    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+    author: {
+      name: 'Kamal Uddin',
+      role: 'Senior Developer',
+      avatar: '/placeholder-user.jpg',
+    },
+  },
+  {
+    id: '4',
+    slug: 'brand-strategy-for-apac-founders',
+    title: 'Navigating Cross-Border Brand Expansion Across Asia and the UAE',
+    excerpt:
+      'Cultural nuances, multilingual interfaces, and localized digital trust signals required when taking an ambitious startup regional.',
+    date: 'Oct 15, 2026',
+    readTime: '7 min read',
+    category: 'Brand Strategy',
+    image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&auto=format&fit=crop&q=80',
+    author: {
+      name: 'Priya Sharma',
+      role: 'Brand Strategist',
+      avatar: '/placeholder-user.jpg',
+    },
+  },
+]
