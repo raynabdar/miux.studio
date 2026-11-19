@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { SITE } from '@/lib/data'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -38,7 +39,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/'],
       },
     ],
-    sitemap: 'https://miux.studio/sitemap.xml',
-    host: 'https://miux.studio',
+    sitemap: `${SITE.url}/sitemap.xml`,
+    host: SITE.url,
   }
 }

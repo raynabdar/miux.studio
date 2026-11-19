@@ -68,7 +68,7 @@ export default function Image() {
             paddingTop: '28px',
           }}
         >
-          <div style={{ display: 'flex', fontSize: 18, color: '#707070' }}>
+          <div style={{ display: 'flex', fontSize: 18, color: '#A3A3A3' }}>
             Serving Asia and the UAE · miux.studio
           </div>
           <div style={{ display: 'flex', fontSize: 18, color: '#A3A3A3' }}>

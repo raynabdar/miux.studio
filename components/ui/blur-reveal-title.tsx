@@ -32,7 +32,7 @@ export function BlurRevealTitle({
         delay,
         ease: [0.16, 1, 0.3, 1],
       }}
-      className={cn("will-change-[filter,opacity,transform]", className)}
+      className={cn(className)}
       {...props}
     >
       {children}

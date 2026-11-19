@@ -3,8 +3,9 @@
 import { useEffect } from 'react'
 import Cal, { getCalApi } from '@calcom/embed-react'
 import { motion } from 'framer-motion'
-import { MessageCircle, Send, Sparkles, CheckCircle2 } from 'lucide-react'
+import { MessageCircle, CheckCircle2 } from 'lucide-react'
 import { Navbar, Footer } from '@/components/site-shell'
+import { SITE, STATS } from '@/lib/data'
 
 export default function MeetingPage() {
   useEffect(() => {
@@ -12,7 +13,7 @@ export default function MeetingPage() {
       try {
         const cal = await getCalApi({ namespace: 'special' })
         cal('ui', {
-          theme: 'dark',
+          theme: 'light',
           hideEventTypeDetails: false,
           layout: 'month_view',
         })
@@ -23,7 +24,7 @@ export default function MeetingPage() {
   }, [])
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-[#141414] text-white">
+    <div className="flex min-h-screen flex-col justify-between bg-[#F6F5F0] text-[#141414]">
       <Navbar />
 
       <main className="relative flex-1 px-5 pt-32 pb-24 sm:pt-36 sm:pb-32 overflow-hidden">
@@ -41,13 +42,13 @@ export default function MeetingPage() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] px-4 py-1.5 text-xs font-medium text-white/90 backdrop-blur-md"
+              className="inline-flex items-center gap-2 rounded-full border border-[#141414]/[0.12] bg-white/80 px-4 py-1.5 text-xs font-medium text-[#141414] backdrop-blur-md"
             >
               <span className="relative flex size-2">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-400 opacity-75" />
-                <span className="relative inline-flex size-2 rounded-full bg-orange-500" />
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-orange-600" />
               </span>
-              <span>48+ startups &amp; founders choose miux.studio</span>
+              <span>{STATS.founders}+ startups &amp; founders choose Miux Studio</span>
             </motion.div>
 
             {/* Main Heading: Book a 45-min Call */}
@@ -55,7 +56,7 @@ export default function MeetingPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="text-4xl font-semibold tracking-[-0.06em] text-white sm:text-5xl md:text-6xl"
+              className="text-4xl font-semibold tracking-[-0.06em] text-[#141414] sm:text-5xl md:text-6xl"
             >
               Book a 45-min Call
             </motion.h1>
@@ -65,44 +66,39 @@ export default function MeetingPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.14, ease: 'easeOut' }}
-              className="text-base sm:text-lg text-[#A3A3A3] leading-relaxed"
+              className="text-base sm:text-lg text-[#5C5A55] leading-relaxed"
             >
-              Please select a date and time for the call, or just text me on{' '}
-              <a
-                href="https://wa.me/raynabdar"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Text on WhatsApp"
-                title="Open WhatsApp chat with raynabdar"
-                className="inline-flex items-center gap-1 font-semibold text-emerald-400 underline decoration-emerald-400/40 underline-offset-4 transition-colors hover:text-emerald-300 hover:decoration-emerald-300"
-              >
-                <MessageCircle className="size-4 inline -mt-0.5" />
-                <span>WhatsApp</span>
-              </a>{' '}
-              or{' '}
-              <a
-                href="https://t.me/raynabdar"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Text on Telegram"
-                title="Open Telegram chat with raynabdar"
-                className="inline-flex items-center gap-1 font-semibold text-sky-400 underline decoration-sky-400/40 underline-offset-4 transition-colors hover:text-sky-300 hover:decoration-sky-300"
-              >
-                <Send className="size-3.5 inline -mt-0.5" />
-                <span>Telegram</span>
-              </a>
+              Pick a date and time below
+              {SITE.whatsapp && (
+                <>
+                  {' '}
+                  or message us on{' '}
+                  <a
+                    href={`https://wa.me/${SITE.whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Message Miux Studio on WhatsApp"
+                    title="Open WhatsApp chat with Miux Studio"
+                    className="inline-flex items-center gap-1 font-semibold text-emerald-700 underline decoration-emerald-600/40 underline-offset-4 transition-colors hover:text-emerald-600 hover:decoration-emerald-600"
+                  >
+                    <MessageCircle className="size-4 inline -mt-0.5" />
+                    <span>WhatsApp</span>
+                  </a>
+                </>
+              )}
+              .
             </motion.p>
 
-            {/* Availability Badge: 3 spots available */}
+            {/* Availability Badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               className="pt-2 flex justify-center"
             >
-              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-medium text-emerald-400">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>3 spots available.</span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-600/25 bg-emerald-500/10 px-3.5 py-1 text-xs font-medium text-emerald-700">
+                <span className="size-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                <span>Now booking new projects</span>
               </span>
             </motion.div>
           </div>
@@ -112,7 +108,7 @@ export default function MeetingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden rounded-2xl border border-white/[0.12] bg-[#1A1A1A] p-2 sm:p-4 min-h-[680px]"
+            className="overflow-hidden rounded-2xl border border-[#141414]/[0.10] bg-white p-2 sm:p-4 shadow-sm min-h-[680px]"
           >
             <Cal
               namespace="special"
@@ -131,17 +127,17 @@ export default function MeetingPage() {
           </motion.div>
 
           {/* Direct Support Note */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-[#707070]">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-[#5C5A55]">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-orange-400" />
+              <CheckCircle2 className="size-3.5 text-orange-600" />
               <span>Direct senior partner consultation</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-orange-400" />
+              <CheckCircle2 className="size-3.5 text-orange-600" />
               <span>Zero sales pressure &amp; clear fixed scope</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-orange-400" />
+              <CheckCircle2 className="size-3.5 text-orange-600" />
               <span>Asia &amp; UAE time zone friendly</span>
             </span>
           </div>

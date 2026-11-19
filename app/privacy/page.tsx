@@ -1,1 +1,5 @@
-export { default, metadata } from '@/app/privacy-policy/page'
+import { permanentRedirect } from 'next/navigation'
+
+export default function PrivacyRedirect() {
+  permanentRedirect('/privacy-policy')
+}

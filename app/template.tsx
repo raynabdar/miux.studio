@@ -1,12 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 import { SitePreloader } from '@/components/SitePreloader'
 
 export default function Template({ children }: { children: React.ReactNode }) {
-  const [scrollProgress, setScrollProgress] = useState(0)
+  const progressRef = useRef<HTMLDivElement>(null)
 
   /* ── Lenis smooth scroll + scroll-progress ──────────────── */
   useEffect(() => {
@@ -23,8 +23,8 @@ export default function Template({ children }: { children: React.ReactNode }) {
     const raf = (time: number) => {
       lenis.raf(time)
       const max = document.documentElement.scrollHeight - window.innerHeight
-      if (max > 0) {
-        setScrollProgress(window.scrollY / max)
+      if (max > 0 && progressRef.current) {
+        progressRef.current.style.transform = `scaleX(${window.scrollY / max})`
       }
       frame = requestAnimationFrame(raf)
     }
@@ -39,19 +39,18 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* ── Glass Preloader (Dark with Website Logo) ─────────── */}
+      {/* ── Glass Preloader (Off-White with Dark Website Logo) ── */}
       <SitePreloader />
 
-      {/* ── Thin white scroll progress bar at the very top ───── */}
+      {/* ── Thin dark ink scroll progress bar at the very top ── */}
       <div
         className="fixed left-0 top-0 z-[9990] h-[2px] w-full bg-transparent pointer-events-none"
         aria-hidden="true"
       >
         <div
-          className="h-full bg-white/70 origin-left transition-transform duration-75 ease-out"
-          style={{
-            transform: `scaleX(${scrollProgress})`,
-          }}
+          ref={progressRef}
+          className="h-full origin-left bg-[#141414]/75"
+          style={{ transform: 'scaleX(0)' }}
         />
       </div>
 
@@ -65,12 +64,12 @@ export default function Template({ children }: { children: React.ReactNode }) {
         {children}
       </motion.div>
 
-      {/* ── Thin dark grey overlay wipe for route transitions ── */}
+      {/* ── Thin off-white overlay wipe for route transitions ── */}
       <motion.div
         initial={{ scaleY: 1 }}
         animate={{ scaleY: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="pointer-events-none fixed inset-0 z-[9980] origin-top bg-[#1A1A1A]"
+        className="pointer-events-none fixed inset-0 z-[9980] origin-top bg-[#ECEAE3]"
       />
     </>
   )

@@ -1,12 +1,6 @@
 'use client'
 
-import React from 'react'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
+import { Plus } from 'lucide-react'
 import Link from 'next/link'
 import { BlurRevealTitle } from '@/components/ui/blur-reveal-title'
 import { cn } from '@/lib/utils'
@@ -18,111 +12,85 @@ export interface FAQItem {
 }
 
 interface FAQsProps {
-  items?: FAQItem[]
+  items: FAQItem[]
   className?: string
   title?: string
   description?: string
 }
 
-const DEFAULT_FAQ_ITEMS: FAQItem[] = [
-  {
-    id: 'item-1',
-    question: 'How long does shipping take?',
-    answer:
-      'Standard shipping takes 3-5 business days, depending on your location. Express shipping options are available at checkout for 1-2 business day delivery.',
-  },
-  {
-    id: 'item-2',
-    question: 'What payment methods do you accept?',
-    answer:
-      'We accept all major credit cards (Visa, Mastercard, American Express), PayPal, Apple Pay, and Google Pay. For enterprise customers, we also offer invoicing options.',
-  },
-  {
-    id: 'item-3',
-    question: 'Can I change or cancel my order?',
-    answer:
-      'You can modify or cancel your order within 1 hour of placing it. After this window, please contact our customer support team who will assist you with any changes.',
-  },
-  {
-    id: 'item-4',
-    question: 'Do you ship internationally?',
-    answer:
-      "Yes, we ship to over 50 countries worldwide. International shipping typically takes 7-14 business days. Additional customs fees may apply depending on your country's import regulations.",
-  },
-  {
-    id: 'item-5',
-    question: 'What is your return policy?',
-    answer:
-      'We offer a 30-day return policy for most items. Products must be in original condition with tags attached. Some specialty items may have different return terms, which will be noted on the product page.',
-  },
-]
-
 export default function FAQs({
-  items = DEFAULT_FAQ_ITEMS,
+  items,
   className,
   title = 'Frequently Asked Questions',
-  description = 'Discover quick and comprehensive answers to common questions about our platform, services, and features.',
+  description = 'Answers to the questions we hear most often before a project starts.',
 }: FAQsProps) {
   return (
     <section
       id="faq"
       aria-label="Frequently Asked Questions"
-      className={cn('relative w-full bg-[#141414] py-20 md:py-28 text-white px-5 overflow-hidden', className)}
+      className={cn('relative w-full bg-[#F6F5F0] py-20 md:py-28 text-[#141414] px-5 overflow-hidden', className)}
     >
       {/* Subtle liquid background ambient glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.06)_0%,rgba(234,88,12,0.02)_40%,transparent_70%)] blur-[90px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08)_0%,rgba(234,88,12,0.03)_40%,transparent_70%)] blur-[90px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-5xl">
         <div className="text-center flex flex-col items-center">
-          <BlurRevealTitle className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.05em] text-white text-center">
+          <BlurRevealTitle as="h2" className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.05em] text-[#141414] text-center">
             {title}
           </BlurRevealTitle>
-          <p className="mt-4 text-base sm:text-lg text-[#A3A3A3] max-w-2xl leading-relaxed text-center">
+          <p className="mt-4 text-base sm:text-lg text-[#5C5A55] max-w-2xl leading-relaxed text-center">
             {description}
           </p>
         </div>
 
         <div className="mt-12">
           {/* Liquid glass accordion container */}
-          <div className="relative rounded-2xl border border-white/[0.12] bg-white/[0.03] backdrop-blur-2xl px-6 sm:px-8 py-3 transition-all duration-300 hover:border-white/[0.2]">
+          <div className="relative rounded-2xl border border-[#141414]/[0.10] bg-white/75 backdrop-blur-2xl px-6 sm:px-8 py-3 shadow-[0_12px_36px_-18px_rgba(20,20,20,0.08)] transition-all duration-300 hover:border-[#141414]/[0.18]">
             {/* Liquid inner sheen */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
+              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent"
             />
 
-            <Accordion type="single" collapsible className="w-full">
-              {items.map((item, idx) => (
-                <AccordionItem
-                  key={item.id}
-                  value={item.id}
-                  className={cn(
-                    'border-b border-white/[0.08] transition-colors duration-200',
-                    idx === items.length - 1 && 'border-b-0'
-                  )}
-                >
-                  <AccordionTrigger className="group py-5 text-left text-base sm:text-lg font-medium text-white hover:no-underline transition-colors hover:text-white/90">
+            <div className="divide-y divide-[#141414]/[0.08]">
+              {items.map((item) => (
+                <details key={item.id} className="group">
+                  <summary className="flex cursor-pointer list-none items-center gap-4 py-5 text-left text-base font-medium text-[#141414] transition-colors hover:text-[#141414]/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#141414] [&::-webkit-details-marker]:hidden sm:text-lg">
                     <span className="flex-1 pr-4">{item.question}</span>
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-5 text-sm sm:text-base leading-relaxed text-[#A3A3A3]">
+                    <Plus
+                      aria-hidden="true"
+                      className="size-4 shrink-0 text-[#5C5A55] transition-transform duration-200 group-open:rotate-45"
+                    />
+                  </summary>
+                  <div className="pb-5 text-sm leading-relaxed text-[#5C5A55] sm:text-base">
                     <p>{item.answer}</p>
-                  </AccordionContent>
-                </AccordionItem>
+                  </div>
+                </details>
               ))}
-            </Accordion>
+            </div>
           </div>
 
-          <p className="mt-8 text-center text-sm sm:text-base text-[#A3A3A3]">
-            Can&apos;t find what you&apos;re looking for? Contact our{' '}
-            <Link
-              href="/contact"
-              className="text-orange-400 font-medium hover:text-orange-300 hover:underline transition-colors"
-            >
-              customer support team
-            </Link>
-          </p>
+          <div className="mt-8 space-y-2 text-center text-sm sm:text-base text-[#5C5A55]">
+            <p>
+              Can&apos;t find what you&apos;re looking for?{' '}
+              <Link
+                href="/contact"
+                className="text-orange-600 font-medium hover:text-orange-500 hover:underline transition-colors"
+              >
+                Talk to our team
+              </Link>
+            </p>
+            <p>
+              <Link
+                href="/blogs"
+                className="text-[#2E2D2A] underline decoration-[#141414]/25 decoration-1 underline-offset-4 transition-colors hover:text-[#141414] hover:decoration-orange-600"
+              >
+                Read our blogs to know more.
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </section>

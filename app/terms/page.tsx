@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { Navbar, Footer } from '@/components/site-shell'
+import { LEGAL, SITE } from '@/lib/data'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | MIUX STUDIO',
-  description: 'Terms of Service governing the use of MIUX STUDIO websites and design services.',
+  title: 'Terms of Service | Miux Studio',
+  description: 'Terms of Service governing the use of the Miux Studio website and design services.',
   alternates: {
     canonical: '/terms',
   },
@@ -11,33 +12,36 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#141414] text-white">
+    <div className="min-h-screen bg-[#F6F5F0] text-[#141414]">
       <Navbar />
 
-      <main className="px-5 pb-28 pt-36 sm:pt-44">
-        <article className="mx-auto max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-[#707070]">
-            Legal & Governance
+      <main className="relative px-5 pb-28 pt-36 sm:pt-44">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[540px] overflow-hidden">
+          <div className="absolute left-1/2 top-0 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.1)_0%,rgba(234,88,12,0.03)_45%,transparent_70%)] blur-[100px]" />
+        </div>
+        <article className="relative mx-auto max-w-3xl">
+          <p className="text-xs uppercase tracking-[0.3em] text-[#78756E]">
+            Legal &amp; Governance
           </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-white sm:text-6xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-[#141414] sm:text-6xl">
             Terms of Service
           </h1>
-          <p className="mt-4 text-xs text-[#707070]">
-            Last updated: November 2026 &bull; &copy; 2016–2026 MIUX STUDIO
+          <p className="mt-4 text-xs text-[#78756E]">
+            Last updated: {LEGAL.lastUpdated} &bull; {LEGAL.entity}, {LEGAL.address}
           </p>
 
-          <div className="mt-12 space-y-8 text-base leading-relaxed text-[#A3A3A3]">
-            <section aria-label="Acceptance of terms">
-              <h2 className="text-xl font-medium tracking-tight text-white">
+          <div className="mt-12 space-y-10 text-base leading-relaxed text-[#5C5A55]">
+            <section className="border-t border-[#141414]/[0.08] pt-10 first:border-t-0 first:pt-0" aria-label="Acceptance of terms">
+              <h2 className="text-xl font-semibold tracking-tight text-[#141414] sm:text-2xl">
                 1. Acceptance of Terms
               </h2>
               <p className="mt-3">
-                By accessing miux.studio or commissioning creative work with Miux Studio, you agree to comply with and be bound by these Terms of Service. If you disagree with any portion of these provisions, you should refrain from utilizing our services.
+                By accessing {SITE.url.replace('https://', '')} or commissioning work from {LEGAL.entity}, you agree to these Terms of Service. If you do not agree with any part of them, please do not use the site or our services.
               </p>
             </section>
 
-            <section aria-label="Scope of services">
-              <h2 className="text-xl font-medium tracking-tight text-white">
+            <section className="border-t border-[#141414]/[0.08] pt-10 first:border-t-0 first:pt-0" aria-label="Scope of services">
+              <h2 className="text-xl font-semibold tracking-tight text-[#141414] sm:text-2xl">
                 2. Scope of Services
               </h2>
               <p className="mt-3">
@@ -45,35 +49,44 @@ export default function TermsPage() {
               </p>
             </section>
 
-            <section aria-label="Intellectual property">
-              <h2 className="text-xl font-medium tracking-tight text-white">
+            <section className="border-t border-[#141414]/[0.08] pt-10 first:border-t-0 first:pt-0" aria-label="Intellectual property">
+              <h2 className="text-xl font-semibold tracking-tight text-[#141414] sm:text-2xl">
                 3. Intellectual Property Rights
               </h2>
               <p className="mt-3">
-                Upon final settlement of all agreed engagement invoices, full intellectual property and commercial copyright of bespoke deliverables are transferred to the client. Miux Studio retains the perpetual, non-exclusive right to showcase completed works within our portfolio and promotional materials.
+                Upon settlement of all agreed invoices, ownership of the bespoke deliverables produced for your engagement transfers to you. {LEGAL.entity} retains a non-exclusive right to showcase non-confidential deliverables in its portfolio and case studies.
               </p>
             </section>
 
-            <section aria-label="Warranties and limitations">
-              <h2 className="text-xl font-medium tracking-tight text-white">
+            <section className="border-t border-[#141414]/[0.08] pt-10 first:border-t-0 first:pt-0" aria-label="Warranties and limitations">
+              <h2 className="text-xl font-semibold tracking-tight text-[#141414] sm:text-2xl">
                 4. Warranties & Limitation of Liability
               </h2>
               <p className="mt-3">
-                Our creative solutions and codebase are engineered following high industry standards. Miux Studio shall not be liable for indirect, incidental, or consequential damages resulting from third-party hosting outages, domain registrar disruptions, or external platform API deprecations.
+                Work is produced to professional industry standards. To the maximum extent permitted by law, {LEGAL.entity} is not liable for indirect, incidental, or consequential loss, including losses arising from third-party hosting outages, domain registrar disruptions, or changes to external platform APIs.
               </p>
             </section>
 
-            <section aria-label="Governing law">
-              <h2 className="text-xl font-medium tracking-tight text-white">
-                5. Contact & Inquiries
+            <section className="border-t border-[#141414]/[0.08] pt-10 first:border-t-0 first:pt-0" aria-label="Governing law">
+              <h2 className="text-xl font-semibold tracking-tight text-[#141414] sm:text-2xl">
+                5. Governing Law
               </h2>
               <p className="mt-3">
-                For commercial inquiries or legal notices, contact us at{' '}
+                These terms are governed by {LEGAL.governingLaw}. Any dispute arising from them is subject to the exclusive jurisdiction of the courts of Bangladesh.
+              </p>
+            </section>
+
+            <section className="border-t border-[#141414]/[0.08] pt-10 first:border-t-0 first:pt-0" aria-label="Contact and legal notices">
+              <h2 className="text-xl font-semibold tracking-tight text-[#141414] sm:text-2xl">
+                6. Contact &amp; Legal Notices
+              </h2>
+              <p className="mt-3">
+                {LEGAL.entity}, {LEGAL.address}. For commercial inquiries or legal notices, write to{' '}
                 <a
-                  href="mailto:hello@miux.studio"
-                  className="text-white underline underline-offset-4 hover:text-[#A3A3A3]"
+                  href={`mailto:${SITE.email}`}
+                  className="text-[#141414] underline underline-offset-4 hover:text-[#5C5A55]"
                 >
-                  hello@miux.studio
+                  {SITE.email}
                 </a>.
               </p>
             </section>

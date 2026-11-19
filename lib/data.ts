@@ -2,19 +2,48 @@
    lib/data.ts — Central typed data for Miux Studio
    ───────────────────────────────────────────────────────────── */
 
-// ── Contact Constants ─────────────────────────────────────────
-export const COMPANY_PHONE = "+1 (800) 555-0199"
-export const COMPANY_PHONE_TEL = "+18005550199"
-export const COMPANY_EMAIL = "hello@miux.studio"
+// ── Site Configuration ────────────────────────────────────────
+// Single source of truth for contact details and the public domain.
+// `phone`, `phoneTel` and `whatsapp` are intentionally empty until the real
+// numbers are supplied; every surface that uses them renders conditionally.
+export const SITE = {
+  name: 'Miux Studio',
+  url: 'https://www.miux.studio',
+  email: 'hello@miux.studio',
+  phone: '',
+  phoneTel: '',
+  whatsapp: '',
+  locality: 'Dhaka',
+  country: 'BD',
+  region: 'Bangladesh',
+  areaServed: ['Asia', 'United Arab Emirates'],
+  scopeLabel: 'Bangladesh-based, serving APAC and the UAE',
+  founded: 2016,
+} as const
+
+export const SOCIAL_LINKS = [
+  { label: 'X', href: 'https://x.com/miuxhq' },
+  { label: 'Instagram', href: 'https://instagram.com/miuxhq' },
+  { label: 'LinkedIn', href: 'https://linkedin.com/company/miuxhq' },
+  { label: 'Facebook', href: 'https://facebook.com/miuxhq' },
+] as const
+
+export const LEGAL = {
+  entity: 'Miux Studio',
+  address: 'Dhaka, Bangladesh',
+  governingLaw: 'the laws of Bangladesh',
+  lastUpdated: '19 November 2026',
+} as const
+
+// Keep the hero pill, the impact numbers and the copy in sync.
+export const STATS = {
+  founders: 48,
+  projects: 150,
+  industries: 40,
+  inHousePercent: 100,
+} as const
 
 // ── Types ─────────────────────────────────────────────────────
-
-export type TeamMember = {
-  id: string
-  name: string
-  role: string
-  image: string
-}
 
 export type ProjectCategory =
   | 'Brand Identity'
@@ -25,30 +54,13 @@ export type ProjectCategory =
 
 export type Project = {
   id: string
+  slug: string
   title: string
   category: ProjectCategory
   description: string
   result: string
   services: string[]
   image: string
-}
-
-export type PricingTier = {
-  name: string
-  description: string
-  price: string
-  features: string[]
-  highlighted: boolean
-  badge?: string
-}
-
-export type Testimonial = {
-  id: string
-  quote: string
-  name: string
-  role: string
-  company: string
-  avatar: string
 }
 
 export type FAQ = {
@@ -58,64 +70,12 @@ export type FAQ = {
   answer: string
 }
 
-export type SocialLink = {
-  name: string
-  url: string
-  icon: string
-}
-
-export type ContactInfo = {
-  email: string
-  replyTime: string
-  region: string
-}
-
-// ── Team (6 members) ──────────────────────────────────────────
-
-export const team: TeamMember[] = [
-  {
-    id: '1',
-    name: 'Arif Hasan',
-    role: 'Founder & Creative Director',
-    image: '/placeholder-user.jpg',
-  },
-  {
-    id: '2',
-    name: 'Nadia Rahman',
-    role: 'Lead Designer',
-    image: '/placeholder-user.jpg',
-  },
-  {
-    id: '3',
-    name: 'Kamal Uddin',
-    role: 'Senior Developer',
-    image: '/placeholder-user.jpg',
-  },
-  {
-    id: '4',
-    name: 'Priya Sharma',
-    role: 'Brand Strategist',
-    image: '/placeholder-user.jpg',
-  },
-  {
-    id: '5',
-    name: 'Daniel Park',
-    role: 'UI/UX Designer',
-    image: '/placeholder-user.jpg',
-  },
-  {
-    id: '6',
-    name: 'Sara Chen',
-    role: 'Project Manager',
-    image: '/placeholder-user.jpg',
-  },
-]
-
-// ── Projects (6 projects) ─────────────────────────────────────
+// ── Projects ──────────────────────────────────────────────────
 
 export const projects: Project[] = [
   {
     id: '1',
+    slug: 'verdant-skincare',
     title: 'Verdant Skincare',
     category: 'Brand Identity',
     description:
@@ -127,6 +87,7 @@ export const projects: Project[] = [
   },
   {
     id: '2',
+    slug: 'nimbus-financial',
     title: 'Nimbus Financial',
     category: 'Web Design',
     description:
@@ -138,6 +99,7 @@ export const projects: Project[] = [
   },
   {
     id: '3',
+    slug: 'atlas-logistics',
     title: 'Atlas Logistics',
     category: 'Web Development',
     description:
@@ -149,6 +111,7 @@ export const projects: Project[] = [
   },
   {
     id: '4',
+    slug: 'medica-health',
     title: 'Medica Health',
     category: 'UI/UX',
     description:
@@ -160,6 +123,7 @@ export const projects: Project[] = [
   },
   {
     id: '5',
+    slug: 'ember-coffee-co',
     title: 'Ember Coffee Co.',
     category: 'Ads and Campaigns',
     description:
@@ -171,6 +135,7 @@ export const projects: Project[] = [
   },
   {
     id: '6',
+    slug: 'horizon-education',
     title: 'Horizon Education',
     category: 'Brand Identity',
     description:
@@ -182,6 +147,7 @@ export const projects: Project[] = [
   },
   {
     id: '7',
+    slug: 'solstice-ai-engine',
     title: 'Solstice AI Engine',
     category: 'Web Development',
     description:
@@ -193,6 +159,7 @@ export const projects: Project[] = [
   },
   {
     id: '8',
+    slug: 'aura-spatial-living',
     title: 'Aura Spatial Living',
     category: 'Web Design',
     description:
@@ -204,6 +171,7 @@ export const projects: Project[] = [
   },
   {
     id: '9',
+    slug: 'krypton-liquidity-protocol',
     title: 'Krypton Liquidity Protocol',
     category: 'UI/UX',
     description:
@@ -215,6 +183,7 @@ export const projects: Project[] = [
   },
   {
     id: '10',
+    slug: 'vanguard-hypercar',
     title: 'Vanguard Electric Hypercar',
     category: 'Ads and Campaigns',
     description:
@@ -236,142 +205,6 @@ export const projectCategories = [
   'UI/UX',
   'Ads and Campaigns',
 ] as const
-
-// ── About History (2 to 3 paragraphs) ─────────────────────────
-
-export const aboutHistory: string[] = [
-  'Miux Studio was founded on a simple conviction: digital work should drive measurable business growth, not merely serve as superficial decoration. We partner with ambitious leaders across Asia and the UAE to engineer brand systems and digital products that create definitive commercial advantages.',
-  'Our multidisciplinary practice bridges brand design and identity, web design, web development, UI/UX design, and strategic ads and campaigns. By treating every customer touchpoint as an interconnected growth vehicle, we replace disjointed deliverables with cohesive, high-converting digital ecosystems.',
-  'Positioned intentionally as a selective creative studio, we maintain tight partnership caps to guarantee senior-level execution on every initiative. We are trusted by global corporations and brands at scale to turn complex brand challenges into clear, enduring digital momentum.',
-]
-
-// ── Pricing Tiers (3 tiers) ───────────────────────────────────
-
-export const pricingTiers: PricingTier[] = [
-  {
-    name: 'Starter',
-    description:
-      'For focused engagements that demand strategic clarity and high-calibre visual execution.',
-    price: 'Custom Scope',
-    features: [
-      'Core brand identity or dedicated web property',
-      'End-to-end design system architecture',
-      'Fully responsive, accessible build',
-      'Integrated analytics & performance tuning',
-      'Direct senior partner collaboration',
-      'Post-launch warranty & onboarding',
-    ],
-    highlighted: false,
-  },
-  {
-    name: 'Growth',
-    description:
-      'Comprehensive design and development engineered to accelerate market capture and conversion.',
-    price: 'Partnership',
-    features: [
-      'Complete brand system & multi-surface web platform',
-      'Advanced interactive motions & micro-interactions',
-      'Custom CMS architecture & headless integrations',
-      'Targeted campaign collateral & ad creatives',
-      'Conversion rate optimization (CRO) setup',
-      'Dedicated bi-weekly strategic sprint reviews',
-    ],
-    highlighted: true,
-    badge: 'Most chosen',
-  },
-  {
-    name: 'Scale',
-    description:
-      'Embedded creative and engineering partnership for global brands demanding category dominance.',
-    price: 'Enterprise',
-    features: [
-      'Full-spectrum brand, web, UI/UX, and marketing ecosystem',
-      'High-velocity custom software & web application engineering',
-      'Omnichannel performance ads & campaign rollout',
-      'Multi-region localization across Asia and the UAE',
-      'Priority SLA with continuous optimization & iterations',
-      'Direct Slack/Teams integration with senior team',
-    ],
-    highlighted: false,
-  },
-]
-
-// ── Testimonials (6 testimonials) ─────────────────────────────
-
-export const testimonials: Testimonial[] = [
-  {
-    id: '1',
-    quote:
-      'Miux Studio transformed how our brand shows up online. The attention to detail and strategic thinking behind every decision was exactly what we needed.',
-    name: 'Faisal Al-Rashid',
-    role: 'CEO',
-    company: 'Nimbus Financial',
-    avatar: '/placeholder-user.jpg',
-  },
-  {
-    id: '2',
-    quote:
-      'Working with Miux felt like having an in-house creative team. They understood our market, moved fast, and delivered work that genuinely surprised us.',
-    name: 'Lin Mei',
-    role: 'Head of Marketing',
-    company: 'Ember Coffee Co.',
-    avatar: '/placeholder-user.jpg',
-  },
-  {
-    id: '3',
-    quote:
-      'The UX improvements they made to our platform had an immediate impact. Our patients and doctors both noticed the difference from day one.',
-    name: 'Dr. Aisha Khalil',
-    role: 'Product Lead',
-    company: 'Medica Health',
-    avatar: '/placeholder-user.jpg',
-  },
-  {
-    id: '4',
-    quote:
-      'They do not just make things look good — they think about how design connects to business outcomes. That is rare and incredibly valuable.',
-    name: 'Rajesh Patel',
-    role: 'Founder',
-    company: 'Horizon Education',
-    avatar: '/placeholder-user.jpg',
-  },
-  {
-    id: '5',
-    quote:
-      'From the first call to final delivery, everything was clear and professional. No wasted time, no surprises — just great work, delivered on schedule.',
-    name: 'Sarah Lim',
-    role: 'Operations Director',
-    company: 'Atlas Logistics',
-    avatar: '/placeholder-user.jpg',
-  },
-  {
-    id: '6',
-    quote:
-      'Their selective partnership model really shows in the output. The quality of execution across our brand identity and web presence set a new standard for our industry.',
-    name: 'Tariq Mansoor',
-    role: 'Managing Director',
-    company: 'Verdant Group',
-    avatar: '/placeholder-user.jpg',
-  },
-  {
-    id: '7',
-    quote:
-      'The component system and interactions they built elevated our conversion rates significantly within the first month of rollout.',
-    name: 'Emma Brown',
-    role: 'VP Marketing',
-    company: 'Apex Digital',
-    avatar: '/placeholder-user.jpg',
-  },
-  {
-    id: '8',
-    quote:
-      'Implementing their design system was a game-changer for our engineering team across Southeast Asia and Dubai.',
-    name: 'James Wilson',
-    role: 'Chief Technology Officer',
-    company: 'Veloce Labs',
-    avatar: '/placeholder-user.jpg',
-  },
-]
 
 // ── FAQs (6 items) ────────────────────────────────────────────
 
@@ -420,34 +253,12 @@ export const faqs: FAQ[] = [
   },
 ]
 
-// ── Social Links ──────────────────────────────────────────────
-
-export const socialLinks: SocialLink[] = [
-  { name: 'Facebook', url: 'https://facebook.com/Miuxstudio', icon: 'Facebook' },
-  { name: 'LinkedIn', url: '#', icon: 'Linkedin' },
-  { name: 'Instagram', url: '#', icon: 'Instagram' },
-  { name: 'X', url: '#', icon: 'Twitter' },
-]
-
-// ── Services ──────────────────────────────────────────────────
-
-export const services = [
-  'Brand Design and Identity',
-  'Web Design',
-  'Web Development',
-  'UI/UX Design',
-  'Ads and Other Campaigns',
-] as const
-
-// ── Contact Info ──────────────────────────────────────────────
-
-export const contactInfo: ContactInfo = {
-  email: 'hello@miux.studio',
-  replyTime: 'We reply within one business day.',
-  region: 'Serving Asia and the UAE.',
-}
-
 // ── Blog Posts ────────────────────────────────────────────────
+
+export type BlogSection = {
+  heading: string
+  body: string
+}
 
 export type BlogPost = {
   id: string
@@ -461,8 +272,8 @@ export type BlogPost = {
   author: {
     name: string
     role: string
-    avatar: string
   }
+  content: BlogSection[]
 }
 
 export const blogPosts: BlogPost[] = [
@@ -479,8 +290,25 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: 'Arif Hasan',
       role: 'Creative Director',
-      avatar: '/placeholder-user.jpg',
     },
+    content: [
+      {
+        heading: 'Tokens are the contract',
+        body: 'Most systems break because the token layer is treated as documentation instead of an API. When colour, spacing and type are consumed as named decisions rather than raw values, a rebrand becomes a config change instead of a three-month audit. Treat every token as a versioned public interface and the rest of the system has something stable to depend on.',
+      },
+      {
+        heading: 'Components rot without a governance model',
+        body: 'Coverage charts look healthy long after a library has drifted. The real question is who is allowed to add a variant, what justifies a new one, and when one gets deprecated. A lightweight review ritual — one owner, a written rule for exceptions, a quarterly prune — keeps a library from becoming a museum of one-off fixes.',
+      },
+      {
+        heading: 'Measure adoption, not component count',
+        body: 'A system with forty components and twenty percent adoption is a design project. A system with twelve components used across every surface is infrastructure. Instrument which components ship in production, which get forked, and which get bypassed; that signal tells you where the next investment belongs far better than a library screenshot.',
+      },
+      {
+        heading: 'Start with the three screens you rebuild most',
+        body: 'The fastest path to value is not a full audit. Find the three screens your team rebuilds every quarter and systemise those first. You earn credibility with shipping teams, learn the real constraints, and avoid designing abstractions for problems you have not yet met.',
+      },
+    ],
   },
   {
     id: '2',
@@ -488,15 +316,32 @@ export const blogPosts: BlogPost[] = [
     title: 'The Anatomy of a High-Converting B2B & Startup Website in 2026',
     excerpt:
       'Flashy visuals alone do not drive pipeline. Discover the visual hierarchy, micro-interactions, and message architectures that turn passive visitors into qualified leads.',
-    date: 'Nov 08, 2026',
+    date: 'Nov 8, 2026',
     readTime: '8 min read',
     category: 'Conversion & UX',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
     author: {
       name: 'Nadia Rahman',
       role: 'Lead Designer',
-      avatar: '/placeholder-user.jpg',
     },
+    content: [
+      {
+        heading: 'Lead with the problem, not the feature list',
+        body: 'Buyers arrive with a specific, usually expensive problem. A homepage that opens with company history or a capability grid asks them to do the translation work themselves. Name the problem in the first sentence, in their vocabulary, and the rest of the page has somewhere to land.',
+      },
+      {
+        heading: 'One primary action per page',
+        body: 'Every additional call to action splits attention. Pick the single next step that matters — book a call, start a trial, read the case study — and let everything else recede visually. Secondary paths can exist, but they should look secondary.',
+      },
+      {
+        heading: 'Proof beats adjectives',
+        body: 'A named client, a before-and-after number, a screenshot of the actual product: these outperform words like seamless, robust and world-class every time. If real proof is not available yet, say less and show the work honestly rather than dressing up a placeholder.',
+      },
+      {
+        heading: 'Performance is a conversion feature',
+        body: 'A hero that paints after two seconds of shader warm-up has already lost part of the audience. Measure Largest Contentful Paint on a mid-range phone on 4G, not on a laptop. Motion is worth keeping only when it earns the milliseconds it costs.',
+      },
+    ],
   },
   {
     id: '3',
@@ -511,8 +356,21 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: 'Kamal Uddin',
       role: 'Senior Developer',
-      avatar: '/placeholder-user.jpg',
     },
+    content: [
+      {
+        heading: 'Motion should explain, not decorate',
+        body: 'A shader that reacts to a product’s texture can teach someone what the material feels like. A particle field behind a headline teaches them nothing. Before adding a canvas experience, write down the sentence it helps a visitor understand; if that sentence is weak, the effect is decoration.',
+      },
+      {
+        heading: 'Budget the GPU like you budget JavaScript',
+        body: 'WebGL competes with scrolling, video and every other layer on the page. Cap the device pixel ratio, pause rendering when the canvas leaves the viewport, and ship a static poster for reduced-motion and low-power devices. A beautiful scene that drops frames on a mid-range phone is a bug, not a feature.',
+      },
+      {
+        heading: 'Design the fallback first',
+        body: 'The most reliable version of a WebGL section is the one that still communicates when the context fails. Build the typographic and photographic layout first, then let the canvas enhance it. That ordering keeps the experience honest, keeps accessibility intact, and makes the effect optional rather than load-bearing.',
+      },
+    ],
   },
   {
     id: '4',
@@ -527,7 +385,24 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: 'Priya Sharma',
       role: 'Brand Strategist',
-      avatar: '/placeholder-user.jpg',
     },
+    content: [
+      {
+        heading: 'Localise the proof, not just the language',
+        body: 'Translation is the easy part. A brand entering a new market needs references that market recognises: local customers, local payment methods, local support hours. Trust is built from evidence a buyer can verify, and evidence rarely survives a straight translation.',
+      },
+      {
+        heading: 'Design for right-to-left before you need it',
+        body: 'Retrofitting RTL support after launch means auditing every margin, icon direction and animation. Building with logical properties and direction-agnostic spacing from day one costs almost nothing and removes a launch blocker when the Gulf becomes a priority.',
+      },
+      {
+        heading: 'Payments and trust signals are part of the brand',
+        body: 'A beautifully designed checkout that only accepts international cards tells a regional customer the product was not built for them. Currency, invoicing, tax display and local dispute expectations belong in the brand brief, not in a later engineering ticket.',
+      },
+      {
+        heading: 'Keep one source of truth across regions',
+        body: 'Cross-border expansion fails quietly when each market maintains its own deck, screenshots and claims. A single maintained library of product truth, with region-specific layers on top, keeps the story consistent while letting the evidence change.',
+      },
+    ],
   },
 ]

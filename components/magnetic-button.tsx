@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect, type ReactNode, type MouseEvent as ReactMouseEvent } from 'react'
+import { useRef, useState, type ReactNode, type MouseEvent as ReactMouseEvent } from 'react'
 import { motion, useSpring } from 'framer-motion'
 
 interface MagneticButtonProps {
@@ -31,17 +31,17 @@ export function MagneticButton({
   target,
 }: MagneticButtonProps) {
   const buttonRef = useRef<HTMLAnchorElement & HTMLButtonElement>(null)
-  const [canHover, setCanHover] = useState(false)
+  const [canHover] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
 
   const springConfig = { damping: 20, stiffness: 250, mass: 0.5 }
   const x = useSpring(0, springConfig)
   const y = useSpring(0, springConfig)
 
-  useEffect(() => {
-    const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    setCanHover(isFinePointer && !isReduced)
-  }, [])
 
   const handleMouseMove = (e: ReactMouseEvent) => {
     if (!canHover || !buttonRef.current || disabled) return
@@ -59,10 +59,10 @@ export function MagneticButton({
     y.set(0)
   }
 
-  const baseClasses = `group relative inline-flex items-center justify-center overflow-hidden rounded-full font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 disabled:pointer-events-none disabled:opacity-50 select-none ${
+  const baseClasses = `group relative inline-flex items-center justify-center overflow-hidden rounded-full font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141414]/40 disabled:pointer-events-none disabled:opacity-50 select-none ${
     variant === 'primary'
-      ? 'bg-white text-[#141414] hover:bg-white/95'
-      : 'border border-white/[0.12] bg-[#141414] text-white hover:border-white/30 hover:bg-white/[0.04]'
+      ? 'bg-[#141414] text-[#F6F5F0] hover:bg-[#262626]'
+      : 'border border-[#141414]/[0.14] bg-white/80 text-[#141414] hover:border-[#141414]/35 hover:bg-white'
   } ${className}`
 
   if (href) {

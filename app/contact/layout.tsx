@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SITE } from '@/lib/data'
 
 export const metadata: Metadata = {
   title: 'Contact | Miux Studio',
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     title: 'Contact | Miux Studio',
     description:
       'Start a conversation with Miux Studio. Brand identity, web design, web development, UI/UX, and campaigns across Asia and the UAE.',
-    url: 'https://miux.studio/contact',
+    url: `${SITE.url}/contact`,
   },
   twitter: {
     card: 'summary_large_image',
@@ -30,15 +31,20 @@ export default function ContactLayout({
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
     name: 'Contact Miux Studio',
-    url: 'https://miux.studio/contact',
+    url: `${SITE.url}/contact`,
     description:
       'Start a conversation with Miux Studio. We reply within one business day.',
     mainEntity: {
       '@type': 'ProfessionalService',
-      name: 'Miux Studio',
-      email: 'hello@miux.studio',
-      telephone: '+1-800-555-0199',
-      areaServed: ['Asia', 'United Arab Emirates'],
+      name: SITE.name,
+      email: SITE.email,
+      areaServed: [...SITE.areaServed],
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: SITE.locality,
+        addressCountry: SITE.country,
+      },
+      ...(SITE.phoneTel ? { telephone: SITE.phoneTel } : {}),
     },
   }
 

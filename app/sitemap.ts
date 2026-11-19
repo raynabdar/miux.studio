@@ -1,8 +1,23 @@
 import type { MetadataRoute } from 'next'
+import { blogPosts, projects, SITE } from '@/lib/data'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://miux.studio'
+  const baseUrl = SITE.url
   const now = new Date()
+
+  const workEntries: MetadataRoute.Sitemap = projects.map((project) => ({
+    url: `${baseUrl}/work/${project.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
+
+  const journalEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${baseUrl}/blogs/${post.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }))
 
   return [
     {
@@ -12,21 +27,35 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/projects`,
+      url: `${baseUrl}/work`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    ...workEntries,
     {
       url: `${baseUrl}/blogs`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    ...journalEntries,
     {
       url: `${baseUrl}/meeting`,
       lastModified: now,
       changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/startups`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/teardown`,
+      lastModified: now,
+      changeFrequency: 'monthly',
       priority: 0.8,
     },
     {

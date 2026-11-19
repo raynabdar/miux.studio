@@ -142,7 +142,7 @@ const VerticalCutReveal = forwardRef<VerticalCutRevealRef, TextProps>(
         y: 0,
         transition: {
           ...transition,
-          delay: (((transition as any)?.delay as number) || 0) + getStaggerDelay(i),
+          delay: (transition.delay ?? 0) + getStaggerDelay(i),
         },
       }),
     }

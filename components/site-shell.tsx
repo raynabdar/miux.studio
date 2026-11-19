@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { SITE, SOCIAL_LINKS } from "@/lib/data";
 import { MeltingFooterText } from "@/components/ui/melting-footer-text";
 import {
   useCallback,
@@ -81,15 +84,6 @@ const NAV_LINKS = [
   { label: "Services", href: "#services" },
   { label: "Work", href: "#work" },
   { label: "Pricing", href: "#pricing" },
-] as const;
-
-const SECTION_IDS = [
-  "home",
-  "about",
-  "services",
-  "work",
-  "approach",
-  "pricing",
 ] as const;
 
 /* ─── Navbar ────────────────────────────────────────────────────────── */
@@ -280,49 +274,47 @@ export function Navbar() {
         )}
       >
         <nav
-          className="relative overflow-hidden rounded-full border border-white/[0.16] py-2.5 px-4 sm:px-6 transition-all duration-700 delay-75 ease-[cubic-bezier(0.25,1,0.5,1)]"
+          className="relative overflow-hidden rounded-full border border-[#141414]/[0.10] py-2.5 px-4 sm:px-6 transition-all duration-700 delay-75 ease-[cubic-bezier(0.25,1,0.5,1)]"
           style={{
             backgroundColor: scrolled
-              ? "rgba(20, 20, 20, 0.42)"
-              : "rgba(255, 255, 255, 0.05)",
-            backdropFilter: "blur(24px) saturate(190%)",
-            WebkitBackdropFilter: "blur(24px) saturate(190%)",
+              ? "rgba(246, 245, 240, 0.82)"
+              : "rgba(255, 255, 255, 0.62)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
             boxShadow:
-              "inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.04)",
+              "0 8px 30px -12px rgba(20, 20, 20, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 1px 0 rgba(20, 20, 20, 0.04)",
           }}
         >
           {/* Soft inner top specular highlight line */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent"
+            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent"
           />
 
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
-            <a
+            <Link
               href="/"
               aria-label="Miux Studio - Return to homepage"
               title="Miux Studio - Digital Design & Web Development Studio"
-              className="group flex items-center shrink-0 whitespace-nowrap font-semibold tracking-tight text-white transition-opacity hover:opacity-90"
+              className="group flex items-center shrink-0 whitespace-nowrap font-semibold tracking-tight text-[#141414] transition-opacity hover:opacity-80"
             >
               {!logoError ? (
-                <img
+                <Image
                   src="/logo.png"
                   alt="Miux Studio"
                   width={32}
                   height={32}
-                  fetchPriority="high"
-                  loading="eager"
-                  decoding="sync"
+                  priority
                   onError={() => setLogoError(true)}
-                  className="h-8 w-8 object-contain"
+                  className="h-8 w-8 object-contain brightness-0"
                 />
               ) : (
-                <span className="tracking-[-0.03em] flex items-center font-semibold text-white text-[15px] sm:text-base">
+                <span className="tracking-[-0.03em] flex items-center font-semibold text-[#141414] text-[15px] sm:text-base">
                   miux studio
                 </span>
               )}
-            </a>
+            </Link>
 
             {/* Desktop Center Links */}
             <div
@@ -343,15 +335,15 @@ export function Navbar() {
                     title={`Explore ${link.label}`}
                     className={`relative inline-flex items-center justify-center text-center rounded-full px-3.5 sm:px-4 py-1.5 text-sm font-medium transition-colors duration-200 select-none ${
                       isActive
-                        ? "text-white"
-                        : "text-[#A3A3A3] hover:text-white"
+                        ? "text-[#141414]"
+                        : "text-[#5C5A55] hover:text-[#141414]"
                     }`}
                   >
                     {/* Liquid glass highlight pill gliding between links */}
                     {isActive && (
                       <motion.span
                         layoutId="nav-highlight"
-                        className="absolute inset-0 rounded-full border border-white/[0.18] bg-white/[0.10] backdrop-blur-md"
+                        className="absolute inset-0 rounded-full border border-[#141414]/[0.10] bg-[#141414]/[0.06] backdrop-blur-md"
                         transition={{
                           type: "spring",
                           stiffness: 380,
@@ -371,7 +363,7 @@ export function Navbar() {
               href="/meeting"
               aria-label="Get Started with Miux Studio"
               title="Get Started with Miux Studio"
-              className="relative group overflow-hidden hidden shrink-0 whitespace-nowrap rounded-full bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 border border-orange-400/40 font-semibold text-white transition-all duration-300 hover:brightness-110 active:scale-[0.98] md:inline-flex items-center justify-center gap-2 h-9 px-5 text-xs sm:text-sm shadow-[0_2px_12px_rgba(249,115,22,0.3)]"
+              className="relative group overflow-hidden hidden shrink-0 whitespace-nowrap rounded-full bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 border border-orange-600/20 font-semibold text-white transition-all duration-300 hover:brightness-105 active:scale-[0.98] md:inline-flex items-center justify-center gap-2 h-9 px-5 text-xs sm:text-sm shadow-[0_2px_12px_rgba(234,88,12,0.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#141414]"
             >
               {/* Continuous Smooth Liquid Shine Sweep */}
               <motion.span
@@ -400,11 +392,11 @@ export function Navbar() {
               }
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav-panel"
-              className="relative flex size-9 flex-col items-center justify-center gap-[5px] rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 md:hidden"
+              className="relative flex size-9 flex-col items-center justify-center gap-[5px] rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141414]/40 md:hidden"
               onClick={() => setMobileOpen((prev) => !prev)}
             >
               <motion.span
-                className="block h-[2px] w-5 rounded-full bg-white origin-center"
+                className="block h-[2px] w-5 rounded-full bg-[#141414] origin-center"
                 animate={{
                   rotate: mobileOpen ? 45 : 0,
                   y: mobileOpen ? 7 : 0,
@@ -412,12 +404,12 @@ export function Navbar() {
                 transition={{ type: "spring", stiffness: 340, damping: 25 }}
               />
               <motion.span
-                className="block h-[2px] w-5 rounded-full bg-white origin-center"
+                className="block h-[2px] w-5 rounded-full bg-[#141414] origin-center"
                 animate={{ opacity: mobileOpen ? 0 : 1 }}
                 transition={{ duration: 0.15 }}
               />
               <motion.span
-                className="block h-[2px] w-5 rounded-full bg-white origin-center"
+                className="block h-[2px] w-5 rounded-full bg-[#141414] origin-center"
                 animate={{
                   rotate: mobileOpen ? -45 : 0,
                   y: mobileOpen ? -7 : 0,
@@ -441,12 +433,12 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.98 }}
               transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              className="mt-2 origin-top overflow-hidden rounded-3xl border border-white/[0.16] p-5 md:hidden"
+              className="mt-2 origin-top overflow-hidden rounded-3xl border border-[#141414]/[0.10] p-5 md:hidden"
               style={{
-                backgroundColor: "rgba(20, 20, 20, 0.52)",
-                backdropFilter: "blur(28px) saturate(190%)",
-                WebkitBackdropFilter: "blur(28px) saturate(190%)",
-                boxShadow: "inset 0 1px 1px 0 rgba(255, 255, 255, 0.18)",
+                backgroundColor: "rgba(246, 245, 240, 0.94)",
+                backdropFilter: "blur(28px) saturate(180%)",
+                WebkitBackdropFilter: "blur(28px) saturate(180%)",
+                boxShadow: "0 18px 40px -16px rgba(20, 20, 20, 0.18), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85)",
               }}
             >
               <div
@@ -471,8 +463,8 @@ export function Navbar() {
                     }}
                     className={`rounded-2xl px-4 py-3 text-base font-medium transition-colors ${
                       isHomePage && activeSection === link.href.replace("#", "")
-                        ? "bg-white/[0.08] text-white"
-                        : "text-[#A3A3A3] hover:bg-white/[0.04] hover:text-white"
+                        ? "bg-[#141414]/[0.08] text-[#141414]"
+                        : "text-[#5C5A55] hover:bg-[#141414]/[0.04] hover:text-[#141414]"
                     }`}
                   >
                     {link.label}
@@ -525,46 +517,49 @@ const FOOTER_NAV = [
   { label: "About", href: "/#about" },
   { label: "Services", href: "/#services" },
   { label: "Work", href: "/#work" },
+  { label: "Startups", href: "/startups" },
   { label: "Approach", href: "/#approach" },
   { label: "Pricing", href: "/#pricing" },
-  { label: "Blogs", href: "/blogs" },
+  { label: "Blog", href: "/blogs" },
   { label: "Contact", href: "/contact" },
 ];
 
 const FOOTER_SERVICES = [
-  "Brand Design and Identity",
-  "Web Design",
-  "Web Development",
-  "UI/UX Design",
-  "Ads and Other Campaigns",
+  { label: "Brand Design and Identity", href: "/#services" },
+  { label: "Web Design", href: "/#services" },
+  { label: "Web Development", href: "/#services" },
+  { label: "UI/UX Design", href: "/#services" },
+  { label: "Ads and Other Campaigns", href: "/#services" },
 ];
 
 const FOOTER_OTHERS = [
+  { label: "Free Website Teardown", href: "/teardown" },
   { label: "Client Terms", href: "/client-terms" },
   { label: "Privacy", href: "/privacy-policy" },
   { label: "Terms", href: "/terms" },
   { label: "Sitemap", href: "/sitemap" },
 ];
 
-const FOOTER_SOCIALS = [
-  {
-    label: "Facebook",
-    href: "https://facebook.com/Miuxstudio",
-    Icon: FacebookIcon,
-  },
-  { label: "LinkedIn", href: "#", Icon: LinkedInIcon },
-  { label: "Instagram", href: "#", Icon: InstagramIcon },
-  { label: "X", href: "#", Icon: XIcon },
-];
+const SOCIAL_ICONS = {
+  Facebook: FacebookIcon,
+  LinkedIn: LinkedInIcon,
+  Instagram: InstagramIcon,
+  X: XIcon,
+} as const;
+
+const FOOTER_SOCIALS = SOCIAL_LINKS.map((link) => ({
+  ...link,
+  Icon: SOCIAL_ICONS[link.label],
+}));
 
 export function Footer() {
   return (
     <footer
-      className="relative overflow-hidden transition-all duration-300"
+      className="relative overflow-hidden border-t border-[#141414]/[0.08] transition-all duration-300"
       style={{
-        backgroundColor: "rgba(20, 20, 20, 0.45)",
-        backdropFilter: "blur(24px) saturate(190%)",
-        WebkitBackdropFilter: "blur(24px) saturate(190%)",
+        backgroundColor: "rgba(246, 245, 240, 0.85)",
+        backdropFilter: "blur(24px) saturate(160%)",
+        WebkitBackdropFilter: "blur(24px) saturate(160%)",
       }}
     >
       {/* Subtle liquid background ambient glow */}
@@ -572,30 +567,30 @@ export function Footer() {
         className="pointer-events-none absolute inset-0 overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] h-[350px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.06)_0%,transparent_70%)] blur-[90px]" />
-        {/* Base background transition matching web's base colour (#141414) */}
-        <div className="absolute bottom-0 inset-x-0 h-[380px] bg-gradient-to-b from-transparent via-[#141414]/85 to-[#141414] pointer-events-none" />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] h-[350px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08)_0%,transparent_70%)] blur-[90px]" />
+        {/* Base background transition matching off-white colour (#F6F5F0) */}
+        <div className="absolute bottom-0 inset-x-0 h-[380px] bg-gradient-to-b from-transparent via-[#F6F5F0]/85 to-[#F6F5F0] pointer-events-none" />
       </div>
 
       {/* Responsive 2-Col Mobile / 5-Col Desktop Grid */}
       <div className="relative z-10 mx-auto grid max-w-[1200px] grid-cols-2 gap-8 sm:gap-10 px-5 py-16 sm:py-20 lg:grid-cols-5">
         {/* Brand */}
         <div className="col-span-2 lg:col-span-1">
-          <span className="text-lg font-semibold tracking-tight text-white">
+          <span className="text-lg font-semibold tracking-tight text-[#141414]">
             Miux Studio
           </span>
-          <p className="mt-4 text-sm leading-relaxed text-[#A3A3A3] max-w-sm">
+          <p className="mt-4 text-sm leading-relaxed text-[#5C5A55] max-w-sm">
             Selective creative studio engineering brand systems and
             high-converting digital platforms.
           </p>
-          <p className="mt-4 text-xs tracking-wider uppercase text-[#707070]">
-            Serving Asia and the UAE
+          <p className="mt-4 text-xs tracking-wider uppercase text-[#78756E]">
+            {SITE.scopeLabel}
           </p>
         </div>
 
         {/* Navigation */}
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#707070]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#78756E]">
             Navigation
           </h2>
           <nav
@@ -603,28 +598,35 @@ export function Footer() {
             aria-label="Footer navigation"
           >
             {FOOTER_NAV.map((item) => (
-              <a
+              <Link
                 key={item.label}
                 href={item.href}
                 aria-label={`Go to ${item.label}`}
                 title={`Visit ${item.label}`}
-                className="text-sm text-[#A3A3A3] transition-colors hover:text-white"
+                className="rounded-sm text-sm text-[#5C5A55] transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
 
         {/* Services */}
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#707070]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#78756E]">
             Services
           </h2>
           <ul className="mt-4 flex flex-col gap-3">
             {FOOTER_SERVICES.map((service) => (
-              <li key={service} className="text-sm text-[#A3A3A3]">
-                {service}
+              <li key={service.label}>
+                <Link
+                  href={service.href}
+                  aria-label={`See ${service.label} services`}
+                  title={`See ${service.label} services`}
+                  className="rounded-sm text-sm text-[#5C5A55] transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                >
+                  {service.label}
+                </Link>
               </li>
             ))}
           </ul>
@@ -632,7 +634,7 @@ export function Footer() {
 
         {/* Others */}
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#707070]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#78756E]">
             Others
           </h2>
           <nav
@@ -640,31 +642,31 @@ export function Footer() {
             aria-label="Other resources"
           >
             {FOOTER_OTHERS.map((item) => (
-              <a
+              <Link
                 key={item.label}
                 href={item.href}
                 aria-label={`Go to ${item.label}`}
                 title={`Visit ${item.label}`}
-                className="text-sm text-[#A3A3A3] transition-colors hover:text-white"
+                className="rounded-sm text-sm text-[#5C5A55] transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
 
         {/* Connect */}
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#707070]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#78756E]">
             Connect
           </h2>
           <a
-            href="mailto:hello@miux.studio"
-            aria-label="Send email to hello@miux.studio"
+            href={`mailto:${SITE.email}`}
+            aria-label={`Send email to ${SITE.email}`}
             title="Email Miux Studio"
-            className="mt-4 block text-sm text-[#A3A3A3] transition-colors hover:text-white"
+            className="mt-4 block text-sm text-[#5C5A55] transition-colors hover:text-orange-600"
           >
-            hello@miux.studio
+            {SITE.email}
           </a>
           <div className="mt-6 flex items-center gap-4">
             {FOOTER_SOCIALS.map(({ label, href, Icon }) => (
@@ -673,7 +675,7 @@ export function Footer() {
                 href={href}
                 aria-label={`Follow Miux Studio on ${label}`}
                 title={`Miux Studio on ${label}`}
-                className="text-[#A3A3A3] transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white"
+                className="text-[#5C5A55] transition-colors hover:text-orange-600 focus-visible:outline-none focus-visible:text-orange-600"
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel={
                   href.startsWith("http") ? "noopener noreferrer" : undefined
@@ -688,39 +690,63 @@ export function Footer() {
 
       {/* Centered "Book a Call" button directly above the giant text */}
       <div className="relative z-10 flex justify-center pb-8 pt-4">
-        <a
+        <Link
           href="/meeting"
           aria-label="Book a 45-minute discovery call with Miux Studio"
           title="Schedule a consultation call with Miux Studio"
-          className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-[#141414] transition-colors hover:bg-white/90 select-none"
+          className="group inline-flex items-center gap-2 rounded-full bg-[#141414] px-7 py-3.5 text-sm font-semibold text-[#F6F5F0] transition-colors hover:bg-[#262626] select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414]"
         >
           <span>Book a Call</span>
           <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </a>
+        </Link>
+      </div>
+
+      {/* Currently building strip */}
+      <div className="relative z-10 mx-auto max-w-[1200px] px-5">
+        <div className="flex flex-col gap-2 border-t border-[#141414]/[0.08] py-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-center gap-2.5 text-xs text-[#5C5A55]">
+            <span className="relative flex size-2" aria-hidden="true">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500/60" />
+              <span className="relative inline-flex size-2 rounded-full bg-orange-600" />
+            </span>
+            <span className="uppercase tracking-[0.18em]">Currently building</span>
+            <span className="hidden h-3 w-px bg-[#141414]/15 sm:block" aria-hidden="true" />
+          </p>
+          <Link
+            href="/work/solstice-ai-engine"
+            className="group inline-flex items-center gap-1.5 text-xs text-[#2E2D2A] transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+          >
+            An evaluation layer for a generative AI engine
+            <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+          </Link>
+        </div>
       </div>
 
       {/* Bottom row */}
-      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col justify-between gap-4 px-5 py-6 text-xs text-[#707070] sm:flex-row sm:items-center">
-        <span>&copy; 2016–2026 MIUX STUDIO. All rights reserved.</span>
+      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col justify-between gap-4 px-5 py-6 text-xs text-[#5C5A55] sm:flex-row sm:items-center">
+        <span>
+          &copy; {SITE.founded}–{new Date().getFullYear()} {SITE.name.toUpperCase()}. All
+          rights reserved.
+        </span>
         <div className="flex flex-wrap gap-5 sm:gap-6">
-          <a
+          <Link
             href="/client-terms"
-            className="transition-colors hover:text-[#A3A3A3]"
+            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
           >
             Client Terms
-          </a>
-          <a
+          </Link>
+          <Link
             href="/privacy-policy"
-            className="transition-colors hover:text-[#A3A3A3]"
+            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
           >
             Privacy
-          </a>
-          <a href="/terms" className="transition-colors hover:text-[#A3A3A3]">
+          </Link>
+          <Link href="/terms" className="transition-colors hover:text-orange-600">
             Terms
-          </a>
-          <a href="/sitemap" className="transition-colors hover:text-[#A3A3A3]">
+          </Link>
+          <Link href="/sitemap" className="transition-colors hover:text-orange-600">
             Sitemap
-          </a>
+          </Link>
         </div>
       </div>
 

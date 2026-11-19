@@ -1,42 +1,44 @@
 "use client";
 
-import React, { ElementType } from "react";
+import React from "react";
 import { motion, useInView, type Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-export interface TimelineAnimationProps<T extends ElementType = "div"> {
+const MOTION_COMPONENTS = {
+  div: motion.div,
+  p: motion.p,
+  span: motion.span,
+  section: motion.section,
+  article: motion.article,
+} as const;
+
+type MotionTag = keyof typeof MOTION_COMPONENTS;
+
+export interface TimelineAnimationProps {
   children?: React.ReactNode;
   animationNum?: number;
   timelineRef?: React.RefObject<HTMLElement | null>;
   className?: string;
-  as?: T;
+  as?: MotionTag;
   customVariants?: Variants;
-  viewport?: {
-    once?: boolean;
-    margin?: string;
-    amount?: number | "some" | "all";
-  };
-  [key: string]: any;
 }
 
-export function TimelineContent<T extends ElementType = "div">({
+export function TimelineContent({
   children,
   animationNum = 0,
   timelineRef,
   className,
-  as,
+  as = "div",
   customVariants,
-  viewport = { once: true, margin: "0px 0px -50px 0px" },
-  ...props
-}: TimelineAnimationProps<T>) {
+}: TimelineAnimationProps) {
   const localRef = React.useRef<HTMLDivElement>(null);
   const targetRef = timelineRef || localRef;
   const isInView = useInView(targetRef, {
-    once: viewport?.once ?? true,
-    margin: (viewport?.margin as any) ?? "0px 0px -50px 0px",
+    once: true,
+    margin: "0px 0px -50px 0px",
   });
 
-  const Component = motion.create(as || "div");
+  const Component = MOTION_COMPONENTS[as];
 
   const defaultVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
@@ -58,7 +60,6 @@ export function TimelineContent<T extends ElementType = "div">({
       custom={animationNum}
       variants={customVariants || defaultVariants}
       className={cn(className)}
-      {...props}
     >
       {children}
     </Component>

@@ -1,8 +1,9 @@
 import { Analytics } from '@vercel/analytics/next'
+import { CustomCursor } from '@/components/CustomCursor'
 import type { Metadata, Viewport } from 'next'
-import { faqs } from '@/lib/data'
+import { faqs, SITE, SOCIAL_LINKS } from '@/lib/data'
 import './globals.css'
-import { Geist, Geist_Mono, Geist_Pixel } from 'next/font/google'
+import { Geist, Geist_Mono, Geist_Pixel, Instrument_Serif } from 'next/font/google'
 
 const geistSans = Geist({
   subsets: ['latin'],
@@ -22,13 +23,23 @@ const geistPixel = Geist_Pixel({
   display: 'swap',
 })
 
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: '400',
+  style: 'normal',
+  variable: '--font-display',
+  display: 'swap',
+})
+
 /* ── Metadata ──────────────────────────────────────────────── */
 
+const SITE_DESCRIPTION =
+  'Miux Studio is a design and engineering studio based in Bangladesh, building brand identities and websites for teams across APAC and the UAE.'
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://miux.studio'),
+  metadataBase: new URL(SITE.url),
   title: 'Miux Studio — Websites for Brands & Digital Businesses',
-  description:
-    'Get a website or custom business website that fulfills your goals & drives sales. 48+ startups & founders choose miux.studio. Book a 45-min call.',
+  description: SITE_DESCRIPTION,
   keywords: [
     'Websites for Brands',
     'Digital Businesses',
@@ -39,7 +50,7 @@ export const metadata: Metadata = {
     'Startup Websites',
     'Miux Studio',
   ],
-  authors: [{ name: 'Miux Studio', url: 'https://miux.studio' }],
+  authors: [{ name: SITE.name, url: SITE.url }],
   creator: 'Miux Studio',
   publisher: 'Miux Studio',
   robots: {
@@ -58,75 +69,78 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Miux Studio — Websites for Brands & Digital Businesses',
-    description:
-      'Get a website or custom business website that fulfills your goals & drives sales. 48+ startups & founders choose miux.studio.',
-    url: 'https://miux.studio',
-    siteName: 'Miux Studio',
+    description: SITE_DESCRIPTION,
+    url: SITE.url,
+    siteName: SITE.name,
     locale: 'en_US',
     type: 'website',
-    images: [
-      {
-        url: 'https://miux.studio/logo.png',
-        width: 800,
-        height: 800,
-        alt: 'Miux Studio',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Miux Studio — Websites for Brands & Digital Businesses',
-    description:
-      'Get a website or custom business website that fulfills your goals & drives sales. 48+ startups & founders choose miux.studio.',
-    creator: '@miuxstudio',
-    images: ['https://miux.studio/logo.png'],
+    description: SITE_DESCRIPTION,
+    creator: '@miuxhq',
   },
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'dark',
-  themeColor: '#141414',
+  colorScheme: 'light',
+  themeColor: '#F6F5F0',
   userScalable: true,
 }
 
 /* ── JSON-LD ───────────────────────────────────────────────── */
 
 function buildJsonLd() {
+  const address = {
+    '@type': 'PostalAddress',
+    addressLocality: SITE.locality,
+    addressCountry: SITE.country,
+  }
+
+  const contactPoint = SITE.phoneTel
+    ? {
+        '@type': 'ContactPoint',
+        telephone: SITE.phoneTel,
+        contactType: 'customer service',
+        areaServed: [...SITE.areaServed],
+        availableLanguage: ['English'],
+      }
+    : undefined
+
   const organization = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Miux Studio',
-    url: 'https://miux.studio',
-    logo: 'https://miux.studio/logo.png',
+    name: SITE.name,
+    url: SITE.url,
+    logo: `${SITE.url}/logo.png`,
+    email: SITE.email,
+    foundingDate: String(SITE.founded),
     description:
-      'Creative agency specialising in brand identity, web design, web development, UI/UX, and advertising campaigns.',
-    sameAs: ['https://facebook.com/Miuxstudio'],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      telephone: '+1-800-555-0199',
-      contactType: 'customer service',
-      areaServed: ['Asia', 'United Arab Emirates', 'Worldwide'],
-      availableLanguage: ['English'],
-    },
+      'Design and engineering studio specialising in brand identity, web design, web development, UI/UX, and advertising campaigns.',
+    sameAs: SOCIAL_LINKS.map((link) => link.href),
+    address,
+    ...(contactPoint ? { contactPoint } : {}),
   }
 
   const website = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Miux Studio',
-    url: 'https://miux.studio',
+    name: SITE.name,
+    url: SITE.url,
   }
 
   const professionalService = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
-    name: 'Miux Studio',
-    url: 'https://miux.studio',
-    telephone: '+1-800-555-0199',
+    name: SITE.name,
+    url: SITE.url,
+    email: SITE.email,
     description:
       'Brand design, web design, web development, UI/UX, and advertising campaigns.',
-    areaServed: ['Asia', 'United Arab Emirates'],
-    priceRange: '$$$$',
+    areaServed: [...SITE.areaServed],
+    address,
+    ...(SITE.phoneTel ? { telephone: SITE.phoneTel } : {}),
   }
 
   const faqPage = {
@@ -153,11 +167,11 @@ export default function RootLayout({
   const { organization, website, professionalService, faqPage } = buildJsonLd()
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${geistPixel.variable}`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${geistPixel.variable} ${instrumentSerif.variable}`}>
       <head>
         <link rel="preload" as="image" href="/logo.png" fetchPriority="high" />
       </head>
-      <body className={`${geistSans.className} font-sans antialiased bg-[#141414] text-white selection:bg-white selection:text-black`}>
+      <body className={`${geistSans.className} font-sans antialiased bg-[#F6F5F0] text-[#141414] selection:bg-[#141414] selection:text-[#F6F5F0]`}>
         {/* Structured data */}
         <script
           type="application/ld+json"
@@ -177,6 +191,7 @@ export default function RootLayout({
         />
 
         {children}
+        <CustomCursor />
 
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

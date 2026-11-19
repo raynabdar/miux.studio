@@ -4,8 +4,8 @@ import { Navbar, Footer } from '@/components/site-shell'
 import { ArrowUpRight } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Sitemap | MIUX STUDIO',
-  description: 'Overview and site architecture of MIUX STUDIO pages, case studies, client services, and legal documentation.',
+  title: 'Sitemap | Miux Studio',
+  description: 'Index of Miux Studio pages, selected work, services, and legal documentation.',
   alternates: {
     canonical: '/sitemap',
   },
@@ -16,14 +16,16 @@ const SITEMAP_GROUPS = [
     title: 'Primary Pages',
     links: [
       { label: 'Homepage', href: '/', description: 'Websites for brands and digital businesses' },
-      { label: 'About Us', href: '/#about', description: '#1 premier creative agency in Bangladesh' },
-      { label: 'Work & Portfolio', href: '/#work', description: 'Selected case studies and digital products' },
-      { label: 'Pricing & Retainers', href: '/#pricing', description: 'Starter, Business, and Enterprise plans' },
+      { label: 'About Us', href: '/#about', description: 'A design and engineering studio based in Bangladesh' },
+      { label: 'Work & Portfolio', href: '/work', description: 'Selected case studies and digital products' },
+      { label: 'Startups & Businesses', href: '/startups', description: 'Roster of 48+ startups and businesses we have worked with' },
+      { label: 'Pricing & Retainers', href: '/#pricing', description: 'Starter, Growth, and Enterprise plans' },
       { label: 'Client Endorsements', href: '/#testimonials', description: 'Leader reviews and conversion results' },
       { label: 'Frequently Asked Questions', href: '/#faq', description: 'Answers regarding sprints, tech stack, and scope' },
       { label: 'Book a 45-min Call', href: '/meeting', description: 'Direct Cal.com strategy consultation' },
+      { label: 'Free Website Teardown', href: '/teardown', description: 'Five-point written review of your live site within two working days' },
       { label: 'Contact & Enquiries', href: '/contact', description: 'General enquiries and project briefs' },
-      { label: 'Client Onboarding', href: '/onboarding', description: 'New project kickoff and asset handoff' },
+      { label: 'Journal', href: '/blogs', description: 'Notes on design systems, conversion, and brand strategy' },
     ],
   },
   {
@@ -49,25 +51,28 @@ const SITEMAP_GROUPS = [
 
 export default function SitemapPage() {
   return (
-    <div className="min-h-screen bg-[#141414] text-white">
+    <div className="min-h-screen bg-[#F6F5F0] text-[#141414]">
       <Navbar />
 
-      <main className="px-5 pb-28 pt-36 sm:pt-44">
-        <div className="mx-auto max-w-4xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-[#707070]">
+      <main className="relative px-5 pb-28 pt-36 sm:pt-44">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[520px] overflow-hidden">
+          <div className="absolute left-1/2 top-0 h-[400px] w-[820px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.1)_0%,transparent_70%)] blur-[100px]" />
+        </div>
+        <div className="relative mx-auto max-w-4xl">
+          <p className="text-xs uppercase tracking-[0.3em] text-[#78756E]">
             Architecture &amp; Index
           </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-white sm:text-6xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-[#141414] sm:text-6xl">
             Sitemap
           </h1>
-          <p className="mt-4 text-base text-[#A3A3A3] max-w-xl leading-relaxed">
-            Quick directory to explore all pages, case studies, service categories, and legal governance across MIUX STUDIO.
+          <p className="mt-4 text-base text-[#5C5A55] max-w-xl leading-relaxed">
+            A quick directory of every page, service area, and legal document on the site.
           </p>
 
           <div className="mt-14 space-y-12">
             {SITEMAP_GROUPS.map((group) => (
-              <section key={group.title} className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8 backdrop-blur-xl">
-                <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#707070] mb-6">
+              <section key={group.title} className="rounded-2xl border border-[#141414]/[0.10] bg-white/80 p-6 sm:p-8 shadow-sm backdrop-blur-xl">
+                <h2 className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-orange-600">
                   {group.title}
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -75,15 +80,15 @@ export default function SitemapPage() {
                     <Link
                       key={link.label}
                       href={link.href}
-                      className="group flex flex-col justify-between rounded-xl border border-white/[0.06] bg-[#171717] p-4 transition-all duration-200 hover:border-orange-500/40 hover:-translate-y-0.5"
+                      className="group flex flex-col justify-between rounded-xl border border-[#141414]/[0.08] bg-[#F6F5F0]/70 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-orange-500/50 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-medium text-white group-hover:text-orange-400 transition-colors">
+                        <span className="font-medium text-[#141414] group-hover:text-orange-600 transition-colors">
                           {link.label}
                         </span>
-                        <ArrowUpRight className="size-4 text-[#707070] group-hover:text-orange-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        <ArrowUpRight className="size-4 text-[#78756E] group-hover:text-orange-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                       </div>
-                      <p className="mt-2 text-xs text-[#A3A3A3] leading-relaxed">
+                      <p className="mt-2 text-xs text-[#5C5A55] leading-relaxed">
                         {link.description}
                       </p>
                     </Link>

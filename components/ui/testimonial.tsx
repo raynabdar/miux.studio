@@ -1,99 +1,21 @@
 "use client";
 
-import { useState, useRef, type MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { ArrowUpRight, Globe } from "lucide-react";
 import { BlurRevealTitle } from "@/components/ui/blur-reveal-title";
+import Image from "next/image";
+import { testimonials as TESTIMONIALS_DATA, type TestimonialItem } from "@/lib/testimonials";
 
-interface TestimonialItem {
-  id: string;
-  quote: string;
-  name: string;
-  handle: string;
-  role: string;
-  company: string;
-  website: string;
-  profileUrl: string;
-  avatar: string;
-  variant?: "dark" | "orange";
+function initials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
 }
-
-const TESTIMONIALS_DATA: TestimonialItem[] = [
-  {
-    id: "1",
-    quote: "Miux Studio has been a game-changer for our brand. Their design systems and engineering velocity are unmatched.",
-    name: "Guillermo Rauch",
-    handle: "@rauchg",
-    role: "CEO",
-    company: "Enigma",
-    website: "https://enigma.com",
-    profileUrl: "https://x.com/rauchg",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces",
-    variant: "dark",
-  },
-  {
-    id: "2",
-    quote: "We saw a 3x lift in conversion within four weeks of launching the new digital platform.",
-    name: "Rika Shinoda",
-    handle: "@rikashinoda",
-    role: "CEO",
-    company: "Kintsugi",
-    website: "https://kintsugi.com",
-    profileUrl: "https://x.com/rikashinoda",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=faces",
-    variant: "orange",
-  },
-  {
-    id: "3",
-    quote: "Their team is highly strategic, and their clean development architecture truly streamlined our customer journey.",
-    name: "Reacher",
-    handle: "@reacher",
-    role: "CEO",
-    company: "OdeaoLabs",
-    website: "https://odeaolabs.com",
-    profileUrl: "https://x.com/reacher",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces",
-    variant: "dark",
-  },
-  {
-    id: "4",
-    quote: "Working with Miux Studio was effortless. Senior-level partners, zero fluff, and delivery that exceeded our expectations.",
-    name: "Johnathan Vance",
-    handle: "@jvance",
-    role: "Founder",
-    company: "Labsbo",
-    website: "https://labsbo.com",
-    profileUrl: "https://x.com/jvance",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces",
-    variant: "dark",
-  },
-  {
-    id: "5",
-    quote: "Their creative direction elevated our positioning across the UAE. We could not have asked for a better partner.",
-    name: "Steven Sunny",
-    handle: "@stevensunny",
-    role: "CEO",
-    company: "Boxefi",
-    website: "https://boxefi.com",
-    profileUrl: "https://x.com/stevensunny",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=faces",
-    variant: "dark",
-  },
-  {
-    id: "6",
-    quote: "Miux Studio has been a true partner. Their deep craftsmanship, high standards, and relentless commitment to measurable results set them completely apart.",
-    name: "Paul Brauch",
-    handle: "@paulbrauch",
-    role: "CTO",
-    company: "Spectrum",
-    website: "https://spectrum.chat",
-    profileUrl: "https://x.com/paulbrauch",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces",
-    variant: "orange",
-  },
-];
 
 function Testimonial3DCard({ item }: { item: TestimonialItem }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -104,9 +26,16 @@ function Testimonial3DCard({ item }: { item: TestimonialItem }) {
   const [glarePos, setGlarePos] = useState({ x: 50, y: 50 });
   const [isHovered, setIsHovered] = useState(false);
   const [isTiltActive, setIsTiltActive] = useState(false);
+  const canTiltRef = useRef(true);
+
+  useEffect(() => {
+    canTiltRef.current =
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
 
   const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!canTiltRef.current || !cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -124,6 +53,7 @@ function Testimonial3DCard({ item }: { item: TestimonialItem }) {
   };
 
   const handleMouseEnter = () => {
+    if (!canTiltRef.current) return;
     setIsHovered(true);
     // Small delay (140ms) before the 3D tilt effect starts
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -156,10 +86,10 @@ function Testimonial3DCard({ item }: { item: TestimonialItem }) {
             : "transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.7s cubic-bezier(0.22, 1, 0.36, 1)",
           transformStyle: "preserve-3d",
         }}
-        className="group relative overflow-hidden rounded-2xl p-7 bg-[#181512] text-white border border-orange-500/20 hover:border-orange-400/70 flex flex-col justify-between min-h-[270px]"
+        className="group relative overflow-hidden rounded-2xl p-7 bg-white/85 text-[#141414] border border-[#141414]/[0.10] shadow-[0_12px_36px_-18px_rgba(20,20,20,0.09)] hover:border-orange-500/70 flex flex-col justify-between min-h-[270px]"
       >
         {/* Subtle background grid mesh on rest state */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f973160a_1px,transparent_1px),linear-gradient(to_bottom,#f973160a_1px,transparent_1px)] bg-[size:48px_52px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] pointer-events-none transition-opacity duration-700 group-hover:opacity-0" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#14141409_1px,transparent_1px),linear-gradient(to_bottom,#14141409_1px,transparent_1px)] bg-[size:48px_52px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] pointer-events-none transition-opacity duration-700 group-hover:opacity-0" />
 
         {/* Slow, smooth Orange Hover Fill Overlay */}
         <div
@@ -194,15 +124,15 @@ function Testimonial3DCard({ item }: { item: TestimonialItem }) {
           className="relative z-10 flex flex-col justify-between h-full space-y-6"
         >
           {/* Quote */}
-          <p className="leading-relaxed font-normal text-base sm:text-lg text-neutral-200 transition-colors duration-700 group-hover:text-white">
+          <p className="leading-relaxed font-normal text-base sm:text-lg text-[#2E2D2A] transition-colors duration-700 group-hover:text-white">
             &ldquo;{item.quote}&rdquo;
           </p>
 
           {/* Author details */}
-          <div className="flex justify-between items-center pt-5 border-t border-white/[0.08] transition-colors duration-700 group-hover:border-white/25">
+          <div className="flex justify-between items-center pt-5 border-t border-[#141414]/[0.08] transition-colors duration-700 group-hover:border-white/25">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-base sm:text-lg text-white">
+                <h3 className="font-semibold text-base sm:text-lg text-[#141414] transition-colors duration-700 group-hover:text-white">
                   {item.name}
                 </h3>
                 <a
@@ -211,7 +141,7 @@ function Testimonial3DCard({ item }: { item: TestimonialItem }) {
                   rel="noopener noreferrer"
                   aria-label={`View ${item.name}'s profile (${item.handle})`}
                   title={`Visit ${item.handle}`}
-                  className="text-xs font-medium text-orange-400 transition-colors duration-700 group-hover:text-white/95 hover:underline inline-flex items-center gap-0.5"
+                  className="text-xs font-medium text-orange-600 transition-colors duration-700 group-hover:text-white/95 hover:underline inline-flex items-center gap-0.5"
                 >
                   <span>{item.handle}</span>
                   <ArrowUpRight className="size-3 opacity-70" />
@@ -219,7 +149,7 @@ function Testimonial3DCard({ item }: { item: TestimonialItem }) {
               </div>
 
               <div className="flex items-center gap-1.5">
-                <span className="text-xs text-[#8A8A8A] transition-colors duration-700 group-hover:text-white/80">
+                <span className="text-xs text-[#78756E] transition-colors duration-700 group-hover:text-white/80">
                   {item.role} of
                 </span>
                 <a
@@ -228,7 +158,7 @@ function Testimonial3DCard({ item }: { item: TestimonialItem }) {
                   rel="noopener noreferrer"
                   aria-label={`Visit ${item.company} website`}
                   title={`Open ${item.company} website`}
-                  className="text-xs font-medium text-[#D4D4D4] transition-colors duration-700 group-hover:text-white underline decoration-dotted underline-offset-2 inline-flex items-center gap-1"
+                  className="text-xs font-medium text-[#2E2D2A] transition-colors duration-700 group-hover:text-white underline decoration-dotted underline-offset-2 inline-flex items-center gap-1"
                 >
                   <span>{item.company}</span>
                   <Globe className="size-2.5 opacity-60" />
@@ -236,22 +166,23 @@ function Testimonial3DCard({ item }: { item: TestimonialItem }) {
               </div>
             </div>
 
-            <a
-              href={item.profileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`View ${item.name} avatar`}
-              className="shrink-0"
-            >
+            {item.avatar ? (
               <Image
-                src={item.avatar}
-                alt={item.name}
-                width={120}
-                height={120}
+                src={item.avatar.src}
+                alt={item.avatar.alt}
+                width={36}
+                height={36}
                 loading="lazy"
-                className="w-9 h-9 rounded-full object-cover border border-orange-500/30 transition-colors duration-700 group-hover:border-white/50"
+                className="size-9 shrink-0 rounded-full border border-orange-500/30 object-cover transition-colors duration-700 group-hover:border-white/50"
               />
-            </a>
+            ) : (
+              <span
+                aria-hidden="true"
+                className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#141414]/[0.14] bg-[#ECEAE3] text-xs font-semibold text-[#141414] transition-colors duration-700 group-hover:border-white/50 group-hover:bg-white/15 group-hover:text-white"
+              >
+                {initials(item.name)}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -268,13 +199,13 @@ function ClientFeedback({ className }: { className?: string }) {
     <section
       id="testimonials"
       aria-label="Client testimonials"
-      className={cn("relative w-full bg-[#141414] text-white py-24 sm:py-32 px-5 overflow-hidden", className)}
+      className={cn("relative w-full bg-[#F6F5F0] text-[#141414] py-24 sm:py-32 px-5 overflow-hidden", className)}
     >
       {/* Warm Vibrant Orange Ambient Lighting */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.18)_0%,rgba(234,88,12,0.06)_45%,transparent_70%)] blur-[100px]" />
-        <div className="absolute bottom-10 -right-20 w-[500px] h-[400px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.12)_0%,transparent_65%)] blur-[90px]" />
-        <div className="absolute top-10 -left-20 w-[500px] h-[400px] rounded-full bg-[radial-gradient(circle_at_center,rgba(234,88,12,0.10)_0%,transparent_65%)] blur-[90px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.12)_0%,rgba(234,88,12,0.04)_45%,transparent_70%)] blur-[100px]" />
+        <div className="absolute bottom-10 -right-20 w-[500px] h-[400px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.09)_0%,transparent_65%)] blur-[90px]" />
+        <div className="absolute top-10 -left-20 w-[500px] h-[400px] rounded-full bg-[radial-gradient(circle_at_center,rgba(234,88,12,0.08)_0%,transparent_65%)] blur-[90px]" />
       </div>
 
       <motion.div
@@ -285,12 +216,12 @@ function ClientFeedback({ className }: { className?: string }) {
         className="relative z-10 h-full max-w-7xl mx-auto rounded-2xl"
       >
         <article className="max-w-screen-md mx-auto text-center space-y-3 mb-16">
-          <BlurRevealTitle className="xl:text-5xl md:text-4xl text-3xl font-semibold tracking-[-0.05em] leading-tight text-white">
-            <span className="inline-block bg-gradient-to-r from-white via-orange-100 to-orange-400 bg-clip-text text-transparent font-semibold">
-              Trusted by Startups and the world&apos;s largest companies.
+          <BlurRevealTitle as="h2" className="xl:text-5xl md:text-4xl text-3xl font-semibold tracking-[-0.05em] leading-tight text-[#141414]">
+            <span className="inline-block bg-gradient-to-r from-[#141414] via-[#4A2511] to-orange-600 bg-clip-text text-transparent font-semibold">
+              Trusted by founders and product teams across APAC and the UAE.
             </span>
           </BlurRevealTitle>
-          <p className="mx-auto text-base text-[#B3B3B3] max-w-xl leading-relaxed">
+          <p className="mx-auto text-base text-[#5C5A55] max-w-xl leading-relaxed">
             How visionary leaders across Asia and the UAE accelerate their growth with Miux Studio.
           </p>
         </article>

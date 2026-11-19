@@ -75,10 +75,10 @@ void main() {
   uv = clamp(uv, 0.0, 1.0);
   vec4 col = texture2D(uTexture, uv);
 
-  // Subtle organic liquid light sheen under cursor on hover while maintaining pure white text
+  // Subtle warm orange-tinted liquid sheen under cursor on hover over deep ink text
   if (influence > 0.02 && col.a > 0.01) {
     float rim = smoothstep(0.02, 0.28, influence) * (1.0 - smoothstep(0.28, 0.85, influence));
-    col.rgb = mix(col.rgb, vec3(1.0, 0.96, 0.90), rim * 0.35);
+    col.rgb = mix(col.rgb, vec3(0.92, 0.35, 0.05), rim * 0.45);
   }
 
   gl_FragColor = col;
@@ -96,7 +96,6 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
     isHovered: false,
     hover: 0,
     time: 0,
-    rafId: 0,
     gl: null as WebGLRenderingContext | null,
     texture: null as WebGLTexture | null,
     program: null as WebGLProgram | null,
@@ -131,8 +130,8 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
       ctx.font = `900 ${fontSize}px ${fontFamilies}`;
     }
 
-    // Pure white wordmark (#ffffff)
-    ctx.fillStyle = "#ffffff";
+    // Deep ink wordmark (#141414) on off-white canvas
+    ctx.fillStyle = "#141414";
     ctx.fillText(text, textCanvas.width / 2, textCanvas.height / 2 + textCanvas.height * 0.04);
 
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -249,7 +248,9 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
     }
 
     let lastTimestamp = performance.now();
-    const tick = (now: number) => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const draw = (now: number) => {
       const dt = Math.min((now - lastTimestamp) / 1000, 0.1);
       lastTimestamp = now;
 
@@ -272,11 +273,41 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
 
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-      state.rafId = requestAnimationFrame(tick);
     };
 
-    state.rafId = requestAnimationFrame(tick);
+    let frameHandle = 0;
+    let visible = true;
+
+    const tick = (now: number) => {
+      draw(now);
+      frameHandle = requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (frameHandle || !visible || reduceMotion) return;
+      frameHandle = requestAnimationFrame(tick);
+    };
+
+    const stop = () => {
+      if (frameHandle) cancelAnimationFrame(frameHandle);
+      frameHandle = 0;
+    };
+
+    if (reduceMotion) {
+      draw(performance.now());
+    } else {
+      start();
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) start();
+        else stop();
+      },
+      { rootMargin: "150px" }
+    );
+    observer.observe(container);
 
     const onMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
@@ -302,7 +333,8 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
     container.addEventListener("mouseleave", onMouseLeave);
 
     return () => {
-      cancelAnimationFrame(state.rafId);
+      stop();
+      observer.disconnect();
       resizeObserver.disconnect();
       container.removeEventListener("mousemove", onMouseMove);
       container.removeEventListener("mouseenter", onMouseEnter);
@@ -317,33 +349,33 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[24vw] min-h-[180px] max-h-[380px] select-none overflow-hidden cursor-pointer bg-[#141414]"
-      aria-label="miux brand interactive footer"
+      className="relative w-full h-[24vw] min-h-[180px] max-h-[380px] select-none overflow-hidden cursor-pointer bg-[#F6F5F0]"
     >
-      {/* Background matching base colour (#141414) */}
+      <span className="sr-only">{text}</span>
+      {/* Background matching off-white base colour (#F6F5F0) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#141414]"
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#F6F5F0]"
       />
 
       {webglSupported ? (
         <canvas
           ref={canvasRef}
+          aria-hidden="true"
           className="absolute inset-0 w-full h-full pointer-events-none"
         />
       ) : (
         <p
-          className="whitespace-nowrap text-center text-[28vw] font-bold leading-[0.68] tracking-[-0.08em] text-white"
-          aria-hidden="true"
+          className="whitespace-nowrap text-center text-[28vw] font-bold leading-[0.68] tracking-[-0.08em] text-[#141414]"
         >
           {text}
         </p>
       )}
 
-      {/* Dark fog overlay over bottom edge of wordmark with 85% fog strength */}
+      {/* Off-white fog overlay over bottom edge of wordmark with 85% fog strength */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[32%] bg-gradient-to-t from-[#141414] via-[#141414]/85 to-transparent z-10"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[32%] bg-gradient-to-t from-[#F6F5F0] via-[#F6F5F0]/85 to-transparent z-10"
       />
     </div>
   );

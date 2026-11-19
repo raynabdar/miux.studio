@@ -1,31 +1,59 @@
-# Miux Studio — Full Documentation & Index for AI Agents
+# Miux Studio — Studio Overview
 
-## Overview
-Miux Studio (https://miux.studio) is a boutique digital design and web engineering studio founded to create standout digital platforms for ambitious startups and businesses. The studio combines dark-aesthetic visual craftsmanship with performance engineering (Next.js, React, Tailwind CSS, TypeScript, and Framer Motion).
+## About
+Miux Studio is a design and engineering studio based in Dhaka, Bangladesh. We work with startups and established teams across APAC and the UAE on brand identity, websites, and digital products. Our practice pairs visual craft with production engineering: the same team designs, builds, and ships.
 
-## Studio Philosophy
-"Build great stuff." — The Miux Studio Standard.
-Every client engagement focuses on conversion rate optimization, distinct brand differentiation, fluid motion, accessibility, and high performance.
+Founded: 2016
+Website: https://www.miux.studio
 
-## Portfolio & Case Studies
-1. **Nova Finance**: Institutional DeFi dashboard with sub-second websocket charts and sleek dark interface.
-2. **Kintsugi AI**: Brand identity & design system for an autonomous code review engine.
-3. **Aura Health**: Minimalist wellness platform with interactive 3D anatomy models and subscription engine.
-4. **Spectra OS**: Developer experience landing page with terminal simulators and interactive code snippets.
-5. **Veloce Labs**: High-frequency trading marketing platform with animated particle visualization.
-6. **Zenith Protocol**: Cross-chain governance portal with interactive voting charts and wallet connectivity.
+## Services
+1. **Brand Design & Identity** — positioning, visual identity, design systems, brand guidelines.
+2. **Web Design & UI/UX** — information architecture, interface design, prototyping, usability testing.
+3. **Web Development** — Next.js, React, TypeScript, Tailwind CSS, headless CMS integration.
+4. **AI Automation & Systems** — internal tooling, API integration, workflow automation.
+5. **Ads & Campaign Strategy** — creative direction, ad production, media planning.
 
-## Technology Stack
-- Next.js 16 (Turbopack, App Router, React Server Components)
-- React 19
-- Tailwind CSS
-- TypeScript
-- Framer Motion
-- Lenis Smooth Scroll
-- Radix UI Primitives & shadcn UI
+## Process
+1. Discovery call (45 minutes) to understand goals, audience, and constraints.
+2. Written scope and fixed proposal with milestones.
+3. Weekly sprints across strategy, design, and build.
+4. Launch, handover, and an optional support retainer.
 
-## Frequently Asked Questions
-- **Turnaround Time**: Standard websites take 2-4 weeks; larger custom platforms take 4-8 weeks.
-- **Tech Stack Flexibility**: Next.js and Tailwind are primary, but we integrate with headless CMSs (Sanity, Contentful) and backend APIs.
-- **Ongoing Support**: Retainers and maintenance sprints are available post-launch.
-- **Booking a Call**: Potential clients can schedule a 45-minute discovery consultation directly at https://www.miux.studio/45-min.
+Typical timeline: brand identity 4–6 weeks; website design and build 8–10 weeks; combined engagements 4–10 weeks depending on scope.
+
+## Engagement & Pricing
+- Starter: USD 2,400 per month
+- Growth: USD 4,800 per month
+- Enterprise: USD 8,900 per month
+- Annual partnership: 20% off the monthly rate, billed annually
+- Custom scoping available for multi-surface programs
+
+Prices are in USD, excluding applicable taxes.
+
+## Selected Work
+- Verdant Skincare — brand identity and packaging system
+- Nimbus Financial — website redesign for institutional and retail audiences
+- Atlas Logistics — freight operations web application with real-time tracking
+- Medica Health — telemedicine UX overhaul for patients and clinicians in the UAE
+- Ember Coffee Co. — multi-channel campaign and media buying
+- Horizon Education — brand identity and digital presence for an ed-tech startup
+- Solstice AI Engine — AI research platform with real-time telemetry
+- Aura Spatial Living — immersive e-commerce and 3D interior showcase
+- Krypton Liquidity Protocol — institutional trading interface
+- Vanguard Electric Hypercar — global launch campaign and reservation funnel
+
+## Technology
+Next.js, React, TypeScript, Tailwind CSS, Framer Motion, Radix UI, headless CMS platforms, and standard cloud deployment.
+
+## Contact
+- Email: hello@miux.studio
+- Book a call: https://www.miux.studio/meeting
+- X: https://x.com/miuxhq
+- Instagram: https://instagram.com/miuxhq
+- LinkedIn: https://linkedin.com/company/miuxhq
+- Facebook: https://facebook.com/miuxhq
+
+## Legal
+- Terms of service: https://www.miux.studio/terms
+- Client terms: https://www.miux.studio/client-terms
+- Privacy policy: https://www.miux.studio/privacy-policy

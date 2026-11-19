@@ -14,20 +14,20 @@ export default function GlobalError({
   }, [error])
 
   return (
-    <html lang="en" className="dark">
-      <body className="bg-[#141414] text-white m-0 min-h-screen flex items-center justify-center font-sans antialiased">
+    <html lang="en">
+      <body className="bg-[#F6F5F0] text-[#141414] m-0 min-h-screen flex items-center justify-center font-sans antialiased">
         <main className="max-w-md p-6 text-center space-y-4">
-          <span className="text-xs uppercase tracking-[0.25em] text-orange-400 font-mono">
+          <span className="text-xs uppercase tracking-[0.25em] text-orange-600 font-mono">
             System Alert
           </span>
-          <h1 className="text-3xl font-semibold tracking-tight text-white">Application encountered an issue</h1>
-          <p className="text-sm text-[#A3A3A3] leading-relaxed">
+          <h1 className="text-3xl font-semibold tracking-tight text-[#141414]">Application encountered an issue</h1>
+          <p className="text-sm text-[#5C5A55] leading-relaxed">
             A critical error interrupted the application. Please reload to restore full functionality.
           </p>
           <button
             type="button"
             onClick={() => reset()}
-            className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-[#141414] transition-all hover:bg-white/90 active:scale-95"
+            className="rounded-full bg-[#141414] px-7 py-3 text-sm font-semibold text-[#F6F5F0] transition-all hover:bg-[#262626] active:scale-95"
           >
             Reload Application
           </button>
