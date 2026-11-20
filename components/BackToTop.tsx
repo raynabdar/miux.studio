@@ -6,8 +6,8 @@ import { scrollToTop } from "@/lib/smooth-scroll";
 
 /**
  * Floating shining-orange Back-to-Top button for mobile, tablet, and desktop.
- * Appears with a brief glitch entrance after scrolling past the hero and uses
- * zero idle animation frames (pure CSS keyframes + passive scroll threshold).
+ * Appears with a soft rise after scrolling past the hero and uses zero idle
+ * animation frames (pure CSS keyframes + passive scroll threshold).
  */
 export default function BackToTop() {
   const [visible, setVisible] = useState(false);
@@ -36,7 +36,7 @@ export default function BackToTop() {
       onClick={scrollToTop}
       aria-label="Back to top"
       title="Back to top"
-      className="group fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 z-50 flex size-11 items-center justify-center overflow-hidden rounded-full border border-orange-200/50 bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_10px_28px_-14px_rgba(20,20,20,0.45),0_6px_18px_-8px_rgba(234,88,12,0.45)] transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:scale-105 hover:shadow-[0_1px_0_rgba(255,255,255,0.4)_inset,0_14px_32px_-14px_rgba(20,20,20,0.4),0_10px_24px_-8px_rgba(234,88,12,0.5)] active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-orange-600 animate-btt-glitch-in sm:bottom-[max(1.75rem,env(safe-area-inset-bottom))] sm:right-7 sm:size-12"
+      className="group fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 z-50 flex size-11 items-center justify-center overflow-hidden rounded-full border border-orange-200/50 bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white shadow-mesh-orange transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:scale-105 hover:shadow-mesh-orange-lg active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-orange-600 animate-btt-in sm:bottom-[max(1.75rem,env(safe-area-inset-bottom))] sm:right-7 sm:size-12"
     >
       {/* Top specular highlight */}
       <span
@@ -48,12 +48,6 @@ export default function BackToTop() {
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-white/55 to-transparent animate-btt-shine"
-      />
-
-      {/* Glitch ghost arrow echo */}
-      <ArrowUp
-        aria-hidden="true"
-        className="pointer-events-none absolute size-4.5 text-amber-100 mix-blend-screen animate-btt-ghost-glitch sm:size-5"
       />
 
       {/* Primary crisp arrow */}

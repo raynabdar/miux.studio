@@ -15,9 +15,9 @@ import {
   type MetricSeries,
   type SeriesPoint,
 } from './metric-chart'
-import { PeriodSelect, ViewToggle, type PeriodOption } from './metric-controls'
+import { ViewToggle } from './metric-controls'
 
-export type { SeriesPoint, MetricSeries, MetricAccent, ChartView, PeriodOption }
+export type { SeriesPoint, MetricSeries, MetricAccent, ChartView }
 
 export type CardSize = 'sm' | 'md' | 'lg'
 
@@ -30,9 +30,6 @@ export interface ProgressMetricCardProps {
   percent?: string
   trend?: 'up' | 'down'
   unit?: string
-  period?: string
-  periodOptions?: PeriodOption[]
-  onPeriodChange?: (option: PeriodOption) => void
   defaultView?: ChartView
   accent?: MetricAccent
   data?: SeriesPoint[]
@@ -47,12 +44,6 @@ export interface ProgressMetricCardProps {
   className?: string
 }
 
-const DEFAULT_PERIODS: PeriodOption[] = [
-  { label: 'Past 7 days', points: 4 },
-  { label: 'Past 14 days', points: 7 },
-  { label: 'Past 30 days' },
-]
-
 const CHART_REGION_W = 58
 const NEUTRAL_PCT = 0.5
 
@@ -65,7 +56,7 @@ const SIZES: Record<
     pad: 'px-5 pt-5 sm:px-6',
     footer: 'px-5 py-3 sm:px-6',
     headline: 'text-[48px] sm:text-[56px]',
-    chartBottom: '45px',
+    chartBottom: '112px',
   },
   md: {
     minH: 'min-h-[380px]',
@@ -82,9 +73,6 @@ const SIZES: Record<
     chartBottom: '61px',
   },
 }
-
-const sliceWindow = (points: SeriesPoint[], n?: number) =>
-  n && n < points.length ? points.slice(-n) : points
 
 function CountUp({
   value,
@@ -130,9 +118,6 @@ export default function ProgressMetricCard({
   percent,
   trend,
   unit,
-  period = 'Past 30 days',
-  periodOptions,
-  onPeriodChange,
   defaultView = 'curve',
   accent,
   data,
@@ -152,8 +137,6 @@ export default function ProgressMetricCard({
   const gridId = `metric-grid-${rawId}`
   const sz = SIZES[size]
 
-  const periods = periodOptions ?? DEFAULT_PERIODS
-  const [selectedLabel, setSelectedLabel] = useState(period)
   const [view, setView] = useState<ChartView>(defaultView)
 
   const baseSeries: MetricSeries[] = useMemo(
@@ -161,13 +144,7 @@ export default function ProgressMetricCard({
     [series, data, title, accent],
   )
 
-  const selectedOption =
-    periods.find((option) => option.label === selectedLabel) ?? periods[periods.length - 1]
-
-  const visibleSeries = useMemo(
-    () => baseSeries.map((item) => ({ ...item, data: sliceWindow(item.data, selectedOption?.points) })),
-    [baseSeries, selectedOption],
-  )
+  const visibleSeries = baseSeries
 
   const primary = visibleSeries[0]
   const isMulti = visibleSeries.length > 1
@@ -220,11 +197,6 @@ export default function ProgressMetricCard({
   const lastIndex = (primary?.data.length ?? 1) - 1
   const fallback = Math.min(defaultIndex ?? lastIndex, Math.max(lastIndex, 0))
 
-  const handlePeriodChange = (option: PeriodOption) => {
-    setSelectedLabel(option.label)
-    onPeriodChange?.(option)
-  }
-
   const shell = cn(
     'group relative flex w-full flex-col overflow-hidden rounded-[28px] border border-[#141414]/[0.10] bg-white/80 backdrop-blur-xl shadow-[0_20px_50px_-30px_rgba(20,20,20,0.12)] transition-colors duration-300 hover:border-[#141414]/[0.18]',
     sz.minH,
@@ -270,28 +242,39 @@ export default function ProgressMetricCard({
 
       {/* Chart region */}
       <div
-        className="absolute right-0 top-0 z-0"
-        style={{ width: `${CHART_REGION_W}%`, bottom: sz.chartBottom }}
+        className="absolute right-0 z-0"
+        style={{ width: `${CHART_REGION_W}%`, top: '10px', bottom: sz.chartBottom }}
       >
+        {/* Tint + dot grid fade in from the left and out toward the bottom */}
         <div
           className="absolute inset-0"
-          style={{ background: `linear-gradient(to left, ${color.stroke}14, transparent 78%)` }}
-        />
-        <div
-          className="absolute inset-0 text-[#141414]/[0.12]"
           style={{
-            WebkitMaskImage: 'linear-gradient(to right, transparent, black 55%)',
-            maskImage: 'linear-gradient(to right, transparent, black 55%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent, black 42%)',
+            maskImage: 'linear-gradient(to right, transparent, black 42%)',
           }}
         >
-          <svg className="h-full w-full" aria-hidden="true">
-            <defs>
-              <pattern id={gridId} width="14" height="14" patternUnits="userSpaceOnUse">
-                <circle cx="1" cy="1" r="1" fill="currentColor" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill={`url(#${gridId})`} />
-          </svg>
+          <div
+            className="absolute inset-0"
+            style={{
+              WebkitMaskImage: 'linear-gradient(to bottom, black 10%, transparent 94%)',
+              maskImage: 'linear-gradient(to bottom, black 10%, transparent 94%)',
+            }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{ background: `linear-gradient(to left, ${color.stroke}14, transparent 78%)` }}
+            />
+            <div className="absolute inset-0 text-[#141414]/[0.12]">
+              <svg className="h-full w-full" aria-hidden="true">
+                <defs>
+                  <pattern id={gridId} width="14" height="14" patternUnits="userSpaceOnUse">
+                    <circle cx="1" cy="1" r="1" fill="currentColor" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill={`url(#${gridId})`} />
+              </svg>
+            </div>
+          </div>
         </div>
 
         <MetricChart
@@ -332,6 +315,13 @@ export default function ProgressMetricCard({
         )}
 
         <div className="mt-auto">
+          <span
+            className="mb-3 inline-flex items-center gap-1 text-sm font-medium"
+            style={{ color: color.text }}
+          >
+            <TrendIcon size={15} strokeWidth={2.5} aria-hidden="true" />
+            {displayPercent}
+          </span>
           <div className="flex items-end gap-2.5">
             <div
               className={cn(
@@ -345,13 +335,6 @@ export default function ProgressMetricCard({
                 (total ?? fmtCompact(stats.sum))
               )}
             </div>
-            <span
-              className="mb-1.5 inline-flex items-center gap-1 text-sm font-medium"
-              style={{ color: color.text }}
-            >
-              <TrendIcon size={15} strokeWidth={2.5} aria-hidden="true" />
-              {displayPercent}
-            </span>
           </div>
           {description && (
             <p className="mt-2 max-w-[18rem] text-sm leading-snug text-[#5C5A55]">
@@ -385,7 +368,6 @@ export default function ProgressMetricCard({
             </span>
           </div>
         ) : null}
-        <PeriodSelect value={selectedLabel} options={periods} onChange={handlePeriodChange} />
       </div>
     </div>
   )

@@ -1049,12 +1049,6 @@ const DELIVERY_SERIES = [
   { value: 19, date: "Nov 2026" },
 ];
 
-const DELIVERY_PERIODS = [
-  { label: "12 mo" },
-  { label: "6 mo", points: 6 },
-  { label: "3 mo", points: 3 },
-];
-
 function Stats() {
   return (
     <section
@@ -1088,8 +1082,6 @@ function Stats() {
               trend="up"
               accent="orange"
               unit="projects"
-              period="12 mo"
-              periodOptions={DELIVERY_PERIODS}
               data={DELIVERY_SERIES}
               description="For ambitious APAC teams."
               defaultView="curve"
@@ -1309,7 +1301,7 @@ function FinalCTA() {
               if (window.matchMedia("(hover: hover)").matches) setYouOpen(true);
             }}
             onBlur={() => setYouOpen(false)}
-            className="group relative inline-flex items-center gap-3.5 rounded-full bg-[radial-gradient(ellipse_at_top_left,#ffffff_0%,#fed7aa_35%,#f97316_70%,#ea580c_100%)] px-7 py-3.5 sm:px-8 sm:py-4 text-base font-semibold text-[#141414] shadow-[0_2px_14px_rgba(234,88,12,0.22)] ring-1 ring-inset ring-white/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_6px_26px_rgba(234,88,12,0.35)] select-none active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600"
+            className="group relative inline-flex items-center gap-3.5 rounded-full bg-[radial-gradient(ellipse_at_top_left,#ffffff_0%,#fed7aa_35%,#f97316_70%,#ea580c_100%)] px-7 py-3.5 sm:px-8 sm:py-4 text-base font-semibold text-[#141414] shadow-mesh-orange ring-1 ring-inset ring-white/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-mesh-orange-lg select-none active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600"
           >
             <span className="flex shrink-0 items-center">
               <span
@@ -1350,7 +1342,7 @@ function FinalCTA() {
                   <span className="mx-1.5 inline-flex items-center justify-center text-sm font-bold leading-none text-[#141414] sm:mx-2 sm:text-base">
                     +
                   </span>
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/50 bg-white text-[9px] font-bold uppercase leading-none tracking-[0.04em] text-[#141414] shadow-[0_6px_20px_rgba(0,0,0,0.28)] sm:size-9 sm:text-[10px]">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/50 bg-white text-[9px] font-bold uppercase leading-none tracking-[0.04em] text-[#141414] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_1px_rgba(20,20,20,0.06)] sm:size-9 sm:text-[10px]">
                     YOU
                   </span>
                 </span>

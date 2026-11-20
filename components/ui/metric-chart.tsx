@@ -31,6 +31,7 @@ type XY = { x: number; y: number }
 const VIEW_W = 320
 const VIEW_H = 180
 const PAD_Y = 18
+const X_MAX = VIEW_W - 12
 
 function smoothPath(points: XY[]) {
   if (points.length === 0) return ''
@@ -41,10 +42,10 @@ function smoothPath(points: XY[]) {
     const p1 = points[i]
     const p2 = points[i + 1]
     const p3 = points[i + 2] ?? p2
-    const cp1x = p1.x + (p2.x - p0.x) / 6
-    const cp1y = p1.y + (p2.y - p0.y) / 6
-    const cp2x = p2.x - (p3.x - p1.x) / 6
-    const cp2y = p2.y - (p3.y - p1.y) / 6
+    const cp1x = p1.x + (p2.x - p0.x) / 7
+    const cp1y = p1.y + (p2.y - p0.y) / 7
+    const cp2x = p2.x - (p3.x - p1.x) / 7
+    const cp2y = p2.y - (p3.y - p1.y) / 7
     d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`
   }
   return d
@@ -82,7 +83,7 @@ export function MetricChart({
     const min = values.length ? Math.min(...values) : 0
     const max = values.length ? Math.max(...values) : 1
     const span = max - min || 1
-    const xOf = (index: number) => (n > 1 ? (index / (n - 1)) * VIEW_W : VIEW_W / 2)
+    const xOf = (index: number) => (n > 1 ? (index / (n - 1)) * X_MAX : X_MAX / 2)
     const yOf = (value: number) => VIEW_H - PAD_Y - ((value - min) / span) * (VIEW_H - PAD_Y * 2)
     return { points: values.map((value, index) => ({ x: xOf(index), y: yOf(value) })), yOf }
   }, [data, n])
@@ -116,6 +117,7 @@ export function MetricChart({
       <svg
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="none"
+        shapeRendering="geometricPrecision"
         className="h-full w-full overflow-visible"
         role="img"
         aria-label={`${primary?.name ?? 'Metric'} trend chart`}
@@ -130,7 +132,7 @@ export function MetricChart({
         {view === 'curve'
           ? series.map((item, seriesIndex) => {
               const itemPoints = item.data.map((point, index) => ({
-                x: n > 1 ? (index / (n - 1)) * VIEW_W : VIEW_W / 2,
+                x: n > 1 ? (index / (n - 1)) * X_MAX : X_MAX / 2,
                 y: yOf(point.value),
               }))
               if (itemPoints.length === 0) return null
@@ -153,7 +155,7 @@ export function MetricChart({
                     d={line}
                     fill="none"
                     stroke={item.color}
-                    strokeWidth="2.25"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     vectorEffect="non-scaling-stroke"
@@ -194,7 +196,7 @@ export function MetricChart({
 
       {!hoverPoint && emphasis && n > 1 && (
         <div
-          className="pointer-events-none absolute size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-80 shadow-[0_0_12px_rgba(249,115,22,0.55)]"
+          className="pointer-events-none absolute size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-white/90"
           style={{
             left: `${(emphasis.x / VIEW_W) * 100}%`,
             top: `${(emphasis.y / VIEW_H) * 100}%`,
