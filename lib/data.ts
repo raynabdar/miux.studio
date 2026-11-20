@@ -4,14 +4,14 @@
 
 // ── Site Configuration ────────────────────────────────────────
 // Single source of truth for contact details and the public domain.
-// `phone`, `phoneTel` and `whatsapp` are intentionally empty until the real
-// numbers are supplied; every surface that uses them renders conditionally.
+// `whatsapp` is intentionally empty until the real number is supplied;
+// every surface that uses it renders conditionally.
 export const SITE = {
   name: 'Miux Studio',
   url: 'https://www.miux.studio',
   email: 'hello@miux.studio',
-  phone: '',
-  phoneTel: '',
+  phone: '+880 1848344337',
+  phoneTel: '+8801848344337',
   whatsapp: '',
   locality: 'Dhaka',
   country: 'BD',
@@ -37,7 +37,7 @@ export const LEGAL = {
 
 // Keep the hero pill, the impact numbers and the copy in sync.
 export const STATS = {
-  founders: 48,
+  founders: 40,
   projects: 150,
   industries: 40,
   inHousePercent: 100,

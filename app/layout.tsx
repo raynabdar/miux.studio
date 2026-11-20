@@ -40,7 +40,7 @@ const SITE_DESCRIPTION =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: 'Miux Studio — Websites for Brands & Digital Businesses',
+  title: 'Next-gen Creative Web Agency',
   description: SITE_DESCRIPTION,
   keywords: [
     'Websites for Brands',
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Miux Studio — Websites for Brands & Digital Businesses',
+    title: 'Next-gen Creative Web Agency',
     description: SITE_DESCRIPTION,
     url: SITE.url,
     siteName: SITE.name,
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Miux Studio — Websites for Brands & Digital Businesses',
+    title: 'Next-gen Creative Web Agency',
     description: SITE_DESCRIPTION,
     creator: '@miuxhq',
   },

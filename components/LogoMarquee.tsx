@@ -155,13 +155,15 @@ export function CompanyCardMarquee({
 
       const cruiseVelocity = setWidth / Math.max(speed, 1);
       const targetVelocity = targetPausedRef.current ? 0 : cruiseVelocity;
-      // Smooth, slow inertial deceleration on pause/hover, gentle ramp-up on resume
-      const damping = targetVelocity === 0 ? 2.1 : 2.8;
+      // Quick, smooth halt on pause/hover (no long crawl), gentle ramp-up on resume
+      const damping = targetVelocity === 0 ? 10 : 3.2;
       currentVelocity +=
         (targetVelocity - currentVelocity) * (1 - Math.exp(-dt * damping));
 
-      if (targetVelocity === 0 && Math.abs(currentVelocity) < 0.08) {
+      if (targetVelocity === 0 && Math.abs(currentVelocity) < 0.5) {
         currentVelocity = 0;
+        // Snap to a whole pixel when at rest so logos stay crisp (no shimmer)
+        offset = Math.round(offset);
       }
 
       if (currentVelocity > 0) {

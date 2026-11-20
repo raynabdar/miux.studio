@@ -163,6 +163,14 @@ export function Navbar() {
         }
       }
 
+      // Past the last nav section (pricing) — footer / final CTA: nothing selected
+      if (matched === "home") {
+        const pricing = document.getElementById("pricing");
+        if (pricing && viewportPoint >= pricing.offsetTop - 100 + pricing.offsetHeight) {
+          matched = "";
+        }
+      }
+
       setActiveSection(matched);
     };
 
@@ -679,10 +687,18 @@ export function Footer() {
             Connect
           </h2>
           <a
+            href={`tel:${SITE.phoneTel}`}
+            aria-label={`Call Miux Studio at ${SITE.phone}`}
+            title={`Call ${SITE.phone}`}
+            className="mt-4 block text-sm text-[#5C5A55] transition-colors hover:text-orange-600"
+          >
+            {SITE.phone}
+          </a>
+          <a
             href={`mailto:${SITE.email}`}
             aria-label={`Send email to ${SITE.email}`}
             title="Email Miux Studio"
-            className="mt-4 block text-sm text-[#5C5A55] transition-colors hover:text-orange-600"
+            className="mt-2 block text-sm text-[#5C5A55] transition-colors hover:text-orange-600"
           >
             {SITE.email}
           </a>

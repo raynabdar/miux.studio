@@ -243,10 +243,12 @@ function Hero() {
               </span>
               <span className="relative z-10 flex min-w-0 flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[11px] font-medium text-[#141414] sm:gap-x-2 sm:text-sm">
                 <span className="font-semibold tracking-tight text-[#141414]">
-                  {STATS.founders}+ Startups &amp; Founders
+                  Chosen by {STATS.founders}+ startups and businesses
                 </span>
-                <span className="text-[#5C5A55]">Choose Miux Studio</span>
-                <span className="ml-0.5 inline-flex items-center text-[10px] text-orange-600 sm:text-xs">
+                <span
+                  className="ml-0.5 inline-flex items-center text-[10px] text-orange-600 sm:text-xs"
+                  aria-label="Rated 5 out of 5 stars"
+                >
                   ★★★★★
                 </span>
               </span>
@@ -276,8 +278,10 @@ function Hero() {
             </span>
           </motion.div>
 
-          {/* SEO-Optimized Hero Heading: Websites for Brands & Digital Businesses */}
-          <div className="overflow-hidden max-w-5xl px-1">
+          {/* SEO-Optimized Hero Heading: Websites for Brands & Digital Businesses.
+              Padding + matching negative margin enlarge the clip box so tight
+              leading and negative tracking never shave glyph edges. */}
+          <div className="overflow-hidden max-w-5xl px-3 py-4 sm:px-5 lg:py-7 -my-3 lg:-my-6">
             <motion.h1
               initial={{ y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -1315,11 +1319,11 @@ function FinalCTA() {
                 }}
               >
                 <Image
-                  src="/logo.png"
-                  alt=""
+                  src="/founder.jpg"
+                  alt="Founder of Miux Studio"
                   width={36}
                   height={36}
-                  className="relative z-10 size-full rounded-full bg-[#141414] object-contain p-1.5"
+                  className="relative z-10 size-full rounded-full object-cover"
                 />
               </span>
               <motion.span
