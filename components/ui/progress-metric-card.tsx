@@ -242,8 +242,8 @@ export default function ProgressMetricCard({
 
       {/* Chart region */}
       <div
-        className="absolute right-0 z-0"
-        style={{ width: `${CHART_REGION_W}%`, top: '10px', bottom: sz.chartBottom }}
+        className="absolute right-4 z-0 sm:right-5"
+        style={{ width: `${CHART_REGION_W}%`, top: '12px', bottom: sz.chartBottom }}
       >
         {/* Tint + dot grid fade in from the left and out toward the bottom */}
         <div

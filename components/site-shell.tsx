@@ -2,10 +2,10 @@
 
 import { MeltingFooterText } from "@/components/ui/melting-footer-text";
 import { SITE, SOCIAL_LINKS } from "@/lib/data";
-import { scrollToTop, setSmoothScrollEnabled } from "@/lib/smooth-scroll";
+import { setSmoothScrollEnabled } from "@/lib/smooth-scroll";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUp, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -690,7 +690,7 @@ export function Footer() {
             href={`tel:${SITE.phoneTel}`}
             aria-label={`Call Miux Studio at ${SITE.phone}`}
             title={`Call ${SITE.phone}`}
-            className="mt-4 block text-sm text-[#5C5A55] transition-colors hover:text-orange-600"
+            className="mt-4 block text-[13px] text-[#5C5A55] transition-colors hover:text-orange-600"
           >
             {SITE.phone}
           </a>
@@ -798,18 +798,6 @@ export function Footer() {
           >
             Sitemap
           </Link>
-          <button
-            type="button"
-            onClick={scrollToTop}
-            aria-label="Back to top"
-            title="Back to top"
-            className="group -my-1 ml-1 inline-flex size-11 items-center justify-center rounded-full border border-[#141414]/[0.14] bg-white/70 text-[#141414] transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-500/50 hover:bg-orange-500 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 sm:size-9"
-          >
-            <ArrowUp
-              aria-hidden="true"
-              className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5"
-            />
-          </button>
         </div>
       </div>
 

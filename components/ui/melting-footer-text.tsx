@@ -348,6 +348,7 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
 
   return (
     <div
+      id="footer-brand"
       ref={containerRef}
       className="relative w-full h-[24vw] min-h-[180px] max-h-[380px] select-none overflow-hidden cursor-pointer bg-[#F6F5F0]"
     >

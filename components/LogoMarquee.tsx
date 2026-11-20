@@ -85,6 +85,7 @@ export function CompanyCardMarquee({
   const [paused, setPaused] = React.useState(false);
   const [hovered, setHovered] = React.useState(false);
   const [reducedMotion, setReducedMotion] = React.useState(false);
+  const [sectionInView, setSectionInView] = React.useState(false);
 
   const sectionRef = React.useRef<HTMLElement | null>(null);
   const trackRef = React.useRef<HTMLDivElement | null>(null);
@@ -108,6 +109,17 @@ export function CompanyCardMarquee({
     reducedMotionRef.current = reducedMotion;
     wakeRef.current?.();
   }, [isPaused, reducedMotion]);
+
+  React.useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(
+      (entries) => setSectionInView(entries.some((entry) => entry.isIntersecting)),
+      { rootMargin: "40px" }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   React.useEffect(() => {
     const section = sectionRef.current;
@@ -314,14 +326,21 @@ export function CompanyCardMarquee({
         </div>
       </div>
 
-      {/* Centered Play / Pause control */}
+      {/* Centered Play / Pause control — fades in/out with progressive blur */}
       <div className="mt-5 flex items-center justify-center">
         <button
           type="button"
           onClick={() => setPaused((value) => !value)}
           aria-pressed={paused}
           aria-label={paused ? "Resume logo carousel" : "Pause logo carousel"}
-          className="grid size-10 place-content-center rounded-full border border-[#141414]/[0.14] bg-white/60 text-[#5C5A55] shadow-[0_6px_18px_-10px_rgba(20,20,20,0.16)] backdrop-blur-md transition-all duration-300 hover:border-orange-500/45 hover:bg-white hover:text-[#141414] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+          aria-hidden={!sectionInView}
+          tabIndex={sectionInView ? 0 : -1}
+          className={cn(
+            "grid size-10 place-content-center rounded-full border border-[#141414]/[0.14] bg-white/60 text-[#5C5A55] shadow-[0_6px_18px_-10px_rgba(20,20,20,0.16)] backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] hover:border-orange-500/45 hover:bg-white hover:text-[#141414] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600",
+            sectionInView
+              ? "translate-y-0 scale-100 opacity-100 blur-0"
+              : "pointer-events-none -translate-y-1 scale-90 opacity-0 blur-md"
+          )}
         >
           {paused ? (
             <Play className="size-3.5 translate-x-[1px]" aria-hidden="true" />

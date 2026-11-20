@@ -201,24 +201,24 @@ function Hero() {
             <Link
               href="/startups"
               aria-label={`See the ${STATS.founders}+ startups and businesses that work with Miux Studio`}
-              className="group relative inline-flex max-w-full items-center justify-center gap-2.5 overflow-hidden rounded-full border border-[#141414]/[0.12] bg-transparent px-3 py-1.5 shadow-[0_10px_30px_-14px_rgba(20,20,20,0.14)] backdrop-blur-xl transition-all duration-300 hover:border-orange-500/45 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 sm:gap-3.5 sm:px-4 sm:py-2"
+              className="group relative inline-flex max-w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-[24px] border border-[#141414]/[0.12] bg-transparent px-4 py-3 shadow-[0_10px_30px_-14px_rgba(20,20,20,0.14)] backdrop-blur-xl transition-all duration-300 hover:border-orange-500/45 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 sm:flex-row sm:gap-3.5 sm:rounded-full sm:px-4 sm:py-2"
             >
               {/* Progressive blur layers inside transparent pill */}
               <ProgressiveBlur
                 direction="top"
                 blurLayers={5}
                 blurIntensity={0.45}
-                className="pointer-events-none absolute inset-0 rounded-full"
+                className="pointer-events-none absolute inset-0 rounded-[24px] sm:rounded-full"
               />
               <ProgressiveBlur
                 direction="bottom"
                 blurLayers={5}
                 blurIntensity={0.45}
-                className="pointer-events-none absolute inset-0 rounded-full"
+                className="pointer-events-none absolute inset-0 rounded-[24px] sm:rounded-full"
               />
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/30 via-transparent to-white/10"
+                className="pointer-events-none absolute inset-0 rounded-[24px] bg-gradient-to-b from-white/30 via-transparent to-white/10 sm:rounded-full"
               />
               <span
                 aria-hidden="true"
@@ -243,7 +243,7 @@ function Hero() {
               </span>
               <span className="relative z-10 flex min-w-0 flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[11px] font-medium text-[#141414] sm:gap-x-2 sm:text-sm">
                 <span className="font-semibold tracking-tight text-[#141414]">
-                  Chosen by {STATS.founders}+ startups and businesses
+                  Trusted by {STATS.founders}+ startups and businesses
                 </span>
                 <span
                   className="ml-0.5 inline-flex items-center text-[10px] text-orange-600 sm:text-xs"
@@ -1305,7 +1305,7 @@ function FinalCTA() {
               if (window.matchMedia("(hover: hover)").matches) setYouOpen(true);
             }}
             onBlur={() => setYouOpen(false)}
-            className="group relative inline-flex items-center gap-3.5 rounded-full bg-[radial-gradient(ellipse_at_top_left,#ffffff_0%,#fed7aa_35%,#f97316_70%,#ea580c_100%)] px-7 py-3.5 sm:px-8 sm:py-4 text-base font-semibold text-[#141414] shadow-mesh-orange ring-1 ring-inset ring-white/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-mesh-orange-lg select-none active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600"
+            className="group relative inline-flex items-center gap-3.5 rounded-full bg-[radial-gradient(ellipse_at_top_left,#ffffff_0%,#fed7aa_35%,#f97316_70%,#ea580c_100%)] px-7 py-3.5 sm:px-8 sm:py-4 text-base font-semibold text-[#141414] ring-1 ring-inset ring-white/40 transition-all duration-300 hover:scale-[1.02] select-none active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600"
           >
             <span className="flex shrink-0 items-center">
               <span
