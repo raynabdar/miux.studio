@@ -1,5 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
-import { CustomCursor } from '@/components/CustomCursor'
+import BackToTop from '@/components/BackToTop'
+import MiniDotFlameCursor from '@/components/MiniDotFlameCursor'
+import { NoiseGradientBackground } from 'noise-gradient-bg'
 import type { Metadata, Viewport } from 'next'
 import { faqs, SITE, SOCIAL_LINKS } from '@/lib/data'
 import './globals.css'
@@ -190,8 +192,23 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPage) }}
         />
 
+        <NoiseGradientBackground
+          theme="custom"
+          primaryColor="rgba(249, 115, 22, 0.24)"
+          secondaryColor="rgba(251, 146, 60, 0.16)"
+          tertiaryColor="rgba(254, 215, 170, 0.12)"
+          noiseOpacity={50}
+          microNoiseOpacity={35}
+          primaryBlur={56}
+          secondaryBlur={44}
+          tertiaryBlur={32}
+          vignetteIntensity="none"
+          className="pointer-events-none z-30 mix-blend-soft-light opacity-75 will-change-transform [transform:translateZ(0)] [contain:strict] [&>div:nth-last-child(-n+2)]:hidden"
+        />
+
         {children}
-        <CustomCursor />
+        <BackToTop />
+        <MiniDotFlameCursor />
 
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

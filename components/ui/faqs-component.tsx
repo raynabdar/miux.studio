@@ -1,7 +1,10 @@
 'use client'
 
+import { useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
+import { ProgressiveBlur } from '@/components/ProgressiveBlur'
 import { BlurRevealTitle } from '@/components/ui/blur-reveal-title'
 import { cn } from '@/lib/utils'
 
@@ -24,6 +27,12 @@ export default function FAQs({
   title = 'Frequently Asked Questions',
   description = 'Answers to the questions we hear most often before a project starts.',
 }: FAQsProps) {
+  const [openIds, setOpenIds] = useState<Record<string, boolean>>({})
+
+  const toggleItem = (id: string) => {
+    setOpenIds((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
   return (
     <section
       id="faq"
@@ -55,20 +64,84 @@ export default function FAQs({
             />
 
             <div className="divide-y divide-[#141414]/[0.08]">
-              {items.map((item) => (
-                <details key={item.id} className="group">
-                  <summary className="flex cursor-pointer list-none items-center gap-4 py-5 text-left text-base font-medium text-[#141414] transition-colors hover:text-[#141414]/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#141414] [&::-webkit-details-marker]:hidden sm:text-lg">
-                    <span className="flex-1 pr-4">{item.question}</span>
-                    <Plus
-                      aria-hidden="true"
-                      className="size-4 shrink-0 text-[#5C5A55] transition-transform duration-200 group-open:rotate-45"
-                    />
-                  </summary>
-                  <div className="pb-5 text-sm leading-relaxed text-[#5C5A55] sm:text-base">
-                    <p>{item.answer}</p>
+              {items.map((item) => {
+                const isOpen = Boolean(openIds[item.id])
+                const panelId = `faq-panel-${item.id}`
+                const triggerId = `faq-trigger-${item.id}`
+
+                return (
+                  <div key={item.id}>
+                    <button
+                      id={triggerId}
+                      type="button"
+                      onClick={() => toggleItem(item.id)}
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      className="flex w-full cursor-pointer items-center gap-4 py-5 text-left text-base font-medium text-[#141414] transition-colors hover:text-[#141414]/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 sm:text-lg"
+                    >
+                      <span className="flex-1 pr-4">{item.question}</span>
+                      <Plus
+                        aria-hidden="true"
+                        className={cn(
+                          'size-4 shrink-0 text-[#5C5A55] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                          isOpen && 'rotate-45 text-orange-600',
+                        )}
+                      />
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          id={panelId}
+                          role="region"
+                          aria-labelledby={triggerId}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{
+                            duration: 0.45,
+                            ease: [0.22, 1, 0.36, 1],
+                          }}
+                          className="relative overflow-hidden"
+                        >
+                          <motion.div
+                            initial={{ opacity: 0, y: -8, filter: 'blur(12px)' }}
+                            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, y: -6, filter: 'blur(10px)' }}
+                            transition={{
+                              duration: 0.48,
+                              ease: [0.22, 1, 0.36, 1],
+                            }}
+                            className="pb-5 text-sm leading-relaxed text-[#5C5A55] sm:text-base"
+                          >
+                            <p>{item.answer}</p>
+                          </motion.div>
+
+                          {/* Progressive blur veil dissolving cleanly during open/close */}
+                          <motion.div
+                            aria-hidden="true"
+                            initial={{ opacity: 1 }}
+                            animate={{ opacity: 0 }}
+                            exit={{ opacity: 0.9 }}
+                            transition={{
+                              duration: 0.5,
+                              ease: [0.22, 1, 0.36, 1],
+                            }}
+                            className="pointer-events-none absolute inset-x-0 bottom-0 h-14"
+                          >
+                            <ProgressiveBlur
+                              direction="bottom"
+                              blurLayers={6}
+                              blurIntensity={0.65}
+                              className="absolute inset-0 h-full w-full"
+                            />
+                          </motion.div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                </details>
-              ))}
+                )
+              })}
             </div>
           </div>
 

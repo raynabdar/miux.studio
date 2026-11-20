@@ -1,27 +1,27 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import Cal, { getCalApi } from '@calcom/embed-react'
-import { motion } from 'framer-motion'
-import { MessageCircle, CheckCircle2 } from 'lucide-react'
-import { Navbar, Footer } from '@/components/site-shell'
-import { SITE, STATS } from '@/lib/data'
+import { Footer, Navbar } from "@/components/site-shell";
+import { SITE, STATS } from "@/lib/data";
+import Cal, { getCalApi } from "@calcom/embed-react";
+import { motion } from "framer-motion";
+import { CheckCircle2, MessageCircle } from "lucide-react";
+import { useEffect } from "react";
 
 export default function MeetingPage() {
   useEffect(() => {
     (async function () {
       try {
-        const cal = await getCalApi({ namespace: 'special' })
-        cal('ui', {
-          theme: 'light',
+        const cal = await getCalApi({ namespace: "special" });
+        cal("ui", {
+          theme: "light",
           hideEventTypeDetails: false,
-          layout: 'month_view',
-        })
+          layout: "month_view",
+        });
       } catch (err) {
-        console.error('Failed to initialize Cal.com embed:', err)
+        console.error("Failed to initialize Cal.com embed:", err);
       }
-    })()
-  }, [])
+    })();
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col justify-between bg-[#F6F5F0] text-[#141414]">
@@ -41,21 +41,27 @@ export default function MeetingPage() {
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
               className="inline-flex items-center gap-2 rounded-full border border-[#141414]/[0.12] bg-white/80 px-4 py-1.5 text-xs font-medium text-[#141414] backdrop-blur-md"
             >
               <span className="relative flex size-2">
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500 opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-orange-600" />
               </span>
-              <span>{STATS.founders}+ startups &amp; founders choose Miux Studio</span>
+              <span>
+                {STATS.founders}+ startups &amp; founders choose Miux Studio
+              </span>
             </motion.div>
 
             {/* Main Heading: Book a 45-min Call */}
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+              transition={{
+                duration: 0.6,
+                delay: 0.08,
+                ease: [0.16, 1, 0.3, 1],
+              }}
               className="text-4xl font-semibold tracking-[-0.06em] text-[#141414] sm:text-5xl md:text-6xl"
             >
               Book a 45-min Call
@@ -65,14 +71,14 @@ export default function MeetingPage() {
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.14, ease: 'easeOut' }}
+              transition={{ duration: 0.6, delay: 0.14, ease: "easeOut" }}
               className="text-base sm:text-lg text-[#5C5A55] leading-relaxed"
             >
               Pick a date and time below
               {SITE.whatsapp && (
                 <>
-                  {' '}
-                  or message us on{' '}
+                  {" "}
+                  or message us on{" "}
                   <a
                     href={`https://wa.me/${SITE.whatsapp}`}
                     target="_blank"
@@ -114,14 +120,14 @@ export default function MeetingPage() {
               namespace="special"
               calLink="raynabdar/special"
               style={{
-                width: '100%',
-                height: '100%',
-                minHeight: '650px',
-                overflow: 'scroll',
+                width: "100%",
+                height: "100%",
+                minHeight: "650px",
+                overflow: "scroll",
               }}
               config={{
-                layout: 'month_view',
-                useSlotsViewOnSmallScreen: 'true',
+                layout: "month_view",
+                useSlotsViewOnSmallScreen: "true",
               }}
             />
           </motion.div>
@@ -146,5 +152,5 @@ export default function MeetingPage() {
 
       <Footer />
     </div>
-  )
+  );
 }

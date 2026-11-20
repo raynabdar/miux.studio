@@ -86,6 +86,13 @@ export function CompanyCardMarquee({
   const [hovered, setHovered] = React.useState(false);
   const [reducedMotion, setReducedMotion] = React.useState(false);
 
+  const sectionRef = React.useRef<HTMLElement | null>(null);
+  const trackRef = React.useRef<HTMLDivElement | null>(null);
+  const firstSetRef = React.useRef<HTMLDivElement | null>(null);
+  const targetPausedRef = React.useRef(false);
+  const reducedMotionRef = React.useRef(false);
+  const wakeRef = React.useRef<(() => void) | null>(null);
+
   React.useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => setReducedMotion(query.matches);
@@ -96,27 +103,144 @@ export function CompanyCardMarquee({
 
   const isPaused = paused || hovered || reducedMotion;
 
+  React.useEffect(() => {
+    targetPausedRef.current = isPaused;
+    reducedMotionRef.current = reducedMotion;
+    wakeRef.current?.();
+  }, [isPaused, reducedMotion]);
+
+  React.useEffect(() => {
+    const section = sectionRef.current;
+    const track = trackRef.current;
+    const firstSet = firstSetRef.current;
+    if (!section || !track || !firstSet) return;
+
+    let setWidth = firstSet.offsetWidth;
+    let offset = setWidth > 0 ? -setWidth : 0;
+    let currentVelocity = 0;
+    let lastTime = performance.now();
+    let rafId = 0;
+    let inView = true;
+    let pageVisible = document.visibilityState !== "hidden";
+
+    const stop = () => {
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    };
+
+    const updateWidth = () => {
+      const nextWidth = firstSet.offsetWidth;
+      if (nextWidth > 0) {
+        setWidth = nextWidth;
+        if (offset < -setWidth || offset > 0) {
+          offset = -setWidth;
+        }
+      }
+    };
+
+    const tick = (now: number) => {
+      rafId = 0;
+      if (!inView || !pageVisible) return;
+
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+
+      if (reducedMotionRef.current || setWidth <= 0) {
+        currentVelocity = 0;
+        track.style.transform = "translate3d(0px, 0px, 0px)";
+        return;
+      }
+
+      const cruiseVelocity = setWidth / Math.max(speed, 1);
+      const targetVelocity = targetPausedRef.current ? 0 : cruiseVelocity;
+      // Smooth, slow inertial deceleration on pause/hover, gentle ramp-up on resume
+      const damping = targetVelocity === 0 ? 2.1 : 2.8;
+      currentVelocity +=
+        (targetVelocity - currentVelocity) * (1 - Math.exp(-dt * damping));
+
+      if (targetVelocity === 0 && Math.abs(currentVelocity) < 0.08) {
+        currentVelocity = 0;
+      }
+
+      if (currentVelocity > 0) {
+        offset += currentVelocity * dt;
+        if (offset >= 0) {
+          offset -= setWidth;
+        }
+      }
+
+      track.style.transform = `translate3d(${offset}px, 0px, 0px)`;
+
+      // Stop scheduling frames once completely settled at rest
+      if (targetVelocity > 0 || currentVelocity > 0) {
+        rafId = window.requestAnimationFrame(tick);
+      }
+    };
+
+    const wake = () => {
+      if (rafId || !inView || !pageVisible) return;
+      if (reducedMotionRef.current) {
+        track.style.transform = "translate3d(0px, 0px, 0px)";
+        return;
+      }
+      lastTime = performance.now();
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    wakeRef.current = wake;
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateWidth();
+      wake();
+    });
+    resizeObserver.observe(firstSet);
+
+    const intersectionObserver = new IntersectionObserver((entries) => {
+      inView = entries.some((entry) => entry.isIntersecting);
+      if (inView) {
+        wake();
+      } else {
+        stop();
+      }
+    });
+    intersectionObserver.observe(section);
+
+    const onVisibilityChange = () => {
+      pageVisible = document.visibilityState !== "hidden";
+      if (pageVisible) {
+        wake();
+      } else {
+        stop();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    wake();
+
+    return () => {
+      stop();
+      wakeRef.current = null;
+      resizeObserver.disconnect();
+      intersectionObserver.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [speed, logos]);
+
   return (
     <section
+      ref={sectionRef}
       aria-label="Brands our team has worked with"
       className={cn(
         "relative w-full overflow-hidden bg-[#F6F5F0] py-8 sm:py-12 select-none",
         className
       )}
     >
-      <div className="mb-6 flex items-center justify-center gap-3">
+      <div className="mb-6 flex items-center justify-center">
         <p className="text-center text-[11px] uppercase tracking-[0.25em] text-[#5C5A55]">
           Brands our team has worked with
         </p>
-        <button
-          type="button"
-          onClick={() => setPaused((value) => !value)}
-          aria-pressed={isPaused}
-          aria-label={isPaused ? "Resume logo carousel" : "Pause logo carousel"}
-          className="grid size-9 shrink-0 place-content-center rounded-full border border-[#141414]/[0.14] text-[#5C5A55] transition-colors hover:border-[#141414]/30 hover:text-[#141414] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#141414]"
-        >
-          {isPaused ? <Play className="size-3.5" aria-hidden="true" /> : <Pause className="size-3.5" aria-hidden="true" />}
-        </button>
       </div>
       <div className="relative mx-auto max-w-[1280px] overflow-hidden">
         {/* Left endpoint progressive blur + off-white fade */}
@@ -147,24 +271,20 @@ export function CompanyCardMarquee({
           <div className="absolute inset-0 bg-gradient-to-l from-[#F6F5F0] via-[#F6F5F0]/85 to-transparent" />
         </div>
 
-        {/* Continuous Left-to-Right Loop Track */}
+        {/* Continuous Left-to-Right Loop Track with smooth slow pause */}
         <div
           className="relative flex overflow-hidden py-3"
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
           <div
-            className="flex w-max items-center animate-marquee-reverse motion-reduce:animate-none"
-            style={
-              {
-                "--duration": `${speed}s`,
-                animationPlayState: isPaused ? "paused" : "running",
-              } as React.CSSProperties
-            }
+            ref={trackRef}
+            className="flex w-max items-center will-change-transform"
           >
             {[0, 1].map((setIndex) => (
               <div
                 key={setIndex}
+                ref={setIndex === 0 ? firstSetRef : undefined}
                 aria-hidden={setIndex === 1 ? "true" : undefined}
                 className="flex items-center gap-12 sm:gap-16 md:gap-20 pr-12 sm:pr-16 md:pr-20 shrink-0"
               >
@@ -190,6 +310,23 @@ export function CompanyCardMarquee({
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Centered Play / Pause control */}
+      <div className="mt-5 flex items-center justify-center">
+        <button
+          type="button"
+          onClick={() => setPaused((value) => !value)}
+          aria-pressed={paused}
+          aria-label={paused ? "Resume logo carousel" : "Pause logo carousel"}
+          className="grid size-10 place-content-center rounded-full border border-[#141414]/[0.14] bg-white/60 text-[#5C5A55] shadow-[0_6px_18px_-10px_rgba(20,20,20,0.16)] backdrop-blur-md transition-all duration-300 hover:border-orange-500/45 hover:bg-white hover:text-[#141414] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+        >
+          {paused ? (
+            <Play className="size-3.5 translate-x-[1px]" aria-hidden="true" />
+          ) : (
+            <Pause className="size-3.5" aria-hidden="true" />
+          )}
+        </button>
       </div>
     </section>
   );

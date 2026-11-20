@@ -1,13 +1,14 @@
 "use client";
 
+import { MeltingFooterText } from "@/components/ui/melting-footer-text";
+import { SITE, SOCIAL_LINKS } from "@/lib/data";
+import { scrollToTop, setSmoothScrollEnabled } from "@/lib/smooth-scroll";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { ArrowUp, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import { SITE, SOCIAL_LINKS } from "@/lib/data";
-import { MeltingFooterText } from "@/components/ui/melting-footer-text";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -78,6 +79,8 @@ function XIcon({ className = "size-5" }: { className?: string }) {
 
 /* ─── Constants ─────────────────────────────────────────────────────── */
 
+const MotionLink = motion.create(Link);
+
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
@@ -134,7 +137,9 @@ export function Navbar() {
   useEffect(() => {
     if (!isHomePage) return;
 
-    const handleScroll = () => {
+    let ticking = false;
+    const measure = () => {
+      ticking = false;
       // Offset point inside the viewport (upper focal area)
       const viewportPoint = window.scrollY + window.innerHeight * 0.38;
       const sections = [
@@ -161,9 +166,19 @@ export function Navbar() {
       setActiveSection(matched);
     };
 
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(measure);
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll, { passive: true });
+    measure();
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, [isHomePage]);
 
   /* ── Close mobile menu on outside click or Escape ─────────────────── */
@@ -195,13 +210,9 @@ export function Navbar() {
 
   /* ── Lock body scroll when mobile menu is open ────────────────────── */
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    setSmoothScrollEnabled(!mobileOpen);
     return () => {
-      document.body.style.overflow = "";
+      if (mobileOpen) setSmoothScrollEnabled(true);
     };
   }, [mobileOpen]);
 
@@ -270,7 +281,9 @@ export function Navbar() {
         ref={navRef}
         className={cn(
           "fixed left-1/2 top-4 z-50 -translate-x-1/2 w-[calc(100%-2rem)] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]",
-          scrolled ? "max-w-[760px] translate-y-0.5" : "max-w-[960px] translate-y-0",
+          scrolled
+            ? "max-w-[760px] translate-y-0.5"
+            : "max-w-[960px] translate-y-0",
         )}
       >
         <nav
@@ -359,7 +372,7 @@ export function Navbar() {
             </div>
 
             {/* Desktop Right CTA: Orange Gradient with White Text */}
-            <a
+            <Link
               href="/meeting"
               aria-label="Get Started with Miux Studio"
               title="Get Started with Miux Studio"
@@ -377,8 +390,10 @@ export function Navbar() {
                   repeatDelay: 0.8,
                 }}
               />
-              <span className="relative z-10 text-white font-semibold">Get Started</span>
-            </a>
+              <span className="relative z-10 text-white font-semibold">
+                Get Started
+              </span>
+            </Link>
 
             {/* Mobile Hamburger Button */}
             <button
@@ -392,7 +407,7 @@ export function Navbar() {
               }
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav-panel"
-              className="relative flex size-9 flex-col items-center justify-center gap-[5px] rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141414]/40 md:hidden"
+              className="relative -my-1 flex size-11 flex-col items-center justify-center gap-[5px] rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#141414] md:hidden"
               onClick={() => setMobileOpen((prev) => !prev)}
             >
               <motion.span
@@ -438,7 +453,8 @@ export function Navbar() {
                 backgroundColor: "rgba(246, 245, 240, 0.94)",
                 backdropFilter: "blur(28px) saturate(180%)",
                 WebkitBackdropFilter: "blur(28px) saturate(180%)",
-                boxShadow: "0 18px 40px -16px rgba(20, 20, 20, 0.18), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85)",
+                boxShadow:
+                  "0 18px 40px -16px rgba(20, 20, 20, 0.18), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85)",
               }}
             >
               <div
@@ -473,7 +489,7 @@ export function Navbar() {
               </div>
 
               {/* Full-width CTA inside open menu: Orange Gradient with Dark Mesh and White Text */}
-              <motion.a
+              <MotionLink
                 href="/meeting"
                 aria-label="Get Started with Miux Studio"
                 title="Get Started with Miux Studio"
@@ -500,8 +516,10 @@ export function Navbar() {
                     repeatDelay: 0.8,
                   }}
                 />
-                <span className="relative z-10 text-white font-semibold">Get Started</span>
-              </motion.a>
+                <span className="relative z-10 text-white font-semibold">
+                  Get Started
+                </span>
+              </MotionLink>
             </motion.div>
           )}
         </AnimatePresence>
@@ -668,20 +686,20 @@ export function Footer() {
           >
             {SITE.email}
           </a>
-          <div className="mt-6 flex items-center gap-4">
+          <div className="mt-4 flex items-center gap-1 -ml-2">
             {FOOTER_SOCIALS.map(({ label, href, Icon }) => (
               <a
                 key={label}
                 href={href}
                 aria-label={`Follow Miux Studio on ${label}`}
                 title={`Miux Studio on ${label}`}
-                className="text-[#5C5A55] transition-colors hover:text-orange-600 focus-visible:outline-none focus-visible:text-orange-600"
+                className="inline-flex size-11 items-center justify-center rounded-full text-[#5C5A55] transition-colors hover:bg-white/70 hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 sm:size-9"
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel={
                   href.startsWith("http") ? "noopener noreferrer" : undefined
                 }
               >
-                <Icon className="size-5" />
+                <Icon className="size-[18px]" />
               </a>
             ))}
           </div>
@@ -694,10 +712,13 @@ export function Footer() {
           href="/meeting"
           aria-label="Book a 45-minute discovery call with Miux Studio"
           title="Schedule a consultation call with Miux Studio"
-          className="group inline-flex items-center gap-2 rounded-full bg-[#141414] px-7 py-3.5 text-sm font-semibold text-[#F6F5F0] transition-colors hover:bg-[#262626] select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414]"
+          className="group inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[#141414] px-7 py-3 text-sm font-semibold text-[#F6F5F0] shadow-[0_2px_14px_rgba(20,20,20,0.18)] ring-1 ring-inset ring-white/15 transition-[background-color,box-shadow] hover:bg-[#262626] hover:shadow-[0_6px_24px_rgba(20,20,20,0.26)] select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414]"
         >
           <span>Book a Call</span>
-          <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          <ArrowUpRight
+            className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            aria-hidden="true"
+          />
         </Link>
       </div>
 
@@ -709,15 +730,23 @@ export function Footer() {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500/60" />
               <span className="relative inline-flex size-2 rounded-full bg-orange-600" />
             </span>
-            <span className="uppercase tracking-[0.18em]">Currently building</span>
-            <span className="hidden h-3 w-px bg-[#141414]/15 sm:block" aria-hidden="true" />
+            <span className="uppercase tracking-[0.18em]">
+              Currently building
+            </span>
+            <span
+              className="hidden h-3 w-px bg-[#141414]/15 sm:block"
+              aria-hidden="true"
+            />
           </p>
           <Link
             href="/work/solstice-ai-engine"
             className="group inline-flex items-center gap-1.5 text-xs text-[#2E2D2A] transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
           >
             An evaluation layer for a generative AI engine
-            <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+            <ArrowUpRight
+              className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
           </Link>
         </div>
       </div>
@@ -725,10 +754,10 @@ export function Footer() {
       {/* Bottom row */}
       <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col justify-between gap-4 px-5 py-6 text-xs text-[#5C5A55] sm:flex-row sm:items-center">
         <span>
-          &copy; {SITE.founded}–{new Date().getFullYear()} {SITE.name.toUpperCase()}. All
-          rights reserved.
+          &copy; {SITE.founded}–{new Date().getFullYear()}{" "}
+          {SITE.name.toUpperCase()}. All rights reserved.
         </span>
-        <div className="flex flex-wrap gap-5 sm:gap-6">
+        <div className="flex flex-wrap items-center gap-5 sm:gap-6">
           <Link
             href="/client-terms"
             className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
@@ -741,12 +770,30 @@ export function Footer() {
           >
             Privacy
           </Link>
-          <Link href="/terms" className="transition-colors hover:text-orange-600">
+          <Link
+            href="/terms"
+            className="transition-colors hover:text-orange-600"
+          >
             Terms
           </Link>
-          <Link href="/sitemap" className="transition-colors hover:text-orange-600">
+          <Link
+            href="/sitemap"
+            className="transition-colors hover:text-orange-600"
+          >
             Sitemap
           </Link>
+          <button
+            type="button"
+            onClick={scrollToTop}
+            aria-label="Back to top"
+            title="Back to top"
+            className="group -my-1 ml-1 inline-flex size-11 items-center justify-center rounded-full border border-[#141414]/[0.14] bg-white/70 text-[#141414] transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-500/50 hover:bg-orange-500 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 sm:size-9"
+          >
+            <ArrowUp
+              aria-hidden="true"
+              className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5"
+            />
+          </button>
         </div>
       </div>
 

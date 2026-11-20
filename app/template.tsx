@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 import { SitePreloader } from '@/components/SitePreloader'
+import { registerLenis } from '@/lib/smooth-scroll'
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const progressRef = useRef<HTMLDivElement>(null)
@@ -17,7 +18,9 @@ export default function Template({ children }: { children: React.ReactNode }) {
       duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      anchors: true,
     })
+    registerLenis(lenis)
 
     let frame = 0
     const raf = (time: number) => {
@@ -33,6 +36,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
     return () => {
       cancelAnimationFrame(frame)
+      registerLenis(null)
       lenis.destroy()
     }
   }, [])

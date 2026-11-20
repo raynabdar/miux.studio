@@ -1,19 +1,19 @@
 "use client";
 
+import { GLSLHills } from "@/components/GLSLHills";
+import { HeroMedia } from "@/components/HeroMedia";
+import { CompanyCardMarquee } from "@/components/LogoMarquee";
+import { ProgressiveBlur } from "@/components/ProgressiveBlur";
 import { Footer, Navbar } from "@/components/site-shell";
+import { BlurRevealTitle } from "@/components/ui/blur-reveal-title";
+import { ClutchWidget } from "@/components/ui/clutch-widget";
 import FAQs from "@/components/ui/faqs-component";
 import Pricing from "@/components/ui/pricing";
 import ProgressMetricCard from "@/components/ui/progress-metric-card";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import Testimonials from "@/components/ui/testimonial";
-import { ClutchWidget } from "@/components/ui/clutch-widget";
-import { BlurRevealTitle } from "@/components/ui/blur-reveal-title";
-import { ProgressiveBlur } from "@/components/ProgressiveBlur";
-import { CompanyCardMarquee } from "@/components/LogoMarquee";
-import { HeroMedia } from "@/components/HeroMedia";
-import { GLSLHills } from "@/components/GLSLHills";
-import { testimonials } from "@/lib/testimonials";
 import { faqs, projects, STATS, type Project } from "@/lib/data";
+import { testimonials } from "@/lib/testimonials";
 import { cn } from "@/lib/utils";
 import {
   motion,
@@ -25,9 +25,14 @@ import {
   type Variants,
 } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+
+const LiquidEther = dynamic(() => import("@/components/LiquidEther"), {
+  ssr: false,
+});
 
 /* ── Animation variants ─────────────────────────────────────────────── */
 
@@ -66,7 +71,7 @@ function StudioClock() {
           minute: "2-digit",
           hour12: false,
           timeZone: "Asia/Dhaka",
-        }).format(new Date())
+        }).format(new Date()),
       );
     update();
     const id = window.setInterval(update, 30_000);
@@ -83,6 +88,24 @@ function StudioClock() {
 }
 
 function Hero() {
+  const heroRef = useRef<HTMLElement | null>(null);
+  const cursorLightRef = useRef<HTMLDivElement | null>(null);
+  const pointerRafRef = useRef<number>(0);
+  const [heroHovered, setHeroHovered] = useState(false);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const etherOpacity = useTransform(scrollYProgress, [0, 0.72, 1], [1, 0.85, 0]);
+
+  useEffect(() => {
+    return () => {
+      if (pointerRafRef.current) {
+        window.cancelAnimationFrame(pointerRafRef.current);
+      }
+    };
+  }, []);
+
   // Dynamic month: changes dynamically after month ends (e.g. 'November')
   const currentMonth = new Intl.DateTimeFormat("en-US", {
     month: "long",
@@ -90,38 +113,85 @@ function Hero() {
 
   return (
     <section
+      ref={heroRef}
       id="home"
       aria-label="Websites for Brands and Digital Businesses"
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setHeroHovered(true);
+      }}
+      onPointerLeave={() => setHeroHovered(false)}
       onPointerMove={(event) => {
-        const rect = event.currentTarget.getBoundingClientRect();
-        event.currentTarget.style.setProperty("--cursor-x", `${event.clientX - rect.left}px`);
-        event.currentTarget.style.setProperty("--cursor-y", `${event.clientY - rect.top}px`);
+        if (event.pointerType !== "mouse") return;
+        const target = event.currentTarget;
+        const clientX = event.clientX;
+        const clientY = event.clientY;
+        if (pointerRafRef.current) return;
+        pointerRafRef.current = window.requestAnimationFrame(() => {
+          pointerRafRef.current = 0;
+          const light = cursorLightRef.current;
+          if (!light) return;
+          const rect = target.getBoundingClientRect();
+          light.style.setProperty("--cursor-x", `${clientX - rect.left}px`);
+          light.style.setProperty("--cursor-y", `${clientY - rect.top}px`);
+        });
       }}
       className="relative flex min-h-[85vh] lg:min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#F6F5F0] px-4 sm:px-5 pt-28 pb-16 sm:pt-36 sm:pb-24"
     >
-      {/* Crisp Background Image + Warm Mesh Ambient Lighting (No blur on hero image or text) */}
+      {/* Crisp Background Image + LiquidEther (Header top to Hero bottom) + Warm Ambient Lighting */}
       <div
         className="absolute inset-0 pointer-events-none overflow-hidden bg-[#F6F5F0]"
         aria-hidden="true"
       >
         <HeroMedia />
 
-        {/* Cursor-reactive warm light */}
-        <div className="absolute inset-0 bg-[radial-gradient(520px_circle_at_var(--cursor-x,50%)_var(--cursor-y,40%),rgba(249,115,22,0.12),transparent_65%)]" />
+        {/* Slow, smooth, SEO-friendly LiquidEther spanning from top of header to bottom of hero,
+            dissolving smoothly at the bottom edge and fading out cleanly as you scroll past the hero */}
+        <motion.div
+          style={{ opacity: etherOpacity }}
+          className="absolute inset-0 pointer-events-none will-change-[opacity] [mask-image:linear-gradient(to_bottom,black_0%,black_78%,transparent_100%)]"
+        >
+          <LiquidEther
+            colors={["#ea580c", "#fb923c", "#fdba74"]}
+            lightMode
+            backgroundColor="transparent"
+            intensity={0.9}
+            mouseForce={12}
+            cursorSize={120}
+            persistence={0.82}
+            viscosity={0.38}
+            resolution={0.32}
+            maxDevicePixelRatio={1.5}
+            autoDemo
+            autoSpeed={0.22}
+            autoIntensity={1.5}
+            autoResumeDelay={1400}
+            intro
+            className="h-full w-full opacity-90"
+          />
+        </motion.div>
+
+        {/* Cursor-reactive warm light — isolated ref so pointer movement never recalculates hero subtree */}
+        <div
+          ref={cursorLightRef}
+          className={cn(
+            "absolute inset-0 bg-[radial-gradient(520px_circle_at_var(--cursor-x,50%)_var(--cursor-y,40%),rgba(249,115,22,0.14),transparent_65%)] transition-opacity duration-700 ease-out will-change-[opacity]",
+            heroHovered ? "opacity-100" : "opacity-0",
+          )}
+        />
 
         {/* Layered Orange Mesh Gradient Orbs for warm depth */}
-        <div className="absolute -top-[12%] left-1/2 -translate-x-1/2 w-[900px] h-[550px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.16)_0%,rgba(234,88,12,0.06)_45%,transparent_70%)]" />
-        <div className="absolute top-[20%] left-[8%] w-[500px] h-[380px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(251,146,60,0.10)_0%,transparent_65%)]" />
-        <div className="absolute top-[24%] right-[8%] w-[520px] h-[400px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(234,88,12,0.10)_0%,transparent_65%)]" />
+        <div className="absolute -top-[12%] left-1/2 -translate-x-1/2 w-[900px] h-[550px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.14)_0%,rgba(234,88,12,0.05)_45%,transparent_70%)]" />
+        <div className="absolute top-[20%] left-[8%] w-[500px] h-[380px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(251,146,60,0.09)_0%,transparent_65%)]" />
+        <div className="absolute top-[24%] right-[8%] w-[520px] h-[400px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(234,88,12,0.09)_0%,transparent_65%)]" />
 
         {/* Ambient Off-White Gradation resolving cleanly into #F6F5F0 */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#F6F5F0_82%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#F6F5F0]/75 via-[#F6F5F0]/35 to-[#F6F5F0]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#F6F5F0_85%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F6F5F0]/55 via-[#F6F5F0]/25 to-[#F6F5F0]" />
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col items-center text-center">
         <div className="flex w-full flex-col items-center text-center">
-          {/* Founder Avatars Pill placed on TOP of Websites for Brands & Digital Businesses */}
+          {/* Founder Avatars Pill — transparent with progressive blur */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -131,17 +201,39 @@ function Hero() {
             <Link
               href="/startups"
               aria-label={`See the ${STATS.founders}+ startups and businesses that work with Miux Studio`}
-              className="group inline-flex max-w-full items-center justify-center gap-2.5 rounded-full border border-[#141414]/[0.12] bg-white/85 px-3 py-1.5 shadow-[0_6px_20px_-10px_rgba(20,20,20,0.12)] backdrop-blur-md transition-all duration-300 hover:border-orange-500/50 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 sm:gap-3.5 sm:px-4 sm:py-2"
+              className="group relative inline-flex max-w-full items-center justify-center gap-2.5 overflow-hidden rounded-full border border-[#141414]/[0.12] bg-transparent px-3 py-1.5 shadow-[0_10px_30px_-14px_rgba(20,20,20,0.14)] backdrop-blur-xl transition-all duration-300 hover:border-orange-500/45 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 sm:gap-3.5 sm:px-4 sm:py-2"
             >
-              <span className="flex shrink-0 -space-x-2" aria-hidden="true">
+              {/* Progressive blur layers inside transparent pill */}
+              <ProgressiveBlur
+                direction="top"
+                blurLayers={5}
+                blurIntensity={0.45}
+                className="pointer-events-none absolute inset-0 rounded-full"
+              />
+              <ProgressiveBlur
+                direction="bottom"
+                blurLayers={5}
+                blurIntensity={0.45}
+                className="pointer-events-none absolute inset-0 rounded-full"
+              />
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/30 via-transparent to-white/10"
+              />
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"
+              />
+
+              <span className="relative z-10 flex shrink-0 -space-x-2" aria-hidden="true">
                 {FOUNDER_AVATARS.map((person, index) => (
                   <span
                     key={person.id}
                     className={cn(
-                      "relative grid size-7 place-items-center overflow-hidden rounded-full border-2 border-white text-[10px] font-semibold text-white transition-transform duration-300 ease-out hover:z-10 hover:scale-110 sm:size-8",
+                      "relative grid size-7 place-items-center overflow-hidden rounded-full border-2 border-white/85 text-[10px] font-semibold text-white transition-transform duration-300 ease-out hover:z-10 hover:scale-110 sm:size-8",
                       index % 2 === 0
                         ? "bg-gradient-to-br from-orange-500 to-amber-600"
-                        : "bg-gradient-to-br from-[#2E2D2A] to-[#141414]"
+                        : "bg-gradient-to-br from-[#2E2D2A] to-[#141414]",
                     )}
                     style={{ zIndex: FOUNDER_AVATARS.length - index }}
                   >
@@ -149,7 +241,7 @@ function Hero() {
                   </span>
                 ))}
               </span>
-              <span className="flex min-w-0 flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[11px] font-medium text-[#141414] sm:gap-x-2 sm:text-sm">
+              <span className="relative z-10 flex min-w-0 flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[11px] font-medium text-[#141414] sm:gap-x-2 sm:text-sm">
                 <span className="font-semibold tracking-tight text-[#141414]">
                   {STATS.founders}+ Startups &amp; Founders
                 </span>
@@ -165,17 +257,17 @@ function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
+            transition={{
+              duration: 0.65,
+              delay: 0.16,
+              ease: [0.16, 1, 0.3, 1],
+            }}
             className="mb-10 inline-flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-xs text-[#5C5A55] select-none sm:mb-14"
           >
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-500 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-600" />
             </span>
-            <span>Dhaka</span>
-            <span aria-hidden="true">·</span>
-            <StudioClock />
-            <span aria-hidden="true">·</span>
             <span>
               Taking new projects for{" "}
               <strong className="font-semibold text-[#141414]">
@@ -203,8 +295,8 @@ function Hero() {
             transition={{ duration: 0.65, delay: 0.14 }}
             className="mt-5 sm:mt-6 max-w-2xl px-2 text-sm text-[#5C5A55] sm:text-lg md:text-xl font-normal leading-relaxed"
           >
-            Get a website or custom business website that fulfils your goals
-            and drives sales.
+            Get a website or custom business website that fulfils your goals and
+            drives sales.
           </motion.p>
 
           {/* Action Buttons */}
@@ -220,10 +312,27 @@ function Hero() {
             >
               <span className="inline-flex items-center gap-2">
                 <span>Book a 45-min call</span>
-                <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <ArrowUpRight
+                  className="size-[18px] shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  aria-hidden="true"
+                />
               </span>
             </ShinyButton>
           </div>
+
+          {/* Studio location & live Dhaka time — placed after Hero CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-4 inline-flex items-center justify-center gap-2 text-xs font-medium text-[#5C5A55] select-none"
+          >
+            <span>Dhaka</span>
+            <span aria-hidden="true" className="text-[#141414]/35">
+              ·
+            </span>
+            <StudioClock />
+          </motion.div>
 
           {/* Official Clutch Widget */}
           <ClutchWidget />
@@ -282,7 +391,11 @@ function ScrollWord({
   const start = 0.16 + index * step;
   const end = start + step * 1.8;
 
-  const opacity = useTransform(progress, [start - 0.04, start, end], [0.2, 0.45, 1]);
+  const opacity = useTransform(
+    progress,
+    [start - 0.04, start, end],
+    [0.2, 0.45, 1],
+  );
   const blurPx = useTransform(progress, [start - 0.04, start, end], [14, 8, 0]);
   const filter = useTransform(blurPx, (v) => `blur(${Math.max(0, v)}px)`);
   const y = useTransform(progress, [start - 0.04, start, end], [12, 6, 0]);
@@ -421,7 +534,9 @@ function ServicesSection() {
       <div className="relative z-10 mx-auto w-full max-w-[1100px]">
         <div className="mb-10 flex flex-col items-start gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="font-display text-sm italic text-orange-600">Capabilities</span>
+            <span className="font-display text-sm italic text-orange-600">
+              Capabilities
+            </span>
             <BlurRevealTitle
               as="h2"
               className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#141414] sm:text-5xl md:text-6xl"
@@ -430,14 +545,17 @@ function ServicesSection() {
             </BlurRevealTitle>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-[#5C5A55] sm:text-base">
-            Full-spectrum brand identity, web design, and digital engineering tailored for
-            ambitious teams.
+            Full-spectrum brand identity, web design, and digital engineering
+            tailored for ambitious teams.
           </p>
         </div>
 
         <ol className="border-t border-[#141414]/[0.10]">
           {STUDIO_SERVICES.map((service, index) => (
-            <li key={service.number} className="group relative border-b border-[#141414]/[0.10]">
+            <li
+              key={service.number}
+              className="group relative border-b border-[#141414]/[0.10]"
+            >
               <Link
                 href="/work"
                 className="relative flex items-start gap-4 py-7 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 sm:items-center sm:gap-8 sm:py-9"
@@ -496,7 +614,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
         aria-label={`View case study: ${project.title}`}
         className="grid items-center gap-7 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 sm:gap-10 lg:grid-cols-2 lg:gap-16"
       >
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-[#141414]/[0.10] bg-[#ECEAE3]">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border-0 bg-[#ECEAE3] shadow-none">
           <Image
             src={project.image}
             alt={`${project.title} — ${project.category} project by Miux Studio`}
@@ -560,7 +678,7 @@ function StickyProjectCard({
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="group relative h-[66svh] min-h-[440px] max-h-[560px] overflow-hidden rounded-[28px] border border-[#141414]/[0.12] bg-[#181818] shadow-[0_36px_90px_-30px_rgba(20,20,20,0.28)] sm:h-[64vh] sm:min-h-[520px] sm:max-h-[660px]"
+          className="group relative h-[66svh] min-h-[440px] max-h-[560px] overflow-hidden rounded-[28px] border-0 bg-[#181818] shadow-none sm:h-[64vh] sm:min-h-[520px] sm:max-h-[660px]"
         >
           <Image
             src={project.image}
@@ -587,7 +705,8 @@ function StickyProjectCard({
 
           <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-5 sm:p-7">
             <span className="rounded-full border border-white/[0.18] bg-black/45 px-3 py-1 font-display text-sm tabular-nums text-white backdrop-blur-md">
-              {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+              {String(index + 1).padStart(2, "0")} /{" "}
+              {String(total).padStart(2, "0")}
             </span>
             <span className="rounded-full border border-orange-300/25 bg-orange-950/35 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-orange-200 backdrop-blur-md sm:text-[11px]">
               {project.category}
@@ -643,7 +762,16 @@ function Work() {
     target: workRef,
     offset: ["start end", "end start"],
   });
-  const washOpacity = useTransform(scrollYProgress, [0, 0.45, 1], [0, 0.55, 0]);
+  const halfMoonOpacity = useTransform(
+    scrollYProgress,
+    [0.05, 0.24, 0.78, 0.98],
+    [0, 1, 0.95, 0],
+  );
+  const halfMoonBlurOpacity = useTransform(
+    scrollYProgress,
+    [0.52, 0.78, 0.96],
+    [0, 0.85, 1],
+  );
 
   return (
     <section
@@ -652,16 +780,43 @@ function Work() {
       aria-label="Selected work"
       className="relative bg-[#F6F5F0] px-5 pb-4 pt-14 sm:pt-16"
     >
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <motion.div
-          style={{ opacity: washOpacity }}
-          className="absolute left-1/2 top-1/3 h-[750px] w-[1100px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.12)_0%,transparent_65%)] blur-[110px]"
-        />
+      {/* Sticky half-moon orange shadow in the background behind the Work projects,
+          smoothly transitioning into progressive blur as you scroll further down */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-x-clip"
+      >
+        <div className="sticky top-[18vh] flex h-[72vh] w-full flex-col items-center justify-end">
+          <motion.div
+            style={{ opacity: halfMoonOpacity }}
+            className="relative h-40 w-[94%] max-w-[1160px] will-change-[opacity] sm:h-52"
+          >
+            {/* Half-moon orange shadow dome */}
+            <div className="absolute inset-x-0 bottom-0 h-full rounded-t-[100%] bg-[radial-gradient(ellipse_78%_92%_at_50%_100%,rgba(234,68,24,0.34)_0%,rgba(249,115,22,0.22)_42%,rgba(251,146,60,0.08)_72%,transparent_100%)] blur-2xl" />
+            <div className="absolute inset-x-10 bottom-0 h-28 rounded-t-[100%] bg-[radial-gradient(ellipse_62%_85%_at_50%_100%,rgba(220,38,38,0.20)_0%,rgba(249,115,22,0.14)_50%,transparent_100%)] blur-xl sm:inset-x-24 sm:h-36" />
+          </motion.div>
+
+          {/* Smooth progressive blur activating as you scroll longer through Work */}
+          <motion.div
+            style={{ opacity: halfMoonBlurOpacity }}
+            className="absolute inset-x-0 bottom-0 h-32 w-full will-change-[opacity] sm:h-40"
+          >
+            <ProgressiveBlur
+              direction="bottom"
+              blurLayers={6}
+              blurIntensity={0.65}
+              className="absolute inset-0 h-full w-full"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F6F5F0]/50 to-[#F6F5F0]" />
+          </motion.div>
+        </div>
       </div>
 
       <div className="relative z-10 mx-auto mb-10 flex w-full max-w-[1180px] flex-col items-start gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <span className="font-display text-sm italic text-orange-600">01 — Selected</span>
+          <span className="font-display text-sm italic text-orange-600">
+            01 — Selected
+          </span>
           <BlurRevealTitle
             as="h2"
             className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#141414] sm:text-5xl md:text-6xl"
@@ -686,6 +841,16 @@ function Work() {
           {displayedProjects.map((project, idx) => (
             <ProjectRow key={project.id} project={project} index={idx} />
           ))}
+          <div aria-hidden="true" className="relative h-24 w-full pointer-events-none select-none overflow-visible">
+            <div className="absolute inset-x-4 -top-4 h-20 rounded-[100%] bg-[radial-gradient(ellipse_68%_72%_at_50%_18%,rgba(234,68,24,0.34)_0%,rgba(249,115,22,0.20)_40%,transparent_100%)] blur-2xl" />
+            <ProgressiveBlur
+              direction="bottom"
+              blurLayers={8}
+              blurIntensity={0.6}
+              className="absolute inset-0 h-full w-full"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F6F5F0]/45 to-[#F6F5F0]" />
+          </div>
         </div>
       ) : (
         <div className="relative z-10 mx-auto w-full max-w-[1180px]">
@@ -697,7 +862,20 @@ function Work() {
               total={displayedProjects.length}
             />
           ))}
-          <div aria-hidden="true" className="h-[14vh]" />
+          <div aria-hidden="true" className="relative -mt-[11vh] h-28 sm:h-36 w-full pointer-events-none select-none overflow-visible">
+            {/* Layered orange mesh glow at the end of the project stack, styled like a soft ambient drop shadow */}
+            <div className="absolute inset-x-4 sm:inset-x-10 -top-6 h-24 sm:h-32 rounded-[100%] bg-[radial-gradient(ellipse_68%_72%_at_50%_18%,rgba(234,68,24,0.38)_0%,rgba(249,115,22,0.24)_38%,rgba(251,146,60,0.10)_68%,transparent_100%)] blur-2xl" />
+            <div className="absolute inset-x-12 sm:inset-x-28 -top-3 h-16 sm:h-24 rounded-[100%] bg-[radial-gradient(ellipse_60%_70%_at_35%_25%,rgba(220,38,38,0.24)_0%,transparent_70%),radial-gradient(ellipse_60%_70%_at_68%_25%,rgba(251,146,60,0.28)_0%,transparent_70%)] blur-xl" />
+            {/* Smooth progressive blur dissolving cleanly into #F6F5F0 */}
+            <ProgressiveBlur
+              direction="bottom"
+              blurLayers={8}
+              blurIntensity={0.6}
+              className="absolute inset-0 h-full w-full"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F6F5F0]/45 to-[#F6F5F0]" />
+          </div>
+          <div aria-hidden="true" className="h-[6vh]" />
         </div>
       )}
 
@@ -757,7 +935,9 @@ function ApproachSection() {
     >
       <div className="mx-auto grid w-full max-w-[1100px] gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <span className="font-display text-sm italic text-orange-600">Method</span>
+          <span className="font-display text-sm italic text-orange-600">
+            Method
+          </span>
           <BlurRevealTitle
             as="h2"
             className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#141414] sm:text-5xl md:text-6xl"
@@ -765,8 +945,8 @@ function ApproachSection() {
             Approach
           </BlurRevealTitle>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#5C5A55] sm:text-base">
-            A disciplined, sprint-based workflow focused on craft, speed, and tangible business
-            metrics.
+            A disciplined, sprint-based workflow focused on craft, speed, and
+            tangible business metrics.
           </p>
           <Link
             href="/meeting"
@@ -790,7 +970,9 @@ function ApproachSection() {
               >
                 <span className="size-1.5 rounded-full bg-orange-600" />
               </span>
-              <span className="font-display text-sm text-orange-600">{item.step}</span>
+              <span className="font-display text-sm text-orange-600">
+                {item.step}
+              </span>
               <h3 className="mt-1 text-xl font-semibold tracking-tight text-[#141414] sm:text-2xl">
                 {item.title}
               </h3>
@@ -1030,12 +1212,11 @@ function FinalCTA() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08)_0%,transparent_68%)]"
       />
 
-
       {/* Slow, shining ambient pulsing glow */}
       <motion.div
         animate={{
           scale: [1, 1.16, 1],
-          opacity: [0.18, 0.30, 0.18],
+          opacity: [0.18, 0.3, 0.18],
         }}
         transition={{
           duration: 7.5,
@@ -1102,7 +1283,9 @@ function FinalCTA() {
           className="mx-auto mt-7 max-w-xl text-base text-[#5C5A55] sm:text-lg text-center space-y-1.5"
         >
           <p>A focused 45-minute call to see if we&apos;re a good fit.</p>
-          <p className="text-[#141414] font-medium">No pressure. Just clarity.</p>
+          <p className="text-[#141414] font-medium">
+            No pressure. Just clarity.
+          </p>
         </motion.div>
 
         <motion.div
@@ -1112,7 +1295,7 @@ function FinalCTA() {
           variants={fadeUp}
           className="mt-10"
         >
-          <a
+          <Link
             href="/meeting"
             aria-label="Book a 45-minute discovery call with Miux Studio"
             title="Book a 45-min call with Miux Studio"
@@ -1126,7 +1309,7 @@ function FinalCTA() {
               if (window.matchMedia("(hover: hover)").matches) setYouOpen(true);
             }}
             onBlur={() => setYouOpen(false)}
-            className="group relative inline-flex items-center gap-3.5 rounded-full bg-[radial-gradient(ellipse_at_top_left,#ffffff_0%,#fed7aa_35%,#f97316_70%,#ea580c_100%)] px-7 py-3.5 sm:px-8 sm:py-4 text-base font-semibold text-[#141414] shadow-[0_4px_24px_rgba(249,115,22,0.3)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(249,115,22,0.5)] select-none active:scale-[0.98]"
+            className="group relative inline-flex items-center gap-3.5 rounded-full bg-[radial-gradient(ellipse_at_top_left,#ffffff_0%,#fed7aa_35%,#f97316_70%,#ea580c_100%)] px-7 py-3.5 sm:px-8 sm:py-4 text-base font-semibold text-[#141414] shadow-[0_2px_14px_rgba(234,88,12,0.22)] ring-1 ring-inset ring-white/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_6px_26px_rgba(234,88,12,0.35)] select-none active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600"
           >
             <span className="flex shrink-0 items-center">
               <span
@@ -1152,21 +1335,31 @@ function FinalCTA() {
                 initial={false}
                 animate={youOpen ? "open" : "closed"}
                 variants={{
-                  closed: { width: 0, marginLeft: 0 },
-                  open: { width: 36, marginLeft: 8 },
+                  closed: { width: 0, opacity: 0 },
+                  open: { width: "auto", opacity: 1 },
                 }}
-                transition={{ type: "spring", stiffness: 420, damping: 30, mass: 0.7 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 30,
+                  mass: 0.7,
+                }}
                 className="flex h-8 items-center overflow-hidden sm:h-9"
               >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white text-[8px] font-bold uppercase leading-none tracking-[0.02em] text-[#141414] shadow-[0_6px_20px_rgba(0,0,0,0.4)] sm:size-9">
-                  + YOU
+                <span className="flex shrink-0 items-center">
+                  <span className="mx-1.5 inline-flex items-center justify-center text-sm font-bold leading-none text-[#141414] sm:mx-2 sm:text-base">
+                    +
+                  </span>
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/50 bg-white text-[9px] font-bold uppercase leading-none tracking-[0.04em] text-[#141414] shadow-[0_6px_20px_rgba(0,0,0,0.28)] sm:size-9 sm:text-[10px]">
+                    YOU
+                  </span>
                 </span>
               </motion.span>
             </span>
 
             <span>Book a 45-min call</span>
-            <ArrowUpRight className="size-4.5 sm:size-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
+            <ArrowUpRight aria-hidden="true" className="size-[18px] shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:size-5" />
+          </Link>
         </motion.div>
       </div>
     </section>
@@ -1195,12 +1388,10 @@ function StickyHalfMoonBlur() {
       aria-hidden="true"
       className={cn(
         "pointer-events-none fixed bottom-0 left-1/2 -translate-x-1/2 z-40 w-full max-w-[850px] h-14 sm:h-20 overflow-hidden select-none transition-opacity duration-500",
-        visible ? "opacity-100" : "opacity-0"
+        visible ? "opacity-100" : "opacity-0",
       )}
     >
-      <div
-        className="w-full h-[200%] rounded-t-[100%] backdrop-blur-xl [mask-image:radial-gradient(ellipse_100%_100%_at_bottom,black_35%,transparent_96%)]"
-      />
+      <div className="w-full h-[200%] rounded-t-[100%] backdrop-blur-xl [mask-image:radial-gradient(ellipse_100%_100%_at_bottom,black_35%,transparent_96%)]" />
     </div>
   );
 }

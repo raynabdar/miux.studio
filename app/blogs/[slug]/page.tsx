@@ -27,6 +27,8 @@ export async function generateMetadata({
   const post = blogPosts.find((item) => item.slug === slug)
   if (!post) return {}
 
+  const publishedTime = new Date(post.date).toISOString()
+
   return {
     title: `${post.title} | ${SITE.name}`,
     description: post.excerpt,
@@ -36,7 +38,16 @@ export async function generateMetadata({
       title: post.title,
       description: post.excerpt,
       url: `${SITE.url}/blogs/${post.slug}`,
+      siteName: SITE.name,
+      publishedTime,
+      modifiedTime: publishedTime,
       images: [{ url: post.image, alt: post.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt,
+      images: [post.image],
     },
   }
 }
@@ -50,16 +61,32 @@ export default async function BlogPostPage({
   const post = blogPosts.find((item) => item.slug === slug)
   if (!post) notFound()
 
+  const postUrl = `${SITE.url}/blogs/${post.slug}`
+  const datePublished = new Date(post.date).toISOString()
+
   const articleJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
-    datePublished: post.date,
+    datePublished,
+    dateModified: datePublished,
     image: post.image,
-    author: { '@type': 'Person', name: post.author.name },
+    author: { '@type': 'Person', name: post.author.name, url: SITE.url },
     publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
-    mainEntityOfPage: `${SITE.url}/blogs/${post.slug}`,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
+    url: postUrl,
+    inLanguage: 'en-US',
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+      { '@type': 'ListItem', position: 2, name: 'Journal', item: `${SITE.url}/blogs` },
+      { '@type': 'ListItem', position: 3, name: post.title, item: postUrl },
+    ],
   }
 
   const related = blogPosts.filter((item) => item.slug !== post.slug).slice(0, 2)
@@ -75,6 +102,10 @@ export default async function BlogPostPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <Navbar />
 

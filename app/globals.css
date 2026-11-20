@@ -2,6 +2,9 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+@source "../node_modules/noise-gradient-bg";
+@source inline("opacity-50 opacity-35");
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -125,27 +128,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Custom cursor (pointer-fine only) ─────────────────────── */
-
-html.has-custom-cursor,
-html.has-custom-cursor body {
-  cursor: none;
-}
-
-html.has-custom-cursor :focus-visible,
-html.has-custom-cursor input,
-html.has-custom-cursor textarea,
-html.has-custom-cursor select {
-  cursor: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html.has-custom-cursor,
-  html.has-custom-cursor body {
-    cursor: auto;
-  }
-}
-
 /* ── Selection ─────────────────────────────────────────────── */
 
 ::selection {
@@ -249,6 +231,79 @@ body::after {
 
 .animate-marquee-reverse {
   animation: marquee-reverse var(--duration, 30s) linear infinite;
+}
+
+/* ── Back-to-top Glitch & Orange Shine Keyframes ───────────── */
+
+@keyframes btt-glitch-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(6px, 12px, 0) scale(0.78) skewX(-10deg);
+    clip-path: inset(0 0 65% 0);
+  }
+  22% {
+    opacity: 1;
+    transform: translate3d(-4px, -2px, 0) scale(1.06) skewX(8deg);
+    clip-path: inset(18% 0 12% 0);
+  }
+  42% {
+    opacity: 0.72;
+    transform: translate3d(3px, 1px, 0) scale(0.96) skewX(-5deg);
+    clip-path: inset(0 0 28% 0);
+  }
+  64% {
+    opacity: 1;
+    transform: translate3d(-2px, -1px, 0) scale(1.02) skewX(2deg);
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) skewX(0deg);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes btt-shine {
+  0% {
+    transform: translateX(-160%) skewX(-22deg);
+  }
+  45%,
+  100% {
+    transform: translateX(220%) skewX(-22deg);
+  }
+}
+
+@keyframes btt-ghost-glitch {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  91% {
+    opacity: 0.8;
+    transform: translate3d(-2px, 1px, 0);
+  }
+  94% {
+    opacity: 0.65;
+    transform: translate3d(2px, -1px, 0);
+  }
+  97% {
+    opacity: 0;
+    transform: translate3d(-1px, 0, 0);
+  }
+}
+
+.animate-btt-glitch-in {
+  animation: btt-glitch-in 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-btt-shine {
+  animation: btt-shine 3.2s ease-in-out infinite;
+}
+
+.animate-btt-ghost-glitch {
+  animation: btt-ghost-glitch 3.8s steps(2, end) infinite;
 }
 
 /* ── Reduced motion compliance ─────────────────────────────── */

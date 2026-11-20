@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import Link from "next/link";
 import { useId, useSyncExternalStore } from "react";
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
@@ -285,19 +286,29 @@ export function ShinyButton({
   `;
 
   if (href) {
+    const shared = {
+      className: `${scope} ${className}`,
+      onClick,
+      "aria-label": ariaLabel || label,
+      title: title || ariaLabel || label,
+      "data-reduced-motion": reducedMotion ? "true" : undefined,
+    } as const;
+
+    if (href.startsWith("/") && !target) {
+      return (
+        <>
+          <style>{css}</style>
+          <Link href={href} {...shared}>
+            <span>{children ?? label}</span>
+          </Link>
+        </>
+      );
+    }
+
     return (
       <>
         <style>{css}</style>
-        <a
-          href={href}
-          className={`${scope} ${className}`}
-          onClick={onClick}
-          aria-label={ariaLabel || label}
-          title={title || ariaLabel || label}
-          target={target}
-          rel={rel}
-          data-reduced-motion={reducedMotion ? "true" : undefined}
-        >
+        <a href={href} {...shared} target={target} rel={rel}>
           <span>{children ?? label}</span>
         </a>
       </>
