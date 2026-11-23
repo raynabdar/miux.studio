@@ -5,6 +5,7 @@ import { getDb } from '@/lib/db/client'
 import { requireFounder } from '@/lib/auth/session'
 import { statusAfterVerification } from '@/lib/auth/status'
 import { audit } from '@/lib/security/audit'
+import { createNotification, emailClient } from '@/lib/portal/notifications'
 
 export async function setEarlySignUp(formData: FormData) {
   const { userId } = await requireFounder()
@@ -62,6 +63,23 @@ export async function setAccountVerification(formData: FormData) {
     targetId: target.clerkId,
     metadata: { status },
   })
+
+  if (mode === 'verify') {
+    await createNotification({
+      recipientClerkId: target.clerkId,
+      type: 'account_event',
+      title: 'Your account is approved',
+      body: 'Your Miux Studio account is verified. Your client workspace is now available.',
+      linkUrl: '/client',
+    })
+    await emailClient(target.clerkId, 'Your Miux Studio account is approved', [
+      `Hi ${target.fullName ?? 'there'},`,
+      '',
+      'Your account has been verified. You can now access your client workspace.',
+      '',
+      'Portal: /client',
+    ])
+  }
 
   revalidatePath('/founder')
 }

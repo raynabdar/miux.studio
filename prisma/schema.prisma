@@ -56,7 +56,12 @@ model User {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  submissions OnboardingSubmission[]
+  submissions     OnboardingSubmission[]
+  projects        Project[]          @relation("ProjectClient")
+  memberships     ProjectMember[]
+  meetingRequests MeetingRequest[]
+  notifications   Notification[]
+  clientNotes     ClientNote[]       @relation("ClientNotes")
 
   @@index([status])
   @@index([isDemo])
@@ -115,4 +120,169 @@ model AuditLog {
   @@index([actorClerkId, createdAt])
   @@index([action, createdAt])
   @@map("audit_logs")
+}
+
+// ── Phase 2 — client portal ───────────────────────────────────────────────────
+
+enum ProjectStatus {
+  discovery
+  design
+  development
+  review
+  launched
+  on_hold
+}
+
+enum MeetingRequestStatus {
+  pending
+  seen
+  completed
+  cancelled
+}
+
+enum NotificationType {
+  team_message
+  project_update
+  meeting_request_update
+  account_event
+}
+
+enum MessageSenderRole {
+  client
+  team_member
+  assistant
+}
+
+model Project {
+  id                 String        @id @default(uuid()) @db.Uuid
+  clientId           String
+  name               String
+  description        String
+  status             ProjectStatus @default(discovery)
+  startDate          DateTime?
+  expectedCompletion DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  client          User             @relation("ProjectClient", fields: [clientId], references: [clerkId], onDelete: Cascade)
+  members         ProjectMember[]
+  updates         ProjectUpdate[]
+  conversations   Conversation[]
+  meetingRequests MeetingRequest[]
+
+  @@index([clientId])
+  @@index([status])
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @db.Uuid
+  clerkId   String
+  roleLabel String?
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [clerkId], references: [clerkId], onDelete: Cascade)
+
+  @@unique([projectId, clerkId])
+  @@index([clerkId])
+  @@map("project_members")
+}
+
+model ProjectUpdate {
+  id             String   @id @default(uuid()) @db.Uuid
+  projectId      String   @db.Uuid
+  authorClerkId  String
+  title          String
+  description    String
+  attachmentPath String?
+  attachmentName String?
+  createdAt      DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@map("project_updates")
+}
+
+model Conversation {
+  id               String    @id @default(uuid()) @db.Uuid
+  projectId        String    @unique @db.Uuid
+  clientLastReadAt DateTime?
+  teamLastReadAt   DateTime?
+  lastMessageAt    DateTime?
+  createdAt        DateTime  @default(now())
+
+  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String            @id @default(uuid()) @db.Uuid
+  conversationId String            @db.Uuid
+  senderClerkId  String?
+  senderRole     MessageSenderRole
+  body           String
+  createdAt      DateTime          @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+model MeetingRequest {
+  id          String               @id @default(uuid()) @db.Uuid
+  clientId    String
+  projectId   String?              @db.Uuid
+  message     String
+  status      MeetingRequestStatus @default(pending)
+  createdAt   DateTime             @default(now())
+  seenAt      DateTime?
+  completedAt DateTime?
+  cancelledAt DateTime?
+
+  client  User     @relation(fields: [clientId], references: [clerkId], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([clientId, status])
+  @@index([status, createdAt])
+  @@map("meeting_requests")
+}
+
+model Notification {
+  id               String           @id @default(uuid()) @db.Uuid
+  recipientClerkId String
+  type             NotificationType
+  title            String
+  body             String
+  linkUrl          String?
+  dedupeKey        String?          @unique
+  readAt           DateTime?
+  createdAt        DateTime         @default(now())
+
+  recipient User @relation(fields: [recipientClerkId], references: [clerkId], onDelete: Cascade)
+
+  @@index([recipientClerkId, readAt])
+  @@index([recipientClerkId, createdAt])
+  @@map("notifications")
+}
+
+// ── Phase 3 — admin dashboard ─────────────────────────────────────────────────
+
+// Internal, owner-only notes about a client. Never exposed to the client portal.
+model ClientNote {
+  id            String   @id @default(uuid()) @db.Uuid
+  clientId      String
+  authorClerkId String
+  body          String
+  createdAt     DateTime @default(now())
+
+  client User @relation("ClientNotes", fields: [clientId], references: [clerkId], onDelete: Cascade)
+
+  @@index([clientId, createdAt])
+  @@map("client_notes")
 }

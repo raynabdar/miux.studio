@@ -55,6 +55,42 @@ Open http://localhost:3000.
 - **Demo accounts** (`DEMO_*` env) are read-only in the UI (banner) and reset nightly by
   `/api/cron/demo-reset` (Bearer `CRON_SECRET`, see `vercel.json`).
 
+### Client portal (Phase 2)
+
+- **Dashboard** (`/client`) shows projects with statuses, recent updates, unread notifications,
+  recent conversations, and any pending meeting request.
+- **Project workspace** (`/client/projects/[id]`) shows the timeline, a conversation with the team,
+  the project assistant, and meeting requests. Every read and write goes through
+  `lib/portal/access.ts`, so a client can only ever load its own project.
+- **Team workspace** (`/team`, `/team/projects/[id]`) lets team members publish updates and reply to
+  clients. Team members only see projects they are assigned to; the founder sees all.
+- **Notifications** are stored in `notifications` and surfaced in-app; email goes to the client via
+  Resend. Demo accounts never receive email and cannot write.
+- **Realtime** uses Supabase Realtime with Clerk as a third-party auth provider: create a Clerk JWT
+  template named `supabase` and enable it in Supabase. RLS policies on `messages`/`notifications`
+  compare `auth.jwt() ->> 'sub'` with ownership columns. Without Supabase configured the chat falls
+  back to periodic refresh.
+- **AI assistant** calls Gemini from the server only (`lib/ai/gemini.ts`) with project-scoped
+  context; answers are stored as an `assistant` message. Replies never include other clients' data.
+- **Meeting requests** are one-pending-per-client, enforced by a partial unique index
+  (`meeting_requests_one_pending_per_client`).
+
+### Admin dashboard (Phase 3)
+
+- `/admin` is owner-only (`requireFounder()` on every page and server action). Middleware and hidden
+  UI are never the authorization layer.
+- **Clients** — cards with status; the detail page aggregates contact/company, onboarding
+  submissions, projects and files, owner-only internal notes, chat history, meeting history and
+  notifications. Verify/unverify takes effect immediately; role changes are limited to
+  `client`/`team_member` (founder is configuration-only) and audited.
+- **Meetings** — all requests with current state; "Mark as reviewed" moves `pending` → `seen`,
+  notifies and emails the client, and re-enables new requests. Shared logic lives in
+  `lib/meetings.ts` and is used by both `/team` and `/admin`.
+- **Submissions** — all onboarding submissions with service, budget, meeting preference, booking
+  state and status.
+- **Audit log** — recent entries. `audit_logs` is append-only: a database trigger rejects UPDATE and
+  DELETE on the table.
+
 ### Database
 
 Prisma with PostgreSQL (Supabase). Runtime uses the pooled `DATABASE_URL` (port 6543,
@@ -96,6 +132,10 @@ Without these three, both form endpoints return `503` with a message telling the
 | `/contact` | Static | Enquiry form → `/api/contact` |
 | `/onboarding` | Static, `noindex` | Long-form client brief → `/api/onboarding` |
 | `/terms`, `/client-terms`, `/privacy-policy` | Static | Legal pages |
+| `/client`, `/client/projects/[id]` | Dynamic, `noindex` | Client portal (role `client`) |
+| `/team`, `/team/projects/[id]` | Dynamic, `noindex` | Team workspace (role `team_member` / founder) |
+| `/founder` | Dynamic, `noindex` | Founder panel (`FOUNDER_USER_ID`) |
+| `/admin`, `/admin/clients/[clerkId]`, `/admin/meetings`, `/admin/submissions`, `/admin/audit` | Dynamic, `noindex` | Owner-only admin workspace |
 | `/sitemap` | Static | HTML sitemap |
 | `/blog`, `/privacy` | Redirects | → `/blogs`, `/privacy-policy` |
 | `/sitemap.xml`, `/robots.txt` | Generated | `app/sitemap.ts`, `app/robots.ts` |
@@ -112,4 +152,8 @@ Form validation schemas are shared between client and server in [`lib/schemas.ts
 
 ## Deployment
 
-Deploys as a standard Next.js app on Vercel. Set the three Resend variables in the project environment. Security headers and the `/onboarding` `noindex` rule are configured in `next.config.mjs`. Only `images.unsplash.com` is allowed as a remote image host.
+Deploys as a standard Next.js app on Vercel. Set the Resend, Clerk, Supabase (`DATABASE_URL`,
+`DIRECT_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`), Upstash, Turnstile and
+Gemini (`GEMINI_API_KEY`) variables in the project environment. Security headers and the
+`/onboarding` `noindex` rule are configured in `next.config.mjs`. Only `images.unsplash.com` is
+allowed as a remote image host.

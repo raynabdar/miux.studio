@@ -14,6 +14,8 @@ export type LimitName =
   | 'sign-up'
   | 'password-reset'
   | 'meeting-request'
+  | 'messaging'
+  | 'ai'
 
 const CONFIG: Record<LimitName, { limit: number; window: `${number} ${'s' | 'm' | 'h'}` }> = {
   'onboarding-submit': { limit: 5, window: '15 m' },
@@ -21,6 +23,8 @@ const CONFIG: Record<LimitName, { limit: number; window: `${number} ${'s' | 'm' 
   'sign-up': { limit: 5, window: '1 h' },
   'password-reset': { limit: 3, window: '1 h' },
   'meeting-request': { limit: 5, window: '1 h' },
+  messaging: { limit: 60, window: '10 m' },
+  ai: { limit: 20, window: '1 h' },
 }
 
 const limiters = new Map<LimitName, Ratelimit>()

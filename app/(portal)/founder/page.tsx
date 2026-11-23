@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { requireFounder } from '@/lib/auth/session'
 import { getDb } from '@/lib/db/client'
 import { setAccountVerification, setEarlySignUp } from './actions'
@@ -69,7 +70,15 @@ export default async function FounderPage() {
             Identity {userId} · every action below is written to the audit log.
           </p>
         </div>
-        <SignOutButton />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin"
+            className="rounded-full border border-[#141414]/15 bg-white px-4 py-2 text-xs font-semibold hover:border-orange-500/50"
+          >
+            Admin dashboard
+          </Link>
+          <SignOutButton />
+        </div>
       </header>
 
       <section className="mb-6 rounded-[28px] border border-[#141414]/10 bg-white/70 p-6">

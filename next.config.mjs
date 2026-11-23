@@ -5,7 +5,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline' https://*.clerk.accounts.dev",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com https://*.upstash.io https://vitals.vercel-insights.com https://va.vercel-scripts.com https://api.resend.com",
+  "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com https://*.upstash.io https://vitals.vercel-insights.com https://va.vercel-scripts.com https://api.resend.com https://*.supabase.co wss://*.supabase.co",
   "frame-src 'self' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://app.cal.com https://cal.com",
   "worker-src 'self' blob:",
   "object-src 'none'",
