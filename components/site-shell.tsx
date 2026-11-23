@@ -613,6 +613,17 @@ const SOCIAL_ICONS = {
   X: XIcon,
 } as const;
 
+// Orange-only gradient for the footer glow: deep amber at the floor rising
+// through bright orange into a soft apricot that dissolves into the page.
+const FOOTER_ORANGE_STOPS = [
+  { offset: 0, color: "#EA580C" },
+  { offset: 0.18, color: "#F97316" },
+  { offset: 0.38, color: "#FB923C" },
+  { offset: 0.58, color: "#FDBA74" },
+  { offset: 0.78, color: "#FED7AA" },
+  { offset: 1, color: "#FFEDD500" },
+];
+
 export function Footer() {
   const cms = useCms();
   const site = cms.site;
@@ -632,6 +643,7 @@ export function Footer() {
       blur={30}
       peak={0.92}
       valley={0.5}
+      stops={FOOTER_ORANGE_STOPS}
       className="relative border-t border-[#141414]/[0.08] bg-[#F6F5F0]"
     >
       <div

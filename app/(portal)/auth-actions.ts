@@ -4,11 +4,6 @@ import { headers } from 'next/headers'
 import { z } from 'zod'
 import { enforceLimit } from '@/lib/ratelimit'
 import {
-  isTurnstileSecretConfigured,
-  verifyTurnstile,
-  type TurnstileAction,
-} from '@/lib/security/turnstile'
-import {
   clearSignInFailures,
   isSignInLocked,
   recordSignInFailure,
@@ -26,14 +21,6 @@ async function requestIp() {
 }
 
 const emailInput = z.object({ email: emailField })
-
-export async function verifyAuthChallenge(
-  token: string,
-  expectedAction?: TurnstileAction
-): Promise<boolean> {
-  if (!isTurnstileSecretConfigured()) return process.env.NODE_ENV !== 'production'
-  return verifyTurnstile(token, { remoteIp: await requestIp(), expectedAction })
-}
 
 export type PreSignInResult =
   | { ok: true }

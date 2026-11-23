@@ -3,7 +3,6 @@ import Link from 'next/link'
 import AuthShell from '@/components/portal/auth-shell'
 import SignUpForm from '@/components/portal/sign-up-form'
 import { getSignUpGate } from '@/lib/onboarding/submission'
-import { getTurnstileSiteKey } from '@/lib/security/turnstile'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,13 +34,13 @@ export default async function SignUpPage({
         <div className="flex flex-wrap gap-3">
           <Link
             href={referenceId ? `/start?ref=${encodeURIComponent(referenceId)}` : '/start'}
-            className="inline-flex items-center justify-center rounded-full bg-[#141414] px-5 py-2.5 text-sm font-semibold text-[#F6F5F0] transition-transform hover:-translate-y-0.5 active:scale-[0.98]"
+            className="inline-flex h-12 items-center justify-center rounded-[12px] bg-[#141414] px-6 text-sm font-medium text-[#F6F5F0] transition-colors hover:bg-[#141414]/90 active:scale-[0.99]"
           >
             Continue onboarding
           </Link>
           <Link
             href="/sign-in"
-            className="inline-flex items-center justify-center rounded-full border border-[#141414]/15 bg-white px-5 py-2.5 text-sm font-semibold text-[#141414] transition-all hover:border-orange-500/50"
+            className="inline-flex h-12 items-center justify-center rounded-[12px] border border-[#141414]/20 bg-white px-6 text-sm font-medium text-[#141414] transition-colors hover:border-orange-500/50"
           >
             I already have an account
           </Link>
@@ -55,10 +54,7 @@ export default async function SignUpPage({
       title="Create your account"
       subtitle={`Reference ${gate.submission.referenceId}. Use the same email address you used in the project request.`}
     >
-      <SignUpForm
-        siteKey={getTurnstileSiteKey()}
-        email={gate.submission.email}
-      />
+      <SignUpForm email={gate.submission.email} />
     </AuthShell>
   )
 }

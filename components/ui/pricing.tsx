@@ -686,7 +686,7 @@ export default function PricingSection5({
       id="pricing"
       aria-label="Pricing and plans"
       className={cn(
-        "relative overflow-hidden bg-[#F6F5F0] px-5 py-24 text-[#141414] sm:py-32",
+        "relative scroll-mt-24 overflow-hidden bg-[#F6F5F0] px-5 py-24 text-[#141414] sm:scroll-mt-28 sm:py-32",
         className
       )}
       ref={pricingRef}

@@ -1,30 +1,24 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useSignIn } from '@clerk/nextjs'
-import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import {
   noteSignInFailure,
   noteSignInSuccess,
   preSignInCheck,
-  verifyAuthChallenge,
 } from '@/app/(portal)/auth-actions'
 
 const fieldClass =
-  'w-full rounded-2xl border border-[#141414]/12 bg-white px-4 py-3 text-sm text-[#141414] outline-none transition-all placeholder:text-[#8A857C] focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/20'
+  'h-14 w-full rounded-[12px] border border-[#141414]/20 bg-white px-5 text-base text-[#141414] outline-none transition-colors placeholder:text-[#8A857C]/80 focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/15'
+const labelClass = 'mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8A857C]'
+const submitClass =
+  'inline-flex h-12 w-full items-center justify-center rounded-[12px] bg-[#141414] px-6 text-base font-medium text-[#F6F5F0] transition-colors hover:bg-[#141414]/90 active:scale-[0.99] disabled:opacity-60'
 
-export default function SignInForm({ siteKey }: { siteKey: string | null }) {
+export default function SignInForm() {
   const { signIn } = useSignIn()
-  const [token, setToken] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const turnstileRef = useRef<TurnstileInstance | null>(null)
-
-  function resetChallenge() {
-    setToken('')
-    turnstileRef.current?.reset()
-  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -40,12 +34,6 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
       const gate = await preSignInCheck({ email })
       if (!gate.ok) {
         setMessage(gate.message)
-        resetChallenge()
-        return
-      }
-      if (!(await verifyAuthChallenge(token, 'sign_in'))) {
-        setMessage('Please complete the verification challenge.')
-        resetChallenge()
         return
       }
 
@@ -57,7 +45,6 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
             ? 'Account temporarily locked after repeated failed sign-ins. Our team has been notified.'
             : (error.longMessage ?? error.message ?? 'Incorrect email or password.')
         )
-        resetChallenge()
         return
       }
 
@@ -65,7 +52,6 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
         setMessage(
           'This account needs an additional verification step that is not available here. Please contact us and we will help.'
         )
-        resetChallenge()
         return
       }
 
@@ -77,7 +63,6 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
       })
     } catch {
       setMessage('Something went wrong while signing in. Please try again.')
-      resetChallenge()
     } finally {
       setBusy(false)
     }
@@ -86,7 +71,7 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="signin-email" className="mb-1.5 block text-xs font-medium text-[#5C5A55]">
+        <label htmlFor="signin-email" className={labelClass}>
           Email address
         </label>
         <input
@@ -100,10 +85,7 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
         />
       </div>
       <div>
-        <label
-          htmlFor="signin-password"
-          className="mb-1.5 block text-xs font-medium text-[#5C5A55]"
-        >
+        <label htmlFor="signin-password" className={labelClass}>
           Password
         </label>
         <input
@@ -117,17 +99,6 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
         />
       </div>
 
-      {siteKey && (
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={siteKey}
-          options={{ theme: 'light', action: 'sign_in' }}
-          onSuccess={(value) => setToken(value)}
-          onExpire={() => setToken('')}
-          onError={() => setToken('')}
-        />
-      )}
-
       {message && (
         <p role="alert" className="text-xs text-red-600">
           {message}
@@ -137,12 +108,12 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
       <button
         type="submit"
         disabled={busy}
-        className="inline-flex w-full items-center justify-center rounded-full bg-[#141414] px-6 py-3 text-sm font-semibold text-[#F6F5F0] transition-transform hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-60"
+        className={submitClass}
       >
         {busy ? 'Signing in…' : 'Sign in'}
       </button>
 
-      <p className="text-center text-xs text-[#5C5A55]">
+      <p className="text-center text-[13px] text-[#5C5A55]">
         <Link href="/reset-password" className="underline-offset-4 hover:underline">
           Forgot password?
         </Link>

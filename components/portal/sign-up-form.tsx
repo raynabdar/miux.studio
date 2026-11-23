@@ -1,32 +1,21 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useSignUp } from '@clerk/nextjs'
-import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
-import { checkSignUpEmail, verifyAuthChallenge } from '@/app/(portal)/auth-actions'
+import { checkSignUpEmail } from '@/app/(portal)/auth-actions'
 
 const fieldClass =
-  'w-full rounded-2xl border border-[#141414]/12 bg-white px-4 py-3 text-sm text-[#141414] outline-none transition-all placeholder:text-[#8A857C] focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/20'
+  'h-14 w-full rounded-[12px] border border-[#141414]/20 bg-white px-5 text-base text-[#141414] outline-none transition-colors placeholder:text-[#8A857C]/80 focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/15'
+const labelClass = 'mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8A857C]'
+const submitClass =
+  'inline-flex h-12 w-full items-center justify-center rounded-[12px] bg-[#141414] px-6 text-base font-medium text-[#F6F5F0] transition-colors hover:bg-[#141414]/90 active:scale-[0.99] disabled:opacity-60'
 
-export default function SignUpForm({
-  siteKey,
-  email,
-}: {
-  siteKey: string | null
-  email: string
-}) {
+export default function SignUpForm({ email }: { email: string }) {
   const { signUp } = useSignUp()
   const [step, setStep] = useState<'form' | 'verify'>('form')
-  const [token, setToken] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [emailAddress, setEmailAddress] = useState(email)
-  const turnstileRef = useRef<TurnstileInstance | null>(null)
-
-  function resetChallenge() {
-    setToken('')
-    turnstileRef.current?.reset()
-  }
 
   async function handleCreate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -42,12 +31,6 @@ export default function SignUpForm({
       const emailCheck = await checkSignUpEmail({ email: nextEmail })
       if (!emailCheck.ok) {
         setMessage(emailCheck.message ?? 'Please check your email address.')
-        resetChallenge()
-        return
-      }
-      if (!(await verifyAuthChallenge(token, 'sign_up'))) {
-        setMessage('Please complete the verification challenge.')
-        resetChallenge()
         return
       }
 
@@ -57,7 +40,15 @@ export default function SignUpForm({
       })
       if (error) {
         setMessage(error.longMessage ?? error.message ?? 'Could not create the account.')
-        resetChallenge()
+        return
+      }
+
+      if (signUp.status === 'complete') {
+        await signUp.finalize({
+          navigate: ({ decorateUrl }) => {
+            window.location.href = decorateUrl('/continue')
+          },
+        })
         return
       }
 
@@ -66,7 +57,6 @@ export default function SignUpForm({
       setStep('verify')
     } catch {
       setMessage('Something went wrong while creating the account. Please try again.')
-      resetChallenge()
     } finally {
       setBusy(false)
     }
@@ -109,7 +99,7 @@ export default function SignUpForm({
           . Enter it below to finish creating your account.
         </p>
         <div>
-          <label htmlFor="code" className="mb-1.5 block text-xs font-medium text-[#5C5A55]">
+          <label htmlFor="code" className={labelClass}>
             Verification code
           </label>
           <input
@@ -130,7 +120,7 @@ export default function SignUpForm({
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex w-full items-center justify-center rounded-full bg-[#141414] px-6 py-3 text-sm font-semibold text-[#F6F5F0] transition-transform hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-60"
+          className={submitClass}
         >
           {busy ? 'Verifying…' : 'Verify and continue'}
         </button>
@@ -141,7 +131,7 @@ export default function SignUpForm({
   return (
     <form onSubmit={handleCreate} className="space-y-4">
       <div>
-        <label htmlFor="signup-email" className="mb-1.5 block text-xs font-medium text-[#5C5A55]">
+        <label htmlFor="signup-email" className={labelClass}>
           Email address
         </label>
         <input
@@ -155,10 +145,7 @@ export default function SignUpForm({
         />
       </div>
       <div>
-        <label
-          htmlFor="signup-password"
-          className="mb-1.5 block text-xs font-medium text-[#5C5A55]"
-        >
+        <label htmlFor="signup-password" className={labelClass}>
           Password
         </label>
         <input
@@ -173,17 +160,6 @@ export default function SignUpForm({
         />
       </div>
 
-      {siteKey && (
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={siteKey}
-          options={{ theme: 'light', action: 'sign_up' }}
-          onSuccess={(value) => setToken(value)}
-          onExpire={() => setToken('')}
-          onError={() => setToken('')}
-        />
-      )}
-
       {message && (
         <p role="alert" className="text-xs text-red-600">
           {message}
@@ -193,13 +169,12 @@ export default function SignUpForm({
       <button
         type="submit"
         disabled={busy}
-        className="inline-flex w-full items-center justify-center rounded-full bg-[#141414] px-6 py-3 text-sm font-semibold text-[#F6F5F0] transition-transform hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-60"
+        className={submitClass}
       >
         {busy ? 'Creating account…' : 'Create account'}
       </button>
       <p className="text-[11px] leading-relaxed text-[#8A857C]">
-        Your account starts as pending verification. Access unlocks after email verification and a
-        quick review by our team.
+        Your account starts as pending verification. Access unlocks after a quick review by our team.
       </p>
     </form>
   )

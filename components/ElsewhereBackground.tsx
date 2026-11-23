@@ -60,7 +60,7 @@ export default function ElsewhereBackground({
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(180deg, rgba(0,0,0,0.42), rgba(0,0,0,0.16) 38%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.34))",
+            "linear-gradient(180deg, rgba(0,0,0,0.38), rgba(0,0,0,0.14) 32%, rgba(0,0,0,0) 58%)",
           pointerEvents: "none",
         }}
       />

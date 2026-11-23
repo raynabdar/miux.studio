@@ -13,11 +13,11 @@ export default function AuthShell({
   return (
     <main className="min-h-[100svh] w-full bg-[#F6F5F0] p-3 text-[#141414] sm:p-5">
       <div className="mx-auto grid min-h-[calc(100svh-1.5rem)] w-full max-w-[1440px] gap-3 sm:min-h-[calc(100svh-2.5rem)] sm:gap-4 lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)]">
-        <section className="flex flex-col rounded-[28px] border border-[#141414]/10 bg-white/75 px-6 py-8 sm:px-10 lg:px-14 lg:py-12">
+        <section className="flex flex-col rounded-[24px] border border-[#141414]/12 bg-white px-6 py-8 sm:px-10 lg:px-14 lg:py-12 xl:px-16">
           <header className="flex items-center justify-between">
             <Link
               href="/"
-              className="text-sm font-semibold tracking-tight transition-opacity hover:opacity-70"
+              className="text-sm font-semibold tracking-tight text-[#141414] transition-opacity hover:opacity-70"
             >
               Miux Studio
             </Link>
@@ -29,16 +29,20 @@ export default function AuthShell({
             </Link>
           </header>
 
-          <div className="flex flex-1 items-start py-10 lg:py-14">
-            <div className="mx-auto w-full max-w-[440px]">
-              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8A857C]">
+          <div className="flex flex-1 items-start py-10 lg:py-14 xl:py-20">
+            <div className="mx-auto w-full max-w-[520px]">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8A857C]">
                 Client portal
               </p>
-              <h1 className="text-[28px] leading-tight tracking-[-0.04em] sm:text-4xl">{title}</h1>
+              <h1 className="text-3xl font-medium leading-[1.05] tracking-[-0.04em] sm:text-4xl lg:text-[42px] xl:text-[46px]">
+                {title}
+              </h1>
               {subtitle && (
-                <p className="mt-3 text-sm leading-relaxed text-[#5C5A55]">{subtitle}</p>
+                <p className="mt-3 text-base leading-snug text-[#5C5A55] sm:text-lg">
+                  {subtitle}
+                </p>
               )}
-              <div className="mt-8">{children}</div>
+              <div className="mt-10">{children}</div>
             </div>
           </div>
 
