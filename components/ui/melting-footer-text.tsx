@@ -86,7 +86,13 @@ void main() {
 }
 `;
 
-export function MeltingFooterText({ text = "miux" }: { text?: string }) {
+export function MeltingFooterText({
+  text = "miux",
+  bare = false,
+}: {
+  text?: string;
+  bare?: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [webglSupported, setWebglSupported] = useState(true);
@@ -363,14 +369,28 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
     <div
       id="footer-brand"
       ref={containerRef}
-      className="relative w-full h-[24vw] min-h-[180px] max-h-[380px] select-none overflow-hidden cursor-pointer bg-[#F6F5F0]"
+      className={`relative w-full h-[24vw] min-h-[180px] max-h-[380px] select-none overflow-hidden cursor-pointer ${
+        bare ? "bg-transparent" : "bg-[#F6F5F0]"
+      }`}
+      style={
+        bare
+          ? {
+              maskImage:
+                "linear-gradient(to bottom, #000 58%, rgba(0,0,0,0.45) 86%, transparent 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, #000 58%, rgba(0,0,0,0.45) 86%, transparent 100%)",
+            }
+          : undefined
+      }
     >
       <span className="sr-only">{text}</span>
       {/* Background matching off-white base colour (#F6F5F0) */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#F6F5F0]"
-      />
+      {!bare && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#F6F5F0]"
+        />
+      )}
 
       {webglSupported ? (
         <canvas
@@ -387,16 +407,20 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
       )}
 
       {/* Fixed progressive blur + off-white feather along the bottom ending edge of "miux" */}
-      <ProgressiveBlur
-        direction="bottom"
-        blurLayers={5}
-        blurIntensity={1.15}
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[44%]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[36%] bg-gradient-to-t from-[#F6F5F0] via-[#F6F5F0]/75 to-transparent"
-      />
+      {!bare && (
+        <>
+          <ProgressiveBlur
+            direction="bottom"
+            blurLayers={5}
+            blurIntensity={1.15}
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[44%]"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[36%] bg-gradient-to-t from-[#F6F5F0] via-[#F6F5F0]/75 to-transparent"
+          />
+        </>
+      )}
     </div>
   );
 }

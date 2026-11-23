@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Compact floating orange Back-to-Top button.
- * Uses passive scroll threshold + IntersectionObserver on #footer-brand
+ * Uses passive scroll threshold + IntersectionObserver on the site footer
  * (zero forced synchronous layout reads on mobile scroll).
  */
 export default function BackToTop() {
@@ -32,8 +32,8 @@ export default function BackToTop() {
     };
 
     let footerObserver: IntersectionObserver | null = null;
-    const brand = document.getElementById("footer-brand");
-    if (brand) {
+    const siteFooter = document.getElementById("site-footer");
+    if (siteFooter) {
       footerObserver = new IntersectionObserver(
         (entries) => {
           footerNear = entries.some((entry) => entry.isIntersecting);
@@ -41,7 +41,7 @@ export default function BackToTop() {
         },
         { rootMargin: "0px 0px -120px 0px" },
       );
-      footerObserver.observe(brand);
+      footerObserver.observe(siteFooter);
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });

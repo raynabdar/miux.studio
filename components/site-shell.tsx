@@ -1,6 +1,7 @@
 "use client";
 
-import { MeltingFooterText } from "@/components/ui/melting-footer-text";
+import { FooterBrand } from "@/components/ui/footer-brand";
+import { RuixenGradientFooter } from "@/components/ui/ruixen-gradient-footer";
 import { SITE, SOCIAL_LINKS } from "@/lib/data";
 import { useCms } from "@/components/cms/cms-provider";
 import { setSmoothScrollEnabled } from "@/lib/smooth-scroll";
@@ -624,15 +625,24 @@ export function Footer() {
   const phoneHref = site.phone ? `tel:${site.phone.replace(/[^+\d]/g, "")}` : "";
 
   return (
-    <footer
-      className="relative overflow-hidden border-t border-[#141414]/[0.08] transition-all duration-300"
-      style={{
-        backgroundColor: "rgba(246, 245, 240, 0.85)",
-        backdropFilter: "blur(24px) saturate(160%)",
-        WebkitBackdropFilter: "blur(24px) saturate(160%)",
-      }}
+    <RuixenGradientFooter
+      id="site-footer"
+      gradientHeight="clamp(340px, 48vh, 560px)"
+      minReveal={0}
+      blur={30}
+      peak={0.92}
+      valley={0.5}
+      className="relative border-t border-[#141414]/[0.08] bg-[#F6F5F0]"
     >
-      {/* Subtle liquid background ambient glow */}
+      <div
+        className="relative z-10 overflow-hidden"
+        style={{
+          backgroundColor: "rgba(246, 245, 240, 0.85)",
+          backdropFilter: "blur(24px) saturate(160%)",
+          WebkitBackdropFilter: "blur(24px) saturate(160%)",
+        }}
+      >
+        {/* Subtle liquid background ambient glow */}
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden"
         aria-hidden="true"
@@ -832,21 +842,23 @@ export function Footer() {
           </Link>
           <Link
             href="/terms"
-            className="transition-colors hover:text-orange-600"
+            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
           >
             Terms
           </Link>
           <Link
             href="/sitemap"
-            className="transition-colors hover:text-orange-600"
+            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
           >
             Sitemap
           </Link>
         </div>
       </div>
 
-      {/* Interactive WebGL Melting Footer Text */}
-      <MeltingFooterText text="miux" />
-    </footer>
+      </div>
+
+      {/* Interactive WebGL Melting Footer Text — pinned to the viewport floor */}
+      <FooterBrand text="miux" />
+    </RuixenGradientFooter>
   );
 }
