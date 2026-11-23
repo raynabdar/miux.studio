@@ -7,12 +7,14 @@ import { ArrowUpRight, CheckCircle2, AlertCircle, Loader2, Phone } from 'lucide-
 import { Navbar, Footer } from '@/components/site-shell'
 import { MagneticButton } from '@/components/magnetic-button'
 import { SITE } from '@/lib/data'
+import { useCms } from '@/components/cms/cms-provider'
 import { BUDGET_RANGES, PROJECT_TYPES, contactSchema, type ContactInput } from '@/lib/schemas'
 import Map from '@/components/ui/contact-map'
 
 type ContactFormValues = ContactInput
 
 export default function ContactPage() {
+  const { site: contact } = useCms()
   const [serverStatus, setServerStatus] = useState<{
     type: 'success' | 'error' | null
     message: string
@@ -335,21 +337,21 @@ export default function ContactPage() {
                 <div>
                   <p className="text-xs text-[#78756E]">Email</p>
                   <a
-                    href={`mailto:${SITE.email}`}
+                    href={`mailto:${contact.email}`}
                     className="animated-link mt-1 text-base font-medium text-[#141414]"
                   >
-                    {SITE.email}
+                    {contact.email}
                   </a>
                 </div>
 
-                {SITE.phoneTel && (
+                {contact.phone && (
                   <div>
                     <p className="text-xs text-[#78756E]">Phone</p>
                     <a
-                      href={`tel:${SITE.phoneTel}`}
+                      href={`tel:${contact.phone.replace(/[^+\d]/g, '')}`}
                       className="animated-link mt-1 text-base font-medium text-[#141414]"
                     >
-                      {SITE.phone}
+                      {contact.phone}
                     </a>
                   </div>
                 )}
@@ -371,14 +373,14 @@ export default function ContactPage() {
                 <div>
                   <p className="text-xs text-[#78756E]">Response Time</p>
                   <p className="mt-1 text-[#2E2D2A]">
-                    We reply within one business day.
+                    {contact.responseTime || 'We reply within one business day.'}
                   </p>
                 </div>
 
                 <div className="pt-2">
                   <p className="text-xs text-[#78756E]">Regional Scope</p>
                   <p className="mt-1 font-medium text-[#141414]">
-                    {SITE.scopeLabel}
+                    {contact.regionalScope || SITE.scopeLabel}
                   </p>
                   <p className="mt-2 text-xs leading-relaxed text-[#5C5A55]">
                     Working with select brands across Dubai, Abu Dhabi, Singapore, Hong Kong, and across the Asian continent.

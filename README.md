@@ -91,6 +91,26 @@ Open http://localhost:3000.
 - **Audit log** — recent entries. `audit_logs` is append-only: a database trigger rejects UPDATE and
   DELETE on the table.
 
+### CMS (Phase 4)
+
+- `/admin/content` (owner-only) edits social links, contact details, startups, testimonials,
+  pricing plans, discount announcements and blog posts. The custom-plan card is fixed in the pricing
+  component and is deliberately outside the CMS.
+- Content lives in dedicated tables (`site_settings`, `social_links`, `startups`, `testimonials`,
+  `pricing_plans`, `discount_announcements`, `blog_posts`). Reads go through `lib/cms/queries.ts`
+  with `unstable_cache` tags; every write calls `revalidateTag(tag, 'max')` plus `revalidatePath`
+  for the affected routes, so live content updates without a deployment.
+- Empty tables fall back to the built-in content in `lib/cms/defaults.ts`, so the site renders
+  before anything is entered. `pnpm db:seed` copies that same content into the CMS tables (only
+  when they are empty), so the editor starts with real rows.
+- Blog posts are structured blocks (headings, paragraphs, images, quotes, code, ordered and
+  unordered lists). Blocks are stored as JSON and rendered as React elements — never as injected
+  HTML. Drafts and future-dated posts stay off `/blogs`; images upload to Supabase Storage via
+  `SUPABASE_SERVICE_ROLE_KEY` (server-only) and bucket `SUPABASE_STORAGE_BUCKET` (default
+  `cms-media`).
+- The discount banner renders from `getActiveDiscount()` and only appears while an announcement is
+  enabled and inside its start/end window.
+
 ### Database
 
 Prisma with PostgreSQL (Supabase). Runtime uses the pooled `DATABASE_URL` (port 6543,

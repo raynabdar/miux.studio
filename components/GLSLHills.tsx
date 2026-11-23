@@ -50,6 +50,10 @@ export function GLSLHills({
       const THREE = await import("three");
       if (disposed) return;
 
+      const isMobile = window.matchMedia(
+        "(max-width: 767px), (pointer: coarse)"
+      ).matches;
+
       const renderer = new THREE.WebGLRenderer({
         canvas,
         antialias: false,
@@ -57,15 +61,18 @@ export function GLSLHills({
         powerPreference: "low-power",
       });
       renderer.setClearColor(0x000000, 0);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+      renderer.setPixelRatio(
+        Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.5)
+      );
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, 1, 1, 10000);
-      camera.position.set(0, 16, cameraZ);
-      camera.lookAt(new THREE.Vector3(0, 28, 0));
+      camera.position.set(0, isMobile ? 14 : 16, isMobile ? cameraZ * 0.78 : cameraZ);
+      camera.lookAt(new THREE.Vector3(0, 26, 0));
 
+      const segments = Math.min(planeSize, isMobile ? 96 : 160);
       const uniforms = { time: { value: 0 } };
-      const geometry = new THREE.PlaneGeometry(planeSize, planeSize, planeSize, planeSize);
+      const geometry = new THREE.PlaneGeometry(planeSize, planeSize, segments, segments);
       const material = new THREE.RawShaderMaterial({
         uniforms,
         transparent: true,
@@ -183,8 +190,11 @@ export function GLSLHills({
           varying vec3 vPosition;
 
           void main(void) {
-            float opacity = (96.0 - length(vPosition)) / 256.0 * 0.45;
-            vec3 color = vec3(0.22);
+            float opacity = clamp((118.0 - length(vPosition)) / 168.0 * 0.92, 0.0, 0.88);
+            float ridge = clamp(vPosition.y / 38.0, 0.0, 1.0);
+            vec3 valleyColor = vec3(0.14, 0.12, 0.11);
+            vec3 crestColor = vec3(0.58, 0.27, 0.12);
+            vec3 color = mix(valleyColor, crestColor, ridge * 0.65);
             gl_FragColor = vec4(color, opacity);
           }
         `,

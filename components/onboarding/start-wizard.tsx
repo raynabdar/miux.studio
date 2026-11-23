@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { Turnstile } from '@marsidev/react-turnstile'
+import { useRef, useState, useTransition } from 'react'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { BUDGET_RANGES, PROJECT_TYPES } from '@/lib/schemas'
 import { acknowledgeMeeting, submitOnboarding } from '@/app/start/actions'
 
@@ -61,6 +61,7 @@ export default function StartWizard({ siteKey, meetingUrl, existing, earlySignUp
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
   const [ackPending, setAckPending] = useState(false)
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
 
   const accountUnlocked = Boolean(submission) && (acknowledged || earlySignUpEnabled)
 
@@ -83,6 +84,8 @@ export default function StartWizard({ siteKey, meetingUrl, existing, earlySignUp
       const result = await submitOnboarding(payload)
       if (!result.ok) {
         setError(result.message)
+        setToken('')
+        turnstileRef.current?.reset()
         return
       }
       setSubmission({
@@ -328,18 +331,15 @@ export default function StartWizard({ siteKey, meetingUrl, existing, earlySignUp
       </fieldset>
 
       <div className="mt-6">
-        {siteKey ? (
+        {siteKey && (
           <Turnstile
+            ref={turnstileRef}
             siteKey={siteKey}
-            options={{ theme: 'light' }}
+            options={{ theme: 'light', action: 'onboarding' }}
             onSuccess={(value) => setToken(value)}
             onExpire={() => setToken('')}
             onError={() => setToken('')}
           />
-        ) : (
-          <p className="rounded-xl border border-dashed border-[#141414]/20 px-3 py-2 text-[11px] text-[#8A857C]">
-            Verification challenge is not configured in this environment.
-          </p>
         )}
       </div>
 

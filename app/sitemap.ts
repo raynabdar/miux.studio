@@ -1,9 +1,11 @@
 import type { MetadataRoute } from 'next'
-import { blogPosts, projects, SITE } from '@/lib/data'
+import { projects, SITE } from '@/lib/data'
+import { getPublishedPosts } from '@/lib/cms/queries'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE.url
   const now = new Date()
+  const blogPosts = await getPublishedPosts()
 
   const workEntries: MetadataRoute.Sitemap = projects.map((project) => ({
     url: `${baseUrl}/work/${project.slug}`,

@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
+const isDev = process.env.NODE_ENV !== 'production'
+
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com https://va.vercel-scripts.com https://app.cal.com https://cal.com",
-  "style-src 'self' 'unsafe-inline' https://*.clerk.accounts.dev",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com https://va.vercel-scripts.com https://app.cal.com https://cal.com`,
+  "style-src 'self' 'unsafe-inline' https://*.clerk.accounts.dev https://api.fontshare.com",
   "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com https://*.upstash.io https://vitals.vercel-insights.com https://va.vercel-scripts.com https://api.resend.com https://*.supabase.co wss://*.supabase.co",
+  "font-src 'self' data: https://cdn.fontshare.com",
+  `connect-src 'self'${isDev ? ' ws: wss:' : ''} https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com https://*.upstash.io https://vitals.vercel-insights.com https://va.vercel-scripts.com https://api.resend.com https://*.supabase.co wss://*.supabase.co`,
   "frame-src 'self' https://challenges.cloudflare.com https://*.clerk.accounts.dev https://*.clerk.com https://app.cal.com https://cal.com",
   "worker-src 'self' blob:",
   "object-src 'none'",
@@ -28,11 +30,20 @@ const securityHeaders = [
 
 const noIndex = [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }]
 
+const supabaseHost = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').hostname
+  } catch {
+    return null
+  }
+})()
+
 const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      ...(supabaseHost ? [{ protocol: 'https', hostname: supabaseHost }] : []),
     ],
   },
   async headers() {

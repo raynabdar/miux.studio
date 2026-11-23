@@ -3,6 +3,7 @@ import Link from 'next/link'
 import AuthShell from '@/components/portal/auth-shell'
 import SignUpForm from '@/components/portal/sign-up-form'
 import { getSignUpGate } from '@/lib/onboarding/submission'
+import { getTurnstileSiteKey } from '@/lib/security/turnstile'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,7 +56,7 @@ export default async function SignUpPage({
       subtitle={`Reference ${gate.submission.referenceId}. Use the same email address you used in the project request.`}
     >
       <SignUpForm
-        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? null}
+        siteKey={getTurnstileSiteKey()}
         email={gate.submission.email}
       />
     </AuthShell>

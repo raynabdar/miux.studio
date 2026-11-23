@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSignIn } from '@clerk/nextjs'
-import { Turnstile } from '@marsidev/react-turnstile'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import {
   noteSignInFailure,
   noteSignInSuccess,
@@ -19,6 +19,12 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
   const [token, setToken] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
+
+  function resetChallenge() {
+    setToken('')
+    turnstileRef.current?.reset()
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -34,10 +40,12 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
       const gate = await preSignInCheck({ email })
       if (!gate.ok) {
         setMessage(gate.message)
+        resetChallenge()
         return
       }
-      if (!(await verifyAuthChallenge(token))) {
+      if (!(await verifyAuthChallenge(token, 'sign_in'))) {
         setMessage('Please complete the verification challenge.')
+        resetChallenge()
         return
       }
 
@@ -49,6 +57,7 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
             ? 'Account temporarily locked after repeated failed sign-ins. Our team has been notified.'
             : (error.longMessage ?? error.message ?? 'Incorrect email or password.')
         )
+        resetChallenge()
         return
       }
 
@@ -56,6 +65,7 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
         setMessage(
           'This account needs an additional verification step that is not available here. Please contact us and we will help.'
         )
+        resetChallenge()
         return
       }
 
@@ -67,6 +77,7 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
       })
     } catch {
       setMessage('Something went wrong while signing in. Please try again.')
+      resetChallenge()
     } finally {
       setBusy(false)
     }
@@ -108,8 +119,9 @@ export default function SignInForm({ siteKey }: { siteKey: string | null }) {
 
       {siteKey && (
         <Turnstile
+          ref={turnstileRef}
           siteKey={siteKey}
-          options={{ theme: 'light' }}
+          options={{ theme: 'light', action: 'sign_in' }}
           onSuccess={(value) => setToken(value)}
           onExpire={() => setToken('')}
           onError={() => setToken('')}

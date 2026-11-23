@@ -1,8 +1,10 @@
 import { ProgressiveBlur } from "@/components/ProgressiveBlur";
 import { Footer, Navbar } from "@/components/site-shell";
 import { SITE } from "@/lib/data";
-import { startupEntries, startupsByRegion } from "@/lib/startups";
+import { startupEntries } from "@/lib/startups";
+import { getStartups } from "@/lib/cms/queries";
 import { ArrowUpRight, Check, Globe } from "lucide-react";
+import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -78,7 +80,25 @@ const SERVICES_COVERED = [
   "AI Systems",
 ];
 
-export default function StartupsPage() {
+export default async function StartupsPage() {
+  const cmsStartups = await getStartups();
+  const liveEntries = cmsStartups.map((entry) => ({
+    id: entry.id,
+    name: entry.name,
+    sector: entry.sector || "Partners",
+    region: entry.region || "Global",
+    service: entry.service || "Studio collaboration",
+    note: entry.description,
+    slug: entry.slug ?? undefined,
+    logoUrl: entry.logoUrl,
+  }));
+  const liveGroups = Array.from(new Set(liveEntries.map((entry) => entry.region))).map((region) => ({
+    label: region,
+    entries: liveEntries.filter((entry) => entry.region === region),
+  }));
+  const startupEntries = liveEntries;
+  const startupsByRegion = liveGroups;
+
   return (
     <>
       <script
@@ -213,12 +233,22 @@ export default function StartupsPage() {
                             className="pointer-events-none absolute inset-x-0 bottom-0 h-20 rounded-b-2xl"
                           />
                           <div className="relative z-10 flex items-start justify-between gap-3">
-                            <span
-                              aria-hidden="true"
-                              className="grid size-10 shrink-0 place-items-center rounded-full border border-orange-500/30 bg-[#F6F5F0] text-xs font-semibold text-[#141414]"
-                            >
-                              {initials(entry.name)}
-                            </span>
+                            {entry.logoUrl ? (
+                              <Image
+                                src={entry.logoUrl}
+                                alt={`${entry.name} logo`}
+                                width={40}
+                                height={40}
+                                className="size-10 shrink-0 rounded-full border border-[#141414]/[0.10] bg-white object-contain p-1"
+                              />
+                            ) : (
+                              <span
+                                aria-hidden="true"
+                                className="grid size-10 shrink-0 place-items-center rounded-full border border-orange-500/30 bg-[#F6F5F0] text-xs font-semibold text-[#141414]"
+                              >
+                                {initials(entry.name)}
+                              </span>
+                            )}
                             {entry.slug ? (
                               <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-orange-700">
                                 Case study

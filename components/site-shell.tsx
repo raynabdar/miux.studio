@@ -2,6 +2,7 @@
 
 import { MeltingFooterText } from "@/components/ui/melting-footer-text";
 import { SITE, SOCIAL_LINKS } from "@/lib/data";
+import { useCms } from "@/components/cms/cms-provider";
 import { setSmoothScrollEnabled } from "@/lib/smooth-scroll";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -86,19 +87,22 @@ const NAV_LINKS = [
   { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
   { label: "Work", href: "#work" },
+  { label: "Approach", href: "#approach" },
   { label: "Pricing", href: "#pricing" },
 ] as const;
 
 /* ─── Navbar ────────────────────────────────────────────────────────── */
 
-export function Navbar() {
+export function Navbar({ heroNight = false }: { heroNight?: boolean } = {}) {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
 
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [overHero, setOverHero] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const overHeroNight = Boolean(heroNight && isHomePage && overHero);
 
   const navRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -140,35 +144,32 @@ export function Navbar() {
     let ticking = false;
     const measure = () => {
       ticking = false;
+      const homeEl = document.getElementById("home");
+      setOverHero(homeEl ? homeEl.getBoundingClientRect().bottom > 80 : false);
+
       // Offset point inside the viewport (upper focal area)
       const viewportPoint = window.scrollY + window.innerHeight * 0.38;
       const sections = [
-        { id: "pricing", navId: "pricing" },
-        { id: "work", navId: "work" },
-        { id: "services", navId: "services" },
-        { id: "about", navId: "about" },
         { id: "home", navId: "home" },
+        { id: "about", navId: "about" },
+        { id: "services", navId: "services" },
+        { id: "work", navId: "work" },
+        { id: "approach", navId: "approach" },
+        { id: "pricing", navId: "pricing" },
       ] as const;
 
       let matched = "home";
       for (const s of sections) {
         const el = document.getElementById(s.id);
-        if (el) {
-          const top = el.offsetTop - 100;
-          const height = el.offsetHeight;
-          if (viewportPoint >= top && viewportPoint < top + height) {
-            matched = s.navId;
-            break;
-          }
+        if (el && viewportPoint >= el.offsetTop - 120) {
+          matched = s.navId;
         }
       }
 
-      // Past the last nav section (pricing) — footer / final CTA: nothing selected
-      if (matched === "home") {
-        const pricing = document.getElementById("pricing");
-        if (pricing && viewportPoint >= pricing.offsetTop - 100 + pricing.offsetHeight) {
-          matched = "";
-        }
+      // Past the last nav section (pricing) — testimonials / FAQ / footer: nothing selected
+      const pricing = document.getElementById("pricing");
+      if (pricing && viewportPoint >= pricing.offsetTop - 100 + pricing.offsetHeight) {
+        matched = "";
       }
 
       setActiveSection(matched);
@@ -295,15 +296,23 @@ export function Navbar() {
         )}
       >
         <nav
-          className="relative overflow-hidden rounded-full border border-[#141414]/[0.10] py-2.5 px-4 sm:px-6 transition-all duration-700 delay-75 ease-[cubic-bezier(0.25,1,0.5,1)]"
+          className={cn(
+            "relative overflow-hidden rounded-full border py-2.5 px-4 sm:px-6 transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)]",
+            overHeroNight
+              ? "border-[#F6F5F0]/[0.18]"
+              : "border-[#141414]/[0.10]",
+          )}
           style={{
-            backgroundColor: scrolled
-              ? "rgba(246, 245, 240, 0.82)"
-              : "rgba(255, 255, 255, 0.62)",
+            backgroundColor: overHeroNight
+              ? "rgba(20, 20, 20, 0.42)"
+              : scrolled
+                ? "rgba(246, 245, 240, 0.82)"
+                : "rgba(255, 255, 255, 0.62)",
             backdropFilter: "blur(24px) saturate(180%)",
             WebkitBackdropFilter: "blur(24px) saturate(180%)",
-            boxShadow:
-              "0 8px 30px -12px rgba(20, 20, 20, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 1px 0 rgba(20, 20, 20, 0.04)",
+            boxShadow: overHeroNight
+              ? "0 8px 30px -12px rgba(0, 0, 0, 0.35), inset 0 1px 1px 0 rgba(246, 245, 240, 0.22)"
+              : "0 8px 30px -12px rgba(20, 20, 20, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 1px 0 rgba(20, 20, 20, 0.04)",
           }}
         >
           {/* Soft inner top specular highlight line */}
@@ -318,7 +327,10 @@ export function Navbar() {
               href="/"
               aria-label="Miux Studio - Return to homepage"
               title="Miux Studio - Digital Design & Web Development Studio"
-              className="group flex items-center shrink-0 whitespace-nowrap font-semibold tracking-tight text-[#141414] transition-opacity hover:opacity-80"
+              className={cn(
+                "group flex items-center shrink-0 whitespace-nowrap font-semibold tracking-tight transition-colors duration-1000 hover:opacity-80",
+                overHeroNight ? "text-[#F6F5F0]" : "text-[#141414]",
+              )}
             >
               {!logoError ? (
                 <Image
@@ -328,10 +340,18 @@ export function Navbar() {
                   height={32}
                   priority
                   onError={() => setLogoError(true)}
-                  className="h-8 w-8 object-contain brightness-0"
+                  className={cn(
+                    "h-8 w-8 object-contain brightness-0 transition-[filter] duration-1000",
+                    overHeroNight && "invert",
+                  )}
                 />
               ) : (
-                <span className="tracking-[-0.03em] flex items-center font-semibold text-[#141414] text-[15px] sm:text-base">
+                <span
+                  className={cn(
+                    "tracking-[-0.03em] flex items-center font-semibold text-[15px] sm:text-base transition-colors duration-1000",
+                    overHeroNight ? "text-[#F6F5F0]" : "text-[#141414]",
+                  )}
+                >
                   miux studio
                 </span>
               )}
@@ -354,17 +374,27 @@ export function Navbar() {
                     onClick={(e) => handleLinkClick(e, link.href)}
                     aria-label={`Navigate to ${link.label} section`}
                     title={`Explore ${link.label}`}
-                    className={`relative inline-flex items-center justify-center text-center rounded-full px-3.5 sm:px-4 py-1.5 text-sm font-medium transition-colors duration-200 select-none ${
-                      isActive
-                        ? "text-[#141414]"
-                        : "text-[#5C5A55] hover:text-[#141414]"
-                    }`}
+                    className={cn(
+                      "relative inline-flex items-center justify-center text-center rounded-full px-3.5 sm:px-4 py-1.5 text-sm font-medium transition-colors duration-1000 select-none",
+                      overHeroNight
+                        ? isActive
+                          ? "text-[#F6F5F0]"
+                          : "text-[#F6F5F0]/80 hover:text-[#F6F5F0]"
+                        : isActive
+                          ? "text-[#141414]"
+                          : "text-[#5C5A55] hover:text-[#141414]",
+                    )}
                   >
                     {/* Liquid glass highlight pill gliding between links */}
                     {isActive && (
                       <motion.span
                         layoutId="nav-highlight"
-                        className="absolute inset-0 rounded-full border border-[#141414]/[0.10] bg-[#141414]/[0.06] backdrop-blur-md"
+                        className={cn(
+                          "absolute inset-0 rounded-full border backdrop-blur-md transition-colors duration-1000",
+                          overHeroNight
+                            ? "border-[#F6F5F0]/[0.18] bg-[#F6F5F0]/[0.12]"
+                            : "border-[#141414]/[0.10] bg-[#141414]/[0.06]",
+                        )}
                         transition={{
                           type: "spring",
                           stiffness: 380,
@@ -419,7 +449,10 @@ export function Navbar() {
               onClick={() => setMobileOpen((prev) => !prev)}
             >
               <motion.span
-                className="block h-[2px] w-5 rounded-full bg-[#141414] origin-center"
+                className={cn(
+                  "block h-[2px] w-5 rounded-full origin-center transition-colors duration-1000",
+                  overHeroNight ? "bg-[#F6F5F0]" : "bg-[#141414]",
+                )}
                 animate={{
                   rotate: mobileOpen ? 45 : 0,
                   y: mobileOpen ? 7 : 0,
@@ -427,12 +460,18 @@ export function Navbar() {
                 transition={{ type: "spring", stiffness: 340, damping: 25 }}
               />
               <motion.span
-                className="block h-[2px] w-5 rounded-full bg-[#141414] origin-center"
+                className={cn(
+                  "block h-[2px] w-5 rounded-full origin-center transition-colors duration-1000",
+                  overHeroNight ? "bg-[#F6F5F0]" : "bg-[#141414]",
+                )}
                 animate={{ opacity: mobileOpen ? 0 : 1 }}
                 transition={{ duration: 0.15 }}
               />
               <motion.span
-                className="block h-[2px] w-5 rounded-full bg-[#141414] origin-center"
+                className={cn(
+                  "block h-[2px] w-5 rounded-full origin-center transition-colors duration-1000",
+                  overHeroNight ? "bg-[#F6F5F0]" : "bg-[#141414]",
+                )}
                 animate={{
                   rotate: mobileOpen ? -45 : 0,
                   y: mobileOpen ? -7 : 0,
@@ -573,12 +612,17 @@ const SOCIAL_ICONS = {
   X: XIcon,
 } as const;
 
-const FOOTER_SOCIALS = SOCIAL_LINKS.map((link) => ({
-  ...link,
-  Icon: SOCIAL_ICONS[link.label],
-}));
-
 export function Footer() {
+  const cms = useCms();
+  const site = cms.site;
+  const socials = (cms.social.length ? cms.social : SOCIAL_LINKS.map(({ label, href }) => ({ label, href }))).map(
+    (link) => ({
+      ...link,
+      Icon: SOCIAL_ICONS[link.label as keyof typeof SOCIAL_ICONS] ?? ArrowUpRight,
+    }),
+  );
+  const phoneHref = site.phone ? `tel:${site.phone.replace(/[^+\d]/g, "")}` : "";
+
   return (
     <footer
       className="relative overflow-hidden border-t border-[#141414]/[0.08] transition-all duration-300"
@@ -610,7 +654,7 @@ export function Footer() {
             high-converting digital platforms.
           </p>
           <p className="mt-4 text-xs tracking-wider uppercase text-[#78756E]">
-            {SITE.scopeLabel}
+            {site.regionalScope || SITE.scopeLabel}
           </p>
         </div>
 
@@ -687,23 +731,23 @@ export function Footer() {
             Connect
           </h2>
           <a
-            href={`tel:${SITE.phoneTel}`}
-            aria-label={`Call Miux Studio at ${SITE.phone}`}
-            title={`Call ${SITE.phone}`}
+            href={phoneHref}
+            aria-label={`Call Miux Studio at ${site.phone}`}
+            title={`Call ${site.phone}`}
             className="mt-4 block text-[13px] text-[#5C5A55] transition-colors hover:text-orange-600"
           >
-            {SITE.phone}
+            {site.phone}
           </a>
           <a
-            href={`mailto:${SITE.email}`}
-            aria-label={`Send email to ${SITE.email}`}
+            href={`mailto:${site.email}`}
+            aria-label={`Send email to ${site.email}`}
             title="Email Miux Studio"
             className="mt-2 block text-sm text-[#5C5A55] transition-colors hover:text-orange-600"
           >
-            {SITE.email}
+            {site.email}
           </a>
           <div className="mt-4 flex items-center gap-1 -ml-2">
-            {FOOTER_SOCIALS.map(({ label, href, Icon }) => (
+            {socials.map(({ label, href, Icon }) => (
               <a
                 key={label}
                 href={href}

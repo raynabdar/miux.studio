@@ -49,6 +49,9 @@ export default async function AdminPage() {
           <Link href="/admin/audit" className="rounded-full border border-[#141414]/15 bg-white px-4 py-2 hover:border-orange-500/50">
             Audit log
           </Link>
+          <Link href="/admin/content" className="rounded-full border border-[#141414]/15 bg-white px-4 py-2 hover:border-orange-500/50">
+            Content
+          </Link>
           <Link href="/founder" className="rounded-full border border-[#141414]/15 bg-white px-4 py-2 hover:border-orange-500/50">
             Founder settings
           </Link>

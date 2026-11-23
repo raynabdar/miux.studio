@@ -93,9 +93,6 @@ export default function PrivacyPolicyPage() {
                   measures aggregate page views and referrers. It is cookieless and does not fingerprint individual visitors.
                 </li>
                 <li>
-                  The Clutch review widget on the homepage loads a script from widget.clutch.co, which may set a cookie to attribute the review badge.
-                </li>
-                <li>
                   The scheduling embed on the booking page is provided by Cal.com and may set cookies required for the booking flow.
                 </li>
               </ul>
@@ -118,7 +115,7 @@ export default function PrivacyPolicyPage() {
                 6. Your Choices
               </h2>
               <p className="mt-3">
-                You can ask us to confirm what we hold about you, correct it, or delete it. Write to the address below and we will respond within a reasonable period. If a request concerns a record held by Cal.com or Clutch, we will point you to the relevant control in their service.
+                You can ask us to confirm what we hold about you, correct it, or delete it. Write to the address below and we will respond within a reasonable period. If a request concerns a record held by Cal.com, we will point you to the relevant control in their service.
               </p>
             </section>
 

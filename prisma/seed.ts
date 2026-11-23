@@ -1,6 +1,14 @@
 import { config as loadEnv } from 'dotenv'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../generated/prisma/client'
+import {
+  DEFAULT_PLANS,
+  DEFAULT_POSTS,
+  DEFAULT_SITE_CONTACT,
+  DEFAULT_SOCIAL,
+  DEFAULT_STARTUPS,
+  DEFAULT_TESTIMONIALS,
+} from '../lib/cms/defaults'
 
 loadEnv({ path: '.env.local', quiet: true })
 loadEnv({ quiet: true })
@@ -23,6 +31,82 @@ async function main() {
       create: { id: 1, earlySignUpEnabled: false },
     })
     console.log('[seed] settings ready')
+
+    await prisma.siteSettings.upsert({
+      where: { id: 1 },
+      update: {},
+      create: {
+        id: 1,
+        email: DEFAULT_SITE_CONTACT.email,
+        phone: DEFAULT_SITE_CONTACT.phone,
+        responseTime: DEFAULT_SITE_CONTACT.responseTime,
+        regionalScope: DEFAULT_SITE_CONTACT.regionalScope,
+      },
+    })
+
+    if ((await prisma.socialLink.count()) === 0) {
+      await prisma.socialLink.createMany({
+        data: DEFAULT_SOCIAL.map((link, index) => ({ label: link.label, url: link.href, position: index })),
+      })
+    }
+    if ((await prisma.startup.count()) === 0) {
+      await prisma.startup.createMany({
+        data: DEFAULT_STARTUPS.map((entry, index) => ({
+          name: entry.name,
+          logoUrl: entry.logoUrl,
+          websiteUrl: entry.websiteUrl,
+          description: entry.description,
+          sector: entry.sector,
+          region: entry.region,
+          service: entry.service,
+          slug: entry.slug,
+          position: index,
+        })),
+      })
+    }
+    if ((await prisma.testimonial.count()) === 0) {
+      await prisma.testimonial.createMany({
+        data: DEFAULT_TESTIMONIALS.map((item, index) => ({
+          quote: item.quote,
+          author: item.author,
+          role: item.role,
+          company: item.company,
+          websiteUrl: item.websiteUrl,
+          position: index,
+        })),
+      })
+    }
+    if ((await prisma.pricingPlan.count()) === 0) {
+      await prisma.pricingPlan.createMany({
+        data: DEFAULT_PLANS.map((plan, index) => ({
+          name: plan.name,
+          price: plan.price,
+          description: plan.description,
+          features: plan.features,
+          includes: plan.includes,
+          recommended: plan.recommended,
+          position: index,
+        })),
+      })
+    }
+    if ((await prisma.blogPostCms.count()) === 0) {
+      await prisma.blogPostCms.createMany({
+        data: DEFAULT_POSTS.map((post) => ({
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt,
+          category: post.category,
+          image: post.image || null,
+          readTime: post.readTime || null,
+          authorName: post.author.name,
+          authorRole: post.author.role,
+          blocks: post.blocks as never,
+          status: 'published',
+          publishAt: new Date(post.date),
+        })),
+      })
+    }
+    console.log('[seed] CMS content ready')
 
     const demoAccounts: Array<{
       email: string | undefined

@@ -8,10 +8,11 @@ export type TokenGetter = () => Promise<string | null>
 
 export function createRealtimeClient(getToken: TokenGetter): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !anonKey) return null
+  const apiKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !apiKey) return null
 
-  return createClient(url, anonKey, {
+  return createClient(url, apiKey, {
     auth: { persistSession: false, autoRefreshToken: false },
     accessToken: async () => (await getToken()) ?? null,
   })

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSignUp } from '@clerk/nextjs'
-import { Turnstile } from '@marsidev/react-turnstile'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { checkSignUpEmail, verifyAuthChallenge } from '@/app/(portal)/auth-actions'
 
 const fieldClass =
@@ -21,6 +21,12 @@ export default function SignUpForm({
   const [message, setMessage] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [emailAddress, setEmailAddress] = useState(email)
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
+
+  function resetChallenge() {
+    setToken('')
+    turnstileRef.current?.reset()
+  }
 
   async function handleCreate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -36,10 +42,12 @@ export default function SignUpForm({
       const emailCheck = await checkSignUpEmail({ email: nextEmail })
       if (!emailCheck.ok) {
         setMessage(emailCheck.message ?? 'Please check your email address.')
+        resetChallenge()
         return
       }
-      if (!(await verifyAuthChallenge(token))) {
+      if (!(await verifyAuthChallenge(token, 'sign_up'))) {
         setMessage('Please complete the verification challenge.')
+        resetChallenge()
         return
       }
 
@@ -49,6 +57,7 @@ export default function SignUpForm({
       })
       if (error) {
         setMessage(error.longMessage ?? error.message ?? 'Could not create the account.')
+        resetChallenge()
         return
       }
 
@@ -57,6 +66,7 @@ export default function SignUpForm({
       setStep('verify')
     } catch {
       setMessage('Something went wrong while creating the account. Please try again.')
+      resetChallenge()
     } finally {
       setBusy(false)
     }
@@ -165,8 +175,9 @@ export default function SignUpForm({
 
       {siteKey && (
         <Turnstile
+          ref={turnstileRef}
           siteKey={siteKey}
-          options={{ theme: 'light' }}
+          options={{ theme: 'light', action: 'sign_up' }}
           onSuccess={(value) => setToken(value)}
           onExpire={() => setToken('')}
           onError={() => setToken('')}

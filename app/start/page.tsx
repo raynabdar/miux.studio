@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import StartWizard, { type ExistingSubmission } from '@/components/onboarding/start-wizard'
 import { getSubmissionByReferenceId } from '@/lib/onboarding/submission'
+import { getTurnstileSiteKey } from '@/lib/security/turnstile'
 import { getEarlySignUpEnabled } from '@/lib/settings'
 
 export const dynamic = 'force-dynamic'
@@ -65,7 +66,7 @@ export default async function StartPage({
           </p>
 
           <StartWizard
-            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? null}
+            siteKey={getTurnstileSiteKey()}
             meetingUrl={process.env.MEETING_URL ?? '/meeting'}
             existing={existing}
             earlySignUpEnabled={earlySignUpEnabled}

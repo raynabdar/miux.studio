@@ -286,3 +286,117 @@ model ClientNote {
   @@index([clientId, createdAt])
   @@map("client_notes")
 }
+
+// ── Phase 4 — site content management ─────────────────────────────────────────
+
+enum BlogStatus {
+  draft
+  published
+}
+
+model SiteSettings {
+  id            Int      @id @default(1)
+  email         String   @default("")
+  phone         String   @default("")
+  responseTime  String   @default("")
+  regionalScope String   @default("")
+  updatedAt     DateTime @updatedAt
+  updatedBy     String?
+
+  @@map("site_settings")
+}
+
+model SocialLink {
+  id       String @id @default(uuid()) @db.Uuid
+  label    String
+  url      String
+  position Int    @default(0)
+
+  @@index([position])
+  @@map("social_links")
+}
+
+model Startup {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  logoUrl     String?
+  websiteUrl  String?
+  description String   @default("")
+  sector      String   @default("")
+  region      String   @default("")
+  service     String   @default("")
+  slug        String?
+  visible     Boolean  @default(true)
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([position])
+  @@map("startups")
+}
+
+model Testimonial {
+  id         String   @id @default(uuid()) @db.Uuid
+  quote      String
+  author     String
+  role       String   @default("")
+  company    String   @default("")
+  websiteUrl String?
+  visible    Boolean  @default(true)
+  position   Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([position])
+  @@map("testimonials")
+}
+
+model PricingPlan {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  price       Int
+  description String
+  features    String[]
+  includes    String[]
+  recommended Boolean  @default(false)
+  visible     Boolean  @default(true)
+  position    Int      @default(0)
+  updatedAt   DateTime @updatedAt
+
+  @@index([position])
+  @@map("pricing_plans")
+}
+
+model DiscountAnnouncement {
+  id        String   @id @default(uuid()) @db.Uuid
+  title     String
+  message   String
+  amount    String
+  startsAt  DateTime
+  endsAt    DateTime
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("discount_announcements")
+}
+
+model BlogPostCms {
+  id             String     @id @default(uuid()) @db.Uuid
+  slug           String     @unique
+  title          String
+  excerpt        String
+  category       String     @default("")
+  image          String?
+  readTime       String?
+  authorName     String     @default("Miux Studio")
+  authorRole     String     @default("")
+  blocks         Json
+  seoTitle       String?
+  seoDescription String?
+  status         BlogStatus @default(draft)
+  publishAt      DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([status, publishAt])
+  @@map("blog_posts")
+}

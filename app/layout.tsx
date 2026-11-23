@@ -2,10 +2,13 @@ import { Analytics } from '@vercel/analytics/next'
 import BackToTop from '@/components/BackToTop'
 import MiniDotFlameCursor from '@/components/MiniDotFlameCursor'
 import { NoiseGradientBackground } from 'noise-gradient-bg'
+import CmsProvider from '@/components/cms/cms-provider'
+import DiscountBanner from '@/components/cms/discount-banner'
+import { getPublicContent } from '@/lib/cms/queries'
 import type { Metadata, Viewport } from 'next'
 import { faqs, SITE, SOCIAL_LINKS } from '@/lib/data'
 import './globals.css'
-import { Geist, Geist_Mono, Geist_Pixel, Instrument_Serif } from 'next/font/google'
+import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
 
 const geistSans = Geist({
   subsets: ['latin'],
@@ -16,12 +19,6 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   subsets: ['latin'],
   variable: '--font-geist-mono',
-  display: 'swap',
-})
-
-const geistPixel = Geist_Pixel({
-  subsets: ['latin'],
-  variable: '--font-geist-pixel',
   display: 'swap',
 })
 
@@ -163,16 +160,14 @@ function buildJsonLd() {
 
 /* ── Root Layout ───────────────────────────────────────────── */
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const { organization, website, professionalService, faqPage } = buildJsonLd()
+  const content = await getPublicContent()
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${geistPixel.variable} ${instrumentSerif.variable}`}>
-      <head>
-        <link rel="preload" as="image" href="/logo.png" fetchPriority="high" />
-      </head>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable}`}>
       <body className={`${geistSans.className} font-sans antialiased bg-[#F6F5F0] text-[#141414] selection:bg-[#141414] selection:text-[#F6F5F0]`}>
         {/* Structured data */}
         <script
@@ -199,14 +194,17 @@ export default function RootLayout({
           tertiaryColor="rgba(254, 215, 170, 0.12)"
           noiseOpacity={50}
           microNoiseOpacity={35}
-          primaryBlur={56}
-          secondaryBlur={44}
-          tertiaryBlur={32}
+          primaryBlur={40}
+          secondaryBlur={32}
+          tertiaryBlur={24}
           vignetteIntensity="none"
-          className="pointer-events-none z-30 mix-blend-soft-light opacity-75 will-change-transform [transform:translateZ(0)] [contain:strict] [&>div:nth-last-child(-n+2)]:hidden"
+          className="pointer-events-none z-30 mix-blend-soft-light opacity-65 md:opacity-75 will-change-transform [transform:translate3d(0,0,0)] [backface-visibility:hidden] [contain:strict] [&>div:nth-last-child(-n+2)]:hidden"
         />
 
-        {children}
+        <CmsProvider value={content}>
+          {children}
+          <DiscountBanner />
+        </CmsProvider>
         <BackToTop />
         <MiniDotFlameCursor />
 

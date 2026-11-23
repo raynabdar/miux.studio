@@ -78,14 +78,8 @@
   --radius-xl: calc(var(--radius) * 1.4);
 }
 
-/* ── Geist Pixel Utilities ─────────────────────────────────── */
+/* ── Display Font Utility ──────────────────────────────────── */
 @utility font-display { font-family: var(--font-display), Georgia, serif; font-weight: 400; }
-
-@utility font-pixel-square   { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 1;  }
-@utility font-pixel-circle   { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 20; }
-@utility font-pixel-grid     { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 40; }
-@utility font-pixel-triangle { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 60; }
-@utility font-pixel-line     { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 80; }
 
 /* ── Base resets ───────────────────────────────────────────── */
 

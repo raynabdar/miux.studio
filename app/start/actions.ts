@@ -4,7 +4,7 @@ import { headers } from 'next/headers'
 import { getDb } from '@/lib/db/client'
 import { acknowledgeMeetingSchema, startSubmissionSchema } from '@/lib/validation/onboarding'
 import { enforceLimit } from '@/lib/ratelimit'
-import { verifyTurnstile } from '@/lib/security/turnstile'
+import { isTurnstileSecretConfigured, verifyTurnstile } from '@/lib/security/turnstile'
 import { createWithReference } from '@/lib/reference-id'
 import { hashIp } from '@/lib/security/hash'
 import { auditSafe } from '@/lib/security/audit'
@@ -44,9 +44,9 @@ export async function submitOnboarding(input: unknown): Promise<SubmitOnboarding
     }
   }
 
-  const captchaConfigured = Boolean(process.env.TURNSTILE_SECRET_KEY)
+  const captchaConfigured = isTurnstileSecretConfigured()
   const captchaOk = captchaConfigured
-    ? await verifyTurnstile(data.turnstileToken, ip)
+    ? await verifyTurnstile(data.turnstileToken, { remoteIp: ip, expectedAction: 'onboarding' })
     : process.env.NODE_ENV !== 'production'
   if (!captchaOk) {
     return { ok: false, message: 'The verification challenge failed. Please try again.' }

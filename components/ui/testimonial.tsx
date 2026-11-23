@@ -190,10 +190,15 @@ function Testimonial3DCard({ item }: { item: TestimonialItem }) {
   );
 }
 
-function ClientFeedback({ className }: { className?: string }) {
-  const col1 = [TESTIMONIALS_DATA[0], TESTIMONIALS_DATA[1]];
-  const col2 = [TESTIMONIALS_DATA[2], TESTIMONIALS_DATA[3]];
-  const col3 = [TESTIMONIALS_DATA[4], TESTIMONIALS_DATA[5]];
+function ClientFeedback({
+  className,
+  items = TESTIMONIALS_DATA,
+}: {
+  className?: string;
+  items?: TestimonialItem[];
+}) {
+  const columns = [0, 1, 2].map((column) => items.filter((_, index) => index % 3 === column));
+  const [col1, col2, col3] = columns;
 
   return (
     <section

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { ProgressiveBlur } from "@/components/ProgressiveBlur";
 
 const VERT_SHADER = `
 attribute vec2 aPosition;
@@ -279,12 +280,20 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
     let visible = true;
 
     const tick = (now: number) => {
+      frameHandle = 0;
       draw(now);
-      frameHandle = requestAnimationFrame(tick);
+      // Stop RAF when settled at rest so mobile & desktop stay lag-free
+      if (visible && (state.isHovered || state.hover > 0.002)) {
+        frameHandle = requestAnimationFrame(tick);
+      } else if (state.hover > 0) {
+        state.hover = 0;
+        draw(now);
+      }
     };
 
     const start = () => {
       if (frameHandle || !visible || reduceMotion) return;
+      lastTimestamp = performance.now();
       frameHandle = requestAnimationFrame(tick);
     };
 
@@ -293,17 +302,18 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
       frameHandle = 0;
     };
 
-    if (reduceMotion) {
-      draw(performance.now());
-    } else {
-      start();
-    }
+    // Draw initial crisp frame immediately
+    draw(performance.now());
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
-        if (visible) start();
-        else stop();
+        if (visible) {
+          draw(performance.now());
+          if (state.isHovered || state.hover > 0.002) start();
+        } else {
+          stop();
+        }
       },
       { rootMargin: "150px" }
     );
@@ -313,6 +323,7 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
       const rect = container.getBoundingClientRect();
       state.targetMouse.x = (e.clientX - rect.left) / rect.width;
       state.targetMouse.y = (e.clientY - rect.top) / rect.height;
+      start();
     };
 
     const onMouseEnter = (e: MouseEvent) => {
@@ -322,10 +333,12 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
       state.targetMouse.y = (e.clientY - rect.top) / rect.height;
       state.currentMouse.x = state.targetMouse.x;
       state.currentMouse.y = state.targetMouse.y;
+      start();
     };
 
     const onMouseLeave = () => {
       state.isHovered = false;
+      start();
     };
 
     container.addEventListener("mousemove", onMouseMove);
@@ -373,10 +386,16 @@ export function MeltingFooterText({ text = "miux" }: { text?: string }) {
         </p>
       )}
 
-      {/* Off-white fog overlay over bottom edge of wordmark with 85% fog strength */}
+      {/* Fixed progressive blur + off-white feather along the bottom ending edge of "miux" */}
+      <ProgressiveBlur
+        direction="bottom"
+        blurLayers={5}
+        blurIntensity={1.15}
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[44%]"
+      />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[32%] bg-gradient-to-t from-[#F6F5F0] via-[#F6F5F0]/85 to-transparent z-10"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[36%] bg-gradient-to-t from-[#F6F5F0] via-[#F6F5F0]/75 to-transparent"
       />
     </div>
   );
