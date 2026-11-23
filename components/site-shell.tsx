@@ -1,12 +1,11 @@
 "use client";
 
-import { PrismSilkFooter } from "@/components/ui/prism-silk-footer";
+import PrismSilkFooter, { type PrismSilkSocialIcon } from "@/components/ui/prism-silk-footer";
 import { SITE, SOCIAL_LINKS } from "@/lib/data";
 import { useCms } from "@/components/cms/cms-provider";
 import { setSmoothScrollEnabled } from "@/lib/smooth-scroll";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,66 +16,6 @@ import {
   useState,
   type MouseEvent as ReactMouseEvent,
 } from "react";
-
-/* ─── Social Icons (Custom SVG) ─────────────────────────────────────── */
-
-function FacebookIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-    </svg>
-  );
-}
-
-function LinkedInIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
-    </svg>
-  );
-}
-
-function InstagramIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-    </svg>
-  );
-}
-
-function XIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
 
 /* ─── Constants ─────────────────────────────────────────────────────── */
 
@@ -577,283 +516,82 @@ export function Navbar({ heroNight = false }: { heroNight?: boolean } = {}) {
 
 /* ─── Footer ────────────────────────────────────────────────────────── */
 
-const FOOTER_NAV = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/#about" },
-  { label: "Services", href: "/#services" },
-  { label: "Work", href: "/#work" },
-  { label: "Startups", href: "/startups" },
-  { label: "Approach", href: "/#approach" },
-  { label: "Pricing", href: "/#pricing" },
-  { label: "Blog", href: "/blogs" },
-  { label: "Contact", href: "/contact" },
+const FOOTER_COLUMNS = [
+  {
+    title: "Studio",
+    links: [
+      { label: "Home", href: "/" },
+      { label: "About", href: "/#about" },
+      { label: "Work", href: "/#work" },
+      { label: "Approach", href: "/#approach" },
+      { label: "Pricing", href: "/#pricing" },
+    ],
+  },
+  {
+    title: "Services",
+    links: [
+      { label: "Brand Design and Identity", href: "/#services" },
+      { label: "Web Design", href: "/#services" },
+      { label: "Web Development", href: "/#services" },
+      { label: "UI/UX Design", href: "/#services" },
+      { label: "Ads and Other Campaigns", href: "/#services" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Blog", href: "/blogs" },
+      { label: "Startups", href: "/startups" },
+      { label: "Free Website Teardown", href: "/teardown", badge: "Free" },
+      { label: "Book a Call", href: "/meeting", badge: "45 min" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Client Terms", href: "/client-terms" },
+      { label: "Privacy", href: "/privacy-policy" },
+      { label: "Terms", href: "/terms" },
+      { label: "Sitemap", href: "/sitemap" },
+    ],
+  },
 ];
 
-const FOOTER_SERVICES = [
-  { label: "Brand Design and Identity", href: "/#services" },
-  { label: "Web Design", href: "/#services" },
-  { label: "Web Development", href: "/#services" },
-  { label: "UI/UX Design", href: "/#services" },
-  { label: "Ads and Other Campaigns", href: "/#services" },
-];
-
-const FOOTER_OTHERS = [
-  { label: "Free Website Teardown", href: "/teardown" },
-  { label: "Client Terms", href: "/client-terms" },
-  { label: "Privacy", href: "/privacy-policy" },
-  { label: "Terms", href: "/terms" },
-  { label: "Sitemap", href: "/sitemap" },
-];
-
-const SOCIAL_ICONS = {
-  Facebook: FacebookIcon,
-  LinkedIn: LinkedInIcon,
-  Instagram: InstagramIcon,
-  X: XIcon,
-} as const;
+const SOCIAL_ICON_BY_LABEL: Record<string, PrismSilkSocialIcon> = {
+  X: "x",
+  Instagram: "instagram",
+  LinkedIn: "linkedin",
+  Facebook: "facebook",
+};
 
 export function Footer() {
   const cms = useCms();
-  const site = cms.site;
-  const socials = (cms.social.length ? cms.social : SOCIAL_LINKS.map(({ label, href }) => ({ label, href }))).map(
-    (link) => ({
-      ...link,
-      Icon: SOCIAL_ICONS[link.label as keyof typeof SOCIAL_ICONS] ?? ArrowUpRight,
-    }),
-  );
-  const phoneHref = site.phone ? `tel:${site.phone.replace(/[^+\d]/g, "")}` : "";
+  const socials = (cms.social.length ? cms.social : SOCIAL_LINKS).flatMap(({ label, href }) => {
+    const icon = SOCIAL_ICON_BY_LABEL[label];
+    return icon ? [{ icon, href, label }] : [];
+  });
 
   return (
     <PrismSilkFooter
       id="site-footer"
-      name="miux"
+      name="Miux Studio"
+      brandHref="/"
+      tagline="Selective creative studio in Dhaka, engineering brand systems and high-converting digital platforms for teams across APAC and the UAE."
+      columns={FOOTER_COLUMNS}
+      socials={socials}
+      copyright={`© ${SITE.founded}–${new Date().getFullYear()} ${SITE.name.toUpperCase()}. All rights reserved.`}
+      credit={{ label: "Miux Studio", href: "/" }}
       preset="ember"
-      maxWidth={1200}
-      backToTop="Back to top"
-      copyright={
-        <span>
-          &copy; {SITE.founded}–{new Date().getFullYear()}{" "}
-          {SITE.name.toUpperCase()}. All rights reserved.
-        </span>
-      }
-      credit={
-        <div className="flex flex-wrap items-center gap-4 sm:gap-5">
-          <Link
-            href="/client-terms"
-            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          >
-            Client Terms
-          </Link>
-          <Link
-            href="/privacy-policy"
-            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          >
-            Privacy
-          </Link>
-          <Link
-            href="/terms"
-            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          >
-            Terms
-          </Link>
-          <Link
-            href="/sitemap"
-            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          >
-            Sitemap
-          </Link>
-        </div>
-      }
-      className="relative border-t border-[#141414]/[0.08] bg-[#F6F5F0]"
-    >
-      <div
-        className="relative z-10 overflow-hidden"
-        style={{
-          backgroundColor: "rgba(246, 245, 240, 0.85)",
-          backdropFilter: "blur(24px) saturate(160%)",
-          WebkitBackdropFilter: "blur(24px) saturate(160%)",
-        }}
-      >
-        {/* Subtle liquid background ambient glow */}
-      <div
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-        aria-hidden="true"
-      >
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] h-[350px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08)_0%,transparent_70%)] blur-[90px]" />
-        {/* Base background transition matching off-white colour (#F6F5F0) */}
-        <div className="absolute bottom-0 inset-x-0 h-[380px] bg-gradient-to-b from-transparent via-[#F6F5F0]/85 to-[#F6F5F0] pointer-events-none" />
-      </div>
-
-      {/* Responsive 2-Col Mobile / 5-Col Desktop Grid */}
-      <div className="relative z-10 mx-auto grid max-w-[1200px] grid-cols-2 gap-8 sm:gap-10 px-5 py-16 sm:py-20 lg:grid-cols-5">
-        {/* Brand */}
-        <div className="col-span-2 lg:col-span-1">
-          <span className="text-lg font-semibold tracking-tight text-[#141414]">
-            Miux Studio
-          </span>
-          <p className="mt-4 text-sm leading-relaxed text-[#5C5A55] max-w-sm">
-            Selective creative studio engineering brand systems and
-            high-converting digital platforms.
-          </p>
-          <p className="mt-4 text-xs tracking-wider uppercase text-[#6E6B65]">
-            {site.regionalScope || SITE.scopeLabel}
-          </p>
-        </div>
-
-        {/* Navigation */}
-        <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6E6B65]">
-            Navigation
-          </h2>
-          <nav
-            className="mt-4 flex flex-col gap-3"
-            aria-label="Footer navigation"
-          >
-            {FOOTER_NAV.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                aria-label={`Go to ${item.label}`}
-                title={`Visit ${item.label}`}
-                className="rounded-sm text-sm text-[#5C5A55] transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        {/* Services */}
-        <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6E6B65]">
-            Services
-          </h2>
-          <ul className="mt-4 flex flex-col gap-3">
-            {FOOTER_SERVICES.map((service) => (
-              <li key={service.label}>
-                <Link
-                  href={service.href}
-                  aria-label={`See ${service.label} services`}
-                  title={`See ${service.label} services`}
-                  className="rounded-sm text-sm text-[#5C5A55] transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                >
-                  {service.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Others */}
-        <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6E6B65]">
-            Others
-          </h2>
-          <nav
-            className="mt-4 flex flex-col gap-3"
-            aria-label="Other resources"
-          >
-            {FOOTER_OTHERS.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                aria-label={`Go to ${item.label}`}
-                title={`Visit ${item.label}`}
-                className="rounded-sm text-sm text-[#5C5A55] transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        {/* Connect */}
-        <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6E6B65]">
-            Connect
-          </h2>
-          <a
-            href={phoneHref}
-            aria-label={`Call Miux Studio at ${site.phone}`}
-            title={`Call ${site.phone}`}
-            className="mt-4 block text-[13px] text-[#5C5A55] transition-colors hover:text-orange-600"
-          >
-            {site.phone}
-          </a>
-          <a
-            href={`mailto:${site.email}`}
-            aria-label={`Send email to ${site.email}`}
-            title="Email Miux Studio"
-            className="mt-2 block text-sm text-[#5C5A55] transition-colors hover:text-orange-600"
-          >
-            {site.email}
-          </a>
-          <div className="mt-4 flex items-center gap-1 -ml-2">
-            {socials.map(({ label, href, Icon }) => (
-              <a
-                key={label}
-                href={href}
-                aria-label={`Follow Miux Studio on ${label}`}
-                title={`Miux Studio on ${label}`}
-                className="inline-flex size-11 items-center justify-center rounded-full text-[#5C5A55] transition-colors hover:bg-white/70 hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 sm:size-9"
-                target={href.startsWith("http") ? "_blank" : undefined}
-                rel={
-                  href.startsWith("http") ? "noopener noreferrer" : undefined
-                }
-              >
-                <Icon className="size-[18px]" />
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Centered "Book a Call" button directly above the giant text */}
-      <div className="relative z-10 flex justify-center pb-8 pt-4">
-        <Link
-          href="/meeting"
-          aria-label="Book a Call — 45-minute discovery call with Miux Studio"
-          title="Schedule a consultation call with Miux Studio"
-          className="group inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[#141414] px-7 py-3 text-sm font-semibold text-[#F6F5F0] shadow-[0_2px_14px_rgba(20,20,20,0.18)] ring-1 ring-inset ring-white/15 transition-[background-color,box-shadow] hover:bg-[#262626] hover:shadow-[0_6px_24px_rgba(20,20,20,0.26)] select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414]"
-        >
-          <span>Book a Call</span>
-          <ArrowUpRight
-            className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-            aria-hidden="true"
-          />
-        </Link>
-      </div>
-
-      {/* Currently building strip */}
-      <div className="relative z-10 mx-auto max-w-[1200px] px-5">
-        <div className="flex flex-col gap-2 border-t border-[#141414]/[0.08] py-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="flex items-center gap-2.5 text-xs text-[#5C5A55]">
-            <span className="relative flex size-2" aria-hidden="true">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500/60" />
-              <span className="relative inline-flex size-2 rounded-full bg-orange-600" />
-            </span>
-            <span className="uppercase tracking-[0.18em]">
-              Currently building
-            </span>
-            <span
-              className="hidden h-3 w-px bg-[#141414]/15 sm:block"
-              aria-hidden="true"
-            />
-          </p>
-          <Link
-            href="/work/solstice-ai-engine"
-            className="group inline-flex items-center gap-1.5 text-xs text-[#2E2D2A] transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          >
-            An evaluation layer for a generative AI engine
-            <ArrowUpRight
-              className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              aria-hidden="true"
-            />
-          </Link>
-        </div>
-      </div>
-
-      </div>
-    </PrismSilkFooter>
+      palette={{
+        paperTop: "#F6F5F0",
+        ink: "#141414",
+        muted: "#5C5A55",
+        line: "rgba(20, 20, 20, 0.12)",
+      }}
+      maxWidth="1200px"
+      fontFamily="var(--font-geist-sans)"
+      stageMinHeight="320px"
+    />
   );
 }

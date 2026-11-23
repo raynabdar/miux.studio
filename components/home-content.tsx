@@ -22,7 +22,6 @@ import {
   motion,
   useInView,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -31,7 +30,26 @@ import {
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+/* Hydration-safe: framer-motion's useReducedMotion() returns the live value on
+   the first client render, which picks different Work markup than the server
+   and breaks hydration for reduced-motion visitors. */
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeToReducedMotion(callback: () => void) {
+  const query = window.matchMedia(REDUCED_MOTION_QUERY);
+  query.addEventListener("change", callback);
+  return () => query.removeEventListener("change", callback);
+}
+
+function usePrefersReducedMotion() {
+  return useSyncExternalStore(
+    subscribeToReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION_QUERY).matches,
+    () => false,
+  );
+}
 
 /* ── Animation variants ─────────────────────────────────────────────── */
 
@@ -326,6 +344,9 @@ function About() {
   const isMobile = useIsMobile();
   const aboutRef = useRef<HTMLElement>(null);
   const [revealedCount, setRevealedCount] = useState(0);
+  // Keep the statement at full contrast until it nears the viewport, otherwise the
+  // dimmed pre-reveal words sit in the page-load DOM at ~1.6:1 contrast (WCAG 1.4.3).
+  const [revealArmed, setRevealArmed] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: aboutRef,
@@ -345,6 +366,22 @@ function About() {
     const nextCount = Math.round(normalized * total);
     setRevealedCount((prev) => (prev === nextCount ? prev : nextCount));
   });
+
+  useEffect(() => {
+    const el = aboutRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setRevealArmed(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px 20% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // Dynamic zoom: scale increases as user approaches the section center, and scales back as they scroll away
   const zoomScale = useTransform(
@@ -389,7 +426,7 @@ function About() {
           className="mx-auto max-w-4xl text-center text-2xl leading-[1.32] font-semibold tracking-[-0.04em] will-change-transform sm:text-5xl md:text-6xl lg:text-[62px] lg:leading-[1.18] text-[#141414]"
         >
           {ABOUT_STATEMENT_WORDS.map((word, i) => {
-            const revealed = i < revealedCount;
+            const revealed = !revealArmed || i < revealedCount;
             const isGradient =
               word.includes("creative") ||
               word.includes("Bangladesh") ||
@@ -697,7 +734,7 @@ function StickyProjectCard({
 function Work() {
   const displayedProjects = projects.slice(0, 4);
   const workRef = useRef<HTMLElement | null>(null);
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const { scrollYProgress } = useScroll({
     target: workRef,
     offset: ["start end", "end start"],
