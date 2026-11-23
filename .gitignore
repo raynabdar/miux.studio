@@ -40,3 +40,6 @@ pnpm-debug.log*
 # Vercel
 .vercel/
 
+# Prisma generated client (regenerated via postinstall)
+/generated/prisma
+

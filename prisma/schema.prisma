@@ -1,0 +1,118 @@
+// Phase 1 schema — auth, guided onboarding, verification, audit.
+// The founder/owner is NOT a stored role: it is resolved at request time by
+// comparing the Clerk user id against FOUNDER_USER_ID (trusted server config).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  client
+  team_member
+}
+
+enum AccountStatus {
+  pending_verification
+  active
+  suspended
+}
+
+enum MeetingPreference {
+  yes
+  no
+}
+
+enum SubmissionStatus {
+  submitted
+  meeting_acknowledged
+  account_created
+  contacted
+  closed
+}
+
+enum BookingState {
+  none
+  acknowledged
+  confirmed
+}
+
+model User {
+  id              String        @id @default(uuid()) @db.Uuid
+  clerkId         String        @unique
+  email           String        @unique
+  fullName        String?
+  company         String?
+  role            UserRole      @default(client)
+  status          AccountStatus @default(pending_verification)
+  emailVerifiedAt DateTime?
+  ownerVerifiedAt DateTime?
+  verifiedBy      String?
+  isDemo          Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  submissions OnboardingSubmission[]
+
+  @@index([status])
+  @@index([isDemo])
+  @@map("users")
+}
+
+model OnboardingSubmission {
+  id                    String            @id @default(uuid()) @db.Uuid
+  referenceId           String            @unique
+  fullName              String
+  email                 String
+  company               String
+  service               String
+  budgetRange           String
+  message               String
+  meetingPreference     MeetingPreference
+  meetingAcknowledgedAt DateTime?
+  bookingState          BookingState      @default(none)
+  bookingExternalId     String?
+  status                SubmissionStatus  @default(submitted)
+  clerkUserId           String?
+  ipHash                String?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  user User? @relation(fields: [clerkUserId], references: [clerkId], onDelete: SetNull)
+
+  @@index([email])
+  @@index([status])
+  @@index([meetingPreference])
+  @@index([createdAt])
+  @@map("onboarding_submissions")
+}
+
+model ApplicationSettings {
+  id                 Int      @id @default(1)
+  earlySignUpEnabled Boolean  @default(false)
+  updatedAt          DateTime @updatedAt
+  updatedBy          String?
+
+  @@map("application_settings")
+}
+
+model AuditLog {
+  id           BigInt   @id @default(autoincrement())
+  actorClerkId String?
+  actorRole    String
+  action       String
+  targetType   String
+  targetId     String?
+  metadata     Json     @default("{}")
+  ipHash       String?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([actorClerkId, createdAt])
+  @@index([action, createdAt])
+  @@map("audit_logs")
+}

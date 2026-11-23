@@ -381,7 +381,7 @@ export function Navbar() {
 
             {/* Desktop Right CTA: Orange Gradient with White Text */}
             <Link
-              href="/meeting"
+              href="/start"
               aria-label="Get Started with Miux Studio"
               title="Get Started with Miux Studio"
               className="relative group overflow-hidden hidden shrink-0 whitespace-nowrap rounded-full bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 border border-orange-600/20 font-semibold text-white transition-all duration-300 hover:brightness-105 active:scale-[0.98] md:inline-flex items-center justify-center gap-2 h-9 px-5 text-xs sm:text-sm shadow-[0_2px_12px_rgba(234,88,12,0.28)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#141414]"
@@ -498,7 +498,7 @@ export function Navbar() {
 
               {/* Full-width CTA inside open menu: Orange Gradient with Dark Mesh and White Text */}
               <MotionLink
-                href="/meeting"
+                href="/start"
                 aria-label="Get Started with Miux Studio"
                 title="Get Started with Miux Studio"
                 initial={{ opacity: 0, y: 12 }}
