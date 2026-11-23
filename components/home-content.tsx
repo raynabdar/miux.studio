@@ -262,7 +262,7 @@ function Hero({ isNight }: { isNight: boolean }) {
     >
       {/* Day/Night ElsewhereBackground video + PC-only cursor effect + bottom progressive blur blend */}
       <div
-        className="absolute inset-0 pointer-events-none overflow-hidden bg-[#0a0d08]"
+        className="absolute inset-0 pointer-events-none overflow-hidden bg-[#0a0d08] [mask-image:linear-gradient(to_right,transparent_0%,black_7%,black_93%,transparent_100%)]"
         aria-hidden="true"
       >
         <ElsewhereBackground
@@ -1366,11 +1366,6 @@ function Stats() {
 /*  8. FINAL CTA                                                         */
 /* ───────────────────────────────────────────────────────────────────── */
 
-const CTA_CORNER_FOG = [
-  "pointer-events-none absolute -bottom-20 -left-20 h-[480px] w-[620px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.22)_0%,rgba(234,88,12,0.09)_45%,transparent_72%)] blur-[90px]",
-  "pointer-events-none absolute -bottom-16 -right-20 h-[500px] w-[640px] rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.20)_0%,rgba(249,115,22,0.08)_46%,transparent_74%)] blur-[100px]",
-];
-
 function FinalCTA() {
   const [youOpen, setYouOpen] = useState(false);
 
@@ -1380,53 +1375,15 @@ function FinalCTA() {
       aria-label="Call to action"
       className="relative bg-[#F6F5F0] px-5 py-28 text-center sm:py-36 overflow-hidden"
     >
-      {/* Animated volumetric mountain/hill field — clearly visible on both PC and mobile */}
+      {/* Simple, slow hill field — no glow or fog layers */}
       <GLSLHills
-        className="absolute inset-0 opacity-100 [mask-image:linear-gradient(to_top,transparent_0%,black_10%,black_88%,transparent_100%)]"
-        cameraZ={112}
+        className="absolute inset-0 opacity-90 [mask-image:linear-gradient(to_top,transparent_0%,black_10%,black_88%,transparent_100%)]"
+        cameraZ={118}
         planeSize={256}
-        speed={0.5}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08)_0%,transparent_68%)]"
+        speed={0.3}
       />
 
-      {/* Slow, shining ambient pulsing glow */}
-      <motion.div
-        animate={{
-          scale: [1, 1.14, 1],
-          opacity: [0.16, 0.28, 0.16],
-        }}
-        transition={{
-          duration: 7.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[340px] sm:w-[720px] sm:h-[450px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.18)_0%,rgba(251,146,60,0.08)_40%,transparent_70%)] blur-[72px] sm:blur-[90px] will-change-[transform,opacity]"
-        aria-hidden="true"
-      />
-
-      {/* Soft orange fog drifting in the bottom-left and bottom-right corners */}
-      {CTA_CORNER_FOG.map((className, index) => (
-        <motion.div
-          key={index}
-          aria-hidden="true"
-          animate={{
-            opacity: [0.55, 0.85, 0.55],
-            scale: [1, 1.08, 1],
-            x: index === 0 ? [0, 18, 0] : [0, -18, 0],
-          }}
-          transition={{
-            duration: 11 + index * 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className={className}
-        />
-      ))}
-
-      {/* Subtle edge blend keeping the mountain terrain clearly visible */}
+      {/* Subtle edge blend keeping the terrain clearly visible */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-20 sm:h-28 bg-gradient-to-b from-[#F6F5F0] via-[#F6F5F0]/45 to-transparent"

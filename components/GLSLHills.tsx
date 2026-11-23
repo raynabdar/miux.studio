@@ -190,12 +190,12 @@ export function GLSLHills({
           varying vec3 vPosition;
 
           void main(void) {
-            float opacity = clamp((118.0 - length(vPosition)) / 168.0 * 0.92, 0.0, 0.88);
-            float ridge = clamp(vPosition.y / 38.0, 0.0, 1.0);
-            vec3 valleyColor = vec3(0.14, 0.12, 0.11);
-            vec3 crestColor = vec3(0.58, 0.27, 0.12);
-            vec3 color = mix(valleyColor, crestColor, ridge * 0.65);
-            gl_FragColor = vec4(color, opacity);
+            float ridge = clamp(vPosition.y / 42.0, 0.0, 1.0);
+            vec3 valleyColor = vec3(0.36, 0.32, 0.27);
+            vec3 crestColor = vec3(0.82, 0.74, 0.63);
+            vec3 color = mix(valleyColor, crestColor, ridge);
+            float edgeFade = 1.0 - smoothstep(96.0, 150.0, length(vPosition));
+            gl_FragColor = vec4(color, edgeFade * 0.85);
           }
         `,
       });

@@ -12,7 +12,7 @@ import {
 } from '@/app/(portal)/auth-actions'
 
 const fieldClass =
-  'w-full rounded-2xl border border-[#141414]/12 bg-white/70 px-4 py-3 text-sm text-[#141414] outline-none transition-all placeholder:text-[#8A857C] focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/20'
+  'w-full rounded-2xl border border-[#141414]/12 bg-white px-4 py-3 text-sm text-[#141414] outline-none transition-all placeholder:text-[#8A857C] focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/20'
 
 export default function SignInForm({ siteKey }: { siteKey: string | null }) {
   const { signIn } = useSignIn()
