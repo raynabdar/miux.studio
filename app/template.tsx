@@ -5,9 +5,11 @@ import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 import { SitePreloader } from '@/components/SitePreloader'
 import { registerLenis } from '@/lib/smooth-scroll'
+import { useSkipMountAnimation } from '@/lib/use-skip-mount-animation'
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const progressRef = useRef<HTMLDivElement>(null)
+  const skipMountAnimation = useSkipMountAnimation()
 
   /* ── Lenis smooth scroll + scroll-progress ──────────────── */
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
       {/* ── Route transition (fade + slight upward slide, 0.5s ease-out) ── */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={skipMountAnimation ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="relative"
@@ -74,7 +76,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
       {/* ── Thin off-white overlay wipe for route transitions ── */}
       <motion.div
-        initial={{ scaleY: 1 }}
+        initial={skipMountAnimation ? { scaleY: 0 } : { scaleY: 1 }}
         animate={{ scaleY: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="pointer-events-none fixed inset-0 z-[9980] origin-top bg-[#ECEAE3]"

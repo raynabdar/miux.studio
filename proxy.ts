@@ -27,6 +27,28 @@ const isPublicRoute = createRouteMatcher([
   '/api(.*)',
 ])
 
+// Marketing pages never read Clerk state, so skipping the middleware there drops
+// the dev-instance handshake redirect chain that otherwise runs before first paint.
+const isMarketingRoute = createRouteMatcher([
+  '/',
+  '/start',
+  '/blog(.*)',
+  '/blogs(.*)',
+  '/work(.*)',
+  '/projects(.*)',
+  '/startups(.*)',
+  '/contact(.*)',
+  '/meeting(.*)',
+  '/privacy(.*)',
+  '/privacy-policy(.*)',
+  '/terms(.*)',
+  '/client-terms(.*)',
+  '/teardown(.*)',
+  '/sitemap(.*)',
+  '/opengraph-image(.*)',
+  '/api(.*)',
+])
+
 const isClerkConfigured = () =>
   Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY)
 
@@ -56,6 +78,10 @@ function withClerk(request: NextRequest, event: NextFetchEvent) {
 // Proxy adds the first cheap layer only. Every protected page/action re-checks
 // the session and stored role server-side (see lib/auth/session.ts).
 export default function proxy(request: NextRequest, event: NextFetchEvent) {
+  if (isMarketingRoute(request)) {
+    return NextResponse.next()
+  }
+
   if (isClerkConfigured()) {
     return withClerk(request, event)
   }

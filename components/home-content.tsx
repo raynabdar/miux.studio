@@ -18,6 +18,7 @@ import { faqs, projects, STATS, type Project } from "@/lib/data";
 import { testimonials, type TestimonialItem } from "@/lib/testimonials";
 import type { PublicPlan, PublicTestimonial } from "@/lib/cms/defaults";
 import { cn } from "@/lib/utils";
+import { useSkipMountAnimation } from "@/lib/use-skip-mount-animation";
 import {
   motion,
   useInView,
@@ -136,6 +137,7 @@ function Hero() {
     month: "long",
     timeZone: "Asia/Dhaka",
   }).format(new Date());
+  const skipEntrance = useSkipMountAnimation();
 
   return (
     <section
@@ -150,7 +152,7 @@ function Hero() {
         <div className="flex w-full max-w-[920px] flex-col items-center text-center">
           {/* Founder Avatars Pill — matching Navbar liquid glass */}
           <motion.div
-            initial={{ opacity: 0, y: 14 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.08 }}
             className="mb-5 max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mb-6"
@@ -198,7 +200,7 @@ function Hero() {
 
           {/* Live availability — sits directly beneath the Startups & Founders pill */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.65,
@@ -224,7 +226,7 @@ function Hero() {
               shave glyph edges. */}
           <div className="-my-2 max-w-5xl overflow-hidden px-2 py-3 sm:px-4 lg:-my-4 lg:py-5">
             <motion.h1
-              initial={{ y: 24, opacity: 0 }}
+              initial={skipEntrance ? false : { y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{
                 duration: 0.75,
@@ -241,7 +243,7 @@ function Hero() {
 
           {/* Subtitle */}
           <motion.p
-            initial={{ opacity: 0, y: 14 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.14 }}
             className="mt-4 max-w-xl px-2 text-sm font-normal leading-relaxed text-[#C7C2B8] sm:mt-5 sm:text-lg md:text-xl"
@@ -252,7 +254,7 @@ function Hero() {
 
           {/* Action Button */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.65,
@@ -282,7 +284,7 @@ function Hero() {
 
           {/* Studio location & live Dhaka time — placed after Hero CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.6,
