@@ -215,11 +215,10 @@ export function CareersValues({
       )}
       {...props}
     >
-      {/* Fontshare Satoshi Global Font Injector */}
+      {/* Satoshi is self-hosted via @font-face in globals.css */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            @import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,900&display=swap');
             .font-satoshi {
               font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
             }

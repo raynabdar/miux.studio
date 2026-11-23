@@ -6,8 +6,8 @@ import { GlassIconReveal } from "@/components/GlassIconReveal";
 
 const MIUX_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="currentColor"><path d="M121 264h57v57h-57z"/><path d="M236 148h57l114 114v59h-57l-57-57v57h-57l-57-57v-58h57z"/></svg>`;
 
-const MIN_VISIBLE_MS = 1700;
-const MAX_VISIBLE_MS = 3000;
+const MIN_VISIBLE_MS = 1200;
+const MAX_VISIBLE_MS = 2200;
 
 export function SitePreloader() {
   const [showPreloader, setShowPreloader] = useState(false);
@@ -41,16 +41,19 @@ export function SitePreloader() {
         hideTimer = setTimeout(dismiss, Math.max(0, MIN_VISIBLE_MS - elapsed));
       };
 
-      if (document.readyState === "complete") {
-        scheduleHide();
+      // Dismiss as soon as the document is parsed instead of waiting for the
+      // ~2 MB of hero video to finish downloading. The hero poster is already
+      // painted underneath the overlay by then.
+      if (document.readyState === "loading") {
+        window.addEventListener("DOMContentLoaded", scheduleHide, { once: true });
       } else {
-        window.addEventListener("load", scheduleHide, { once: true });
+        scheduleHide();
       }
 
       const maxTimer = setTimeout(dismiss, MAX_VISIBLE_MS);
 
       return () => {
-        window.removeEventListener("load", scheduleHide);
+        window.removeEventListener("DOMContentLoaded", scheduleHide);
         if (hideTimer) clearTimeout(hideTimer);
         clearTimeout(maxTimer);
       };

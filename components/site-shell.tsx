@@ -1,7 +1,6 @@
 "use client";
 
-import { FooterBrand } from "@/components/ui/footer-brand";
-import { RuixenGradientFooter } from "@/components/ui/ruixen-gradient-footer";
+import { PrismSilkFooter } from "@/components/ui/prism-silk-footer";
 import { SITE, SOCIAL_LINKS } from "@/lib/data";
 import { useCms } from "@/components/cms/cms-provider";
 import { setSmoothScrollEnabled } from "@/lib/smooth-scroll";
@@ -613,17 +612,6 @@ const SOCIAL_ICONS = {
   X: XIcon,
 } as const;
 
-// Orange-only gradient for the footer glow: deep amber at the floor rising
-// through bright orange into a soft apricot that dissolves into the page.
-const FOOTER_ORANGE_STOPS = [
-  { offset: 0, color: "#EA580C" },
-  { offset: 0.18, color: "#F97316" },
-  { offset: 0.38, color: "#FB923C" },
-  { offset: 0.58, color: "#FDBA74" },
-  { offset: 0.78, color: "#FED7AA" },
-  { offset: 1, color: "#FFEDD500" },
-];
-
 export function Footer() {
   const cms = useCms();
   const site = cms.site;
@@ -636,14 +624,46 @@ export function Footer() {
   const phoneHref = site.phone ? `tel:${site.phone.replace(/[^+\d]/g, "")}` : "";
 
   return (
-    <RuixenGradientFooter
+    <PrismSilkFooter
       id="site-footer"
-      gradientHeight="clamp(340px, 48vh, 560px)"
-      minReveal={0}
-      blur={30}
-      peak={0.92}
-      valley={0.5}
-      stops={FOOTER_ORANGE_STOPS}
+      name="miux"
+      preset="ember"
+      maxWidth={1200}
+      backToTop="Back to top"
+      copyright={
+        <span>
+          &copy; {SITE.founded}–{new Date().getFullYear()}{" "}
+          {SITE.name.toUpperCase()}. All rights reserved.
+        </span>
+      }
+      credit={
+        <div className="flex flex-wrap items-center gap-4 sm:gap-5">
+          <Link
+            href="/client-terms"
+            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+          >
+            Client Terms
+          </Link>
+          <Link
+            href="/privacy-policy"
+            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+          >
+            Privacy
+          </Link>
+          <Link
+            href="/terms"
+            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+          >
+            Terms
+          </Link>
+          <Link
+            href="/sitemap"
+            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+          >
+            Sitemap
+          </Link>
+        </div>
+      }
       className="relative border-t border-[#141414]/[0.08] bg-[#F6F5F0]"
     >
       <div
@@ -675,14 +695,14 @@ export function Footer() {
             Selective creative studio engineering brand systems and
             high-converting digital platforms.
           </p>
-          <p className="mt-4 text-xs tracking-wider uppercase text-[#78756E]">
+          <p className="mt-4 text-xs tracking-wider uppercase text-[#6E6B65]">
             {site.regionalScope || SITE.scopeLabel}
           </p>
         </div>
 
         {/* Navigation */}
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#78756E]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6E6B65]">
             Navigation
           </h2>
           <nav
@@ -705,7 +725,7 @@ export function Footer() {
 
         {/* Services */}
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#78756E]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6E6B65]">
             Services
           </h2>
           <ul className="mt-4 flex flex-col gap-3">
@@ -726,7 +746,7 @@ export function Footer() {
 
         {/* Others */}
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#78756E]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6E6B65]">
             Others
           </h2>
           <nav
@@ -749,7 +769,7 @@ export function Footer() {
 
         {/* Connect */}
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#78756E]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6E6B65]">
             Connect
           </h2>
           <a
@@ -792,7 +812,7 @@ export function Footer() {
       <div className="relative z-10 flex justify-center pb-8 pt-4">
         <Link
           href="/meeting"
-          aria-label="Book a 45-minute discovery call with Miux Studio"
+          aria-label="Book a Call — 45-minute discovery call with Miux Studio"
           title="Schedule a consultation call with Miux Studio"
           className="group inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[#141414] px-7 py-3 text-sm font-semibold text-[#F6F5F0] shadow-[0_2px_14px_rgba(20,20,20,0.18)] ring-1 ring-inset ring-white/15 transition-[background-color,box-shadow] hover:bg-[#262626] hover:shadow-[0_6px_24px_rgba(20,20,20,0.26)] select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414]"
         >
@@ -833,44 +853,7 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom row */}
-      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col justify-between gap-4 px-5 py-6 text-xs text-[#5C5A55] sm:flex-row sm:items-center">
-        <span>
-          &copy; {SITE.founded}–{new Date().getFullYear()}{" "}
-          {SITE.name.toUpperCase()}. All rights reserved.
-        </span>
-        <div className="flex flex-wrap items-center gap-5 sm:gap-6">
-          <Link
-            href="/client-terms"
-            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          >
-            Client Terms
-          </Link>
-          <Link
-            href="/privacy-policy"
-            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          >
-            Privacy
-          </Link>
-          <Link
-            href="/terms"
-            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          >
-            Terms
-          </Link>
-          <Link
-            href="/sitemap"
-            className="rounded-sm transition-colors hover:text-orange-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          >
-            Sitemap
-          </Link>
-        </div>
       </div>
-
-      </div>
-
-      {/* Interactive WebGL Melting Footer Text — pinned to the viewport floor */}
-      <FooterBrand text="miux" />
-    </RuixenGradientFooter>
+    </PrismSilkFooter>
   );
 }

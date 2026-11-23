@@ -4,5 +4,25 @@
       "path": "/api/cron/demo-reset",
       "schedule": "0 3 * * *"
     }
+  ],
+  "headers": [
+    {
+      "source": "/:file(day\\.mp4|night\\.mp4|hero-poster\\.jpg|hero-image\\.jpg|founder\\.jpg|logo\\.png)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/satoshi/:file",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    }
   ]
 }

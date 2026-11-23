@@ -23,11 +23,15 @@ export default function Template({ children }: { children: React.ReactNode }) {
     registerLenis(lenis)
 
     let frame = 0
+    let lastProgress = -1
     const raf = (time: number) => {
       lenis.raf(time)
-      const max = document.documentElement.scrollHeight - window.innerHeight
-      if (max > 0 && progressRef.current) {
-        progressRef.current.style.transform = `scaleX(${window.scrollY / max})`
+      // Lenis exposes its progress without forcing a layout read each frame.
+      const progress = lenis.progress
+      const bar = progressRef.current
+      if (bar && Number.isFinite(progress) && Math.abs(progress - lastProgress) > 0.0005) {
+        lastProgress = progress
+        bar.style.transform = `scaleX(${progress})`
       }
       frame = requestAnimationFrame(raf)
     }

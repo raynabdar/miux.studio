@@ -1,6 +1,5 @@
 "use client";
 
-import ElsewhereBackground from "@/components/ElsewhereBackground";
 import { GLSLHills } from "@/components/GLSLHills";
 import { CompanyCardMarquee } from "@/components/LogoMarquee";
 import { ProgressiveBlur } from "@/components/ProgressiveBlur";
@@ -10,6 +9,7 @@ import { Visual2 } from "@/components/ui/animated-card-diagram";
 import { BlurRevealTitle } from "@/components/ui/blur-reveal-title";
 import { CareersValues } from "@/components/ui/careers-values";
 import FAQs from "@/components/ui/faqs-component";
+import { FluxPay } from "@/components/ui/fluxpay";
 import Pricing from "@/components/ui/pricing";
 import ProgressMetricCard from "@/components/ui/progress-metric-card";
 import { ShinyButton } from "@/components/ui/shiny-button";
@@ -29,14 +29,9 @@ import {
   type Variants,
 } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-
-const LiquidEther = dynamic(() => import("@/components/LiquidEther"), {
-  ssr: false,
-});
 
 /* ── Animation variants ─────────────────────────────────────────────── */
 
@@ -78,94 +73,17 @@ function useIsMobile() {
 /*  2. HERO (id="home")                                                  */
 /* ───────────────────────────────────────────────────────────────────── */
 
-const HERO_MEDIA_CONFIG = {
-  daySrc: "/day.mp4",
-  nightSrc: "/night.mp4",
-} as const;
+/* ───────────────────────────────────────────────────────────────────── */
+/*  2. HERO (id="home")                                                  */
+/* ───────────────────────────────────────────────────────────────────── */
 
-// Representative latitudes by IANA timezone/region so local sunrise & sunset
-// adapt accurately to the visitor's country and season without requesting GPS permission.
-const TIMEZONE_LATITUDE_MAP: Record<string, number> = {
-  "Asia/Dhaka": 23.8,
-  "Asia/Kolkata": 22.6,
-  "Asia/Dubai": 25.2,
-  "Asia/Riyadh": 24.7,
-  "Asia/Singapore": 1.3,
-  "Asia/Tokyo": 35.7,
-  "Asia/Seoul": 37.6,
-  "Asia/Hong_Kong": 22.3,
-  "Asia/Bangkok": 13.8,
-  "Asia/Jakarta": -6.2,
-  "Asia/Karachi": 24.9,
-  "Europe/London": 51.5,
-  "Europe/Paris": 48.9,
-  "Europe/Berlin": 52.5,
-  "Europe/Stockholm": 59.3,
-  "America/New_York": 40.7,
-  "America/Chicago": 41.9,
-  "America/Denver": 39.7,
-  "America/Los_Angeles": 34.1,
-  "America/Toronto": 43.7,
-  "America/Sao_Paulo": -23.6,
-  "Australia/Sydney": -33.9,
-  "Pacific/Auckland": -36.8,
-};
+const HERO_STATS = [
+  { value: `${STATS.founders}+`, label: "Founders & startups" },
+  { value: `${STATS.projects}+`, label: "Projects delivered" },
+  { value: `${STATS.inHousePercent}%`, label: "In-house team" },
+];
 
-function estimateLocalLatitude(): number {
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (tz && tz in TIMEZONE_LATITUDE_MAP) return TIMEZONE_LATITUDE_MAP[tz];
-    if (tz?.startsWith("Europe/")) return 48;
-    if (tz?.startsWith("America/")) return 38;
-    if (tz?.startsWith("Australia/") || tz?.startsWith("Pacific/")) return -33;
-    if (tz?.startsWith("Asia/")) return 24;
-  } catch {
-    // Fall back to equatorial 6:00–18:00 schedule
-  }
-  return 0;
-}
-
-/**
- * Determines whether it is evening/night vs morning/afternoon at the visitor's
- * local time and country (via IANA timezone + seasonal solar day-length).
- */
-function isLocalNightTime(now: Date = new Date()): boolean {
-  const localHour = now.getHours() + now.getMinutes() / 60;
-  const startOfYear = new Date(now.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor(
-    (now.getTime() - startOfYear.getTime()) / 86_400_000,
-  );
-  const latRad = (estimateLocalLatitude() * Math.PI) / 180;
-  // Solar declination approximation in radians
-  const declination =
-    ((23.44 * Math.PI) / 180) *
-    Math.sin(((2 * Math.PI) / 365) * (dayOfYear - 81));
-  const cosHourAngle = Math.max(
-    -0.88,
-    Math.min(0.88, -Math.tan(latRad) * Math.tan(declination)),
-  );
-  const halfDayHours = (Math.acos(cosHourAngle) * 180) / Math.PI / 15;
-  const sunrise = Math.max(4.5, Math.min(8, 12 - halfDayHours));
-  const sunset = Math.max(16.5, Math.min(20.5, 12 + halfDayHours));
-
-  return localHour < sunrise || localHour >= sunset;
-}
-
-function useHeroNightMode(): boolean {
-  // Always start in day mode so SSR and initial hydration match with zero warnings
-  const [isNight, setIsNight] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsNight(isLocalNightTime());
-    check();
-    const id = window.setInterval(check, 60_000);
-    return () => window.clearInterval(id);
-  }, []);
-
-  return isNight;
-}
-
-function StudioClock({ isNight = false }: { isNight?: boolean }) {
+function StudioClock() {
   const [time, setTime] = useState<string | null>(null);
 
   useEffect(() => {
@@ -183,51 +101,18 @@ function StudioClock({ isNight = false }: { isNight?: boolean }) {
     return () => window.clearInterval(id);
   }, []);
 
-  if (!time) {
-    return (
-      <span
-        className={cn(
-          "transition-colors duration-1000 ease-in-out",
-          isNight ? "text-[#F6F5F0]/80" : "text-[#5C5A55]",
-        )}
-      >
-        Dhaka time
-      </span>
-    );
-  }
-
   return (
-    <span
-      className={cn(
-        "tabular-nums transition-colors duration-1000 ease-in-out",
-        isNight ? "text-[#F6F5F0]" : "text-[#141414]/80",
+    <span className="tabular-nums text-[#F6F5F0]/75">
+      {time ? (
+        <time dateTime={new Date().toISOString()}>{time}</time>
+      ) : (
+        "Dhaka time"
       )}
-    >
-      <time dateTime={new Date().toISOString()}>{time}</time>
     </span>
   );
 }
 
-function Hero({ isNight }: { isNight: boolean }) {
-  const isMobile = useIsMobile();
-  const heroRef = useRef<HTMLElement | null>(null);
-  const cursorLightRef = useRef<HTMLDivElement | null>(null);
-  const pointerRafRef = useRef<number>(0);
-  const [heroHovered, setHeroHovered] = useState(false);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const etherOpacity = useTransform(scrollYProgress, [0, 0.72, 1], [1, 0.85, 0]);
-
-  useEffect(() => {
-    return () => {
-      if (pointerRafRef.current) {
-        window.cancelAnimationFrame(pointerRafRef.current);
-      }
-    };
-  }, []);
-
+function Hero() {
   // Dynamic month: deterministic Dhaka timezone to prevent SSR/client hydration mismatches
   const currentMonth = new Intl.DateTimeFormat("en-US", {
     month: "long",
@@ -236,131 +121,39 @@ function Hero({ isNight }: { isNight: boolean }) {
 
   return (
     <section
-      ref={heroRef}
       id="home"
       aria-label="Websites for Brands and Digital Businesses"
-      onPointerEnter={(event) => {
-        if (!isMobile && event.pointerType === "mouse") setHeroHovered(true);
-      }}
-      onPointerLeave={() => setHeroHovered(false)}
-      onPointerMove={(event) => {
-        if (isMobile || event.pointerType !== "mouse") return;
-        const target = event.currentTarget;
-        const clientX = event.clientX;
-        const clientY = event.clientY;
-        if (pointerRafRef.current) return;
-        pointerRafRef.current = window.requestAnimationFrame(() => {
-          pointerRafRef.current = 0;
-          const light = cursorLightRef.current;
-          if (!light) return;
-          const rect = target.getBoundingClientRect();
-          light.style.setProperty("--cursor-x", `${clientX - rect.left}px`);
-          light.style.setProperty("--cursor-y", `${clientY - rect.top}px`);
-        });
-      }}
-      className="relative flex min-h-[85vh] lg:min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#F6F5F0] px-4 sm:px-5 pt-28 pb-16 sm:pt-36 sm:pb-24"
+      className="relative w-full bg-[#0B0B0C] px-2 pt-2 pb-0 sm:px-3 sm:pt-3 lg:px-4"
     >
-      {/* Day/Night ElsewhereBackground video + PC-only cursor effect + bottom progressive blur blend */}
-      <div
-        className="absolute inset-0 pointer-events-none overflow-hidden"
-        aria-hidden="true"
+      <FluxPay
+        stats={HERO_STATS}
+        className="min-h-[calc(100svh-1rem)] sm:min-h-[calc(100svh-1.5rem)]"
       >
-        <ElsewhereBackground
-          daySrc={HERO_MEDIA_CONFIG.daySrc}
-          nightSrc={HERO_MEDIA_CONFIG.nightSrc}
-          isNight={isNight}
-        />
-
-        {/* Soft day readability wash — fades vertically so the edges stay clean (hidden in night mode) */}
-        <div
-          className={cn(
-            "absolute inset-0 bg-[linear-gradient(180deg,rgba(246,245,240,0.30)_0%,rgba(246,245,240,0.46)_36%,rgba(246,245,240,0.40)_58%,rgba(246,245,240,0.14)_82%,rgba(246,245,240,0)_100%)] transition-opacity duration-1000 ease-in-out",
-            isNight ? "opacity-0" : "opacity-100",
-          )}
-        />
-
-        {/* PC-only interactive cursor fluid + warm cursor light (disabled on mobile/touch) */}
-        {!isMobile && (
-          <>
-            <motion.div
-              style={{ opacity: etherOpacity }}
-              className="absolute inset-0 pointer-events-none will-change-[opacity] [mask-image:linear-gradient(to_bottom,black_0%,black_78%,transparent_100%)]"
-            >
-              <LiquidEther
-                colors={["#ea580c", "#fb923c", "#fdba74"]}
-                lightMode={!isNight}
-                backgroundColor="transparent"
-                intensity={0.7}
-                mouseForce={12}
-                cursorSize={120}
-                persistence={0.82}
-                viscosity={0.38}
-                resolution={0.32}
-                maxDevicePixelRatio={1.5}
-                autoDemo={false}
-                intro={false}
-                className="h-full w-full opacity-55"
-              />
-            </motion.div>
-
-            <div
-              ref={cursorLightRef}
-              className={cn(
-                "absolute inset-0 bg-[radial-gradient(520px_circle_at_var(--cursor-x,50%)_var(--cursor-y,40%),rgba(249,115,22,0.16),transparent_65%)] transition-opacity duration-700 ease-out will-change-[opacity]",
-                heroHovered ? "opacity-100" : "opacity-0",
-              )}
-            />
-          </>
-        )}
-
-        {/* Gentle full-width dissolve: progressive blur under a clean fade into the page colour */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-24 sm:h-36">
-          <ProgressiveBlur
-            direction="bottom"
-            blurLayers={4}
-            blurIntensity={0.4}
-            className="absolute inset-0 h-full w-full"
-          />
-        </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[6] h-20 bg-gradient-to-t from-[#F6F5F0] from-0% via-[#F6F5F0]/55 via-45% to-transparent sm:h-28" />
-      </div>
-
-      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col items-center text-center">
-        <div className="flex w-full flex-col items-center text-center">
-          {/* Founder Avatars Pill — matching Navbar liquid glass, fixed PC-style horizontal pill on all screen sizes */}
+        <div className="flex w-full max-w-[920px] flex-col items-center text-center">
+          {/* Founder Avatars Pill — matching Navbar liquid glass */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.08 }}
-            className="mb-4 max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mb-5"
+            className="mb-5 max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mb-6"
           >
             <Link
               href="/startups"
-              aria-label={`See the ${STATS.founders}+ startups and businesses that work with Miux Studio`}
-              className={cn(
-                "group relative inline-flex w-max flex-row flex-nowrap items-center justify-center gap-2 overflow-hidden rounded-full border px-2.5 py-1.5 transition-all duration-1000 ease-in-out hover:border-orange-500/55 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 sm:gap-3.5 sm:px-4 sm:py-2",
-                isNight
-                  ? "border-[#F6F5F0]/[0.18]"
-                  : "border-[#141414]/[0.10]",
-              )}
+              className="group relative inline-flex w-max flex-row flex-nowrap items-center justify-center gap-2 overflow-hidden rounded-full border border-[#F6F5F0]/[0.14] bg-white/[0.06] px-2.5 py-1.5 backdrop-blur-xl transition-all duration-300 ease-out hover:border-orange-400/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 sm:gap-3.5 sm:px-4 sm:py-2"
               style={{
-                backgroundColor: isNight
-                  ? "rgba(20, 20, 20, 0.42)"
-                  : "rgba(246, 245, 240, 0.52)",
-                backdropFilter: "blur(24px) saturate(180%)",
-                WebkitBackdropFilter: "blur(24px) saturate(180%)",
-                boxShadow: isNight
-                  ? "0 8px 30px -12px rgba(0, 0, 0, 0.35), inset 0 1px 1px 0 rgba(246, 245, 240, 0.22)"
-                  : "0 8px 30px -12px rgba(20, 20, 20, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 1px 0 rgba(20, 20, 20, 0.04)",
+                boxShadow:
+                  "0 8px 30px -18px rgba(0, 0, 0, 0.7), inset 0 1px 1px 0 rgba(246, 245, 240, 0.14)",
               }}
             >
-
-              <span className="relative z-10 flex shrink-0 -space-x-2" aria-hidden="true">
+              <span
+                className="relative z-10 flex shrink-0 -space-x-1.5"
+                aria-hidden="true"
+              >
                 {FOUNDER_AVATARS.map((person, index) => (
                   <span
                     key={person.id}
                     className={cn(
-                      "relative grid size-6 place-items-center overflow-hidden rounded-full border-2 border-white/85 text-[9px] font-semibold text-white transition-transform duration-300 ease-out hover:z-10 hover:scale-110 sm:size-8 sm:text-[10px]",
+                      "relative grid size-5 place-items-center overflow-hidden rounded-full border-2 border-[#0B0B0C] text-[8px] font-semibold text-white transition-transform duration-300 ease-out hover:z-10 hover:scale-110 sm:size-8 sm:text-[10px]",
                       index % 2 === 0
                         ? "bg-gradient-to-br from-orange-500 to-amber-600"
                         : "bg-gradient-to-br from-[#2E2D2A] to-[#141414]",
@@ -371,22 +164,12 @@ function Hero({ isNight }: { isNight: boolean }) {
                   </span>
                 ))}
               </span>
-              <span
-                className={cn(
-                  "relative z-10 flex shrink-0 flex-nowrap items-center justify-center gap-x-1.5 whitespace-nowrap text-[10px] min-[390px]:text-[11px] font-medium transition-colors duration-1000 ease-in-out sm:gap-x-2 sm:text-sm",
-                  isNight ? "text-[#F6F5F0]" : "text-[#141414]",
-                )}
-              >
-                <span
-                  className={cn(
-                    "font-semibold tracking-tight transition-colors duration-1000 ease-in-out",
-                    isNight ? "text-[#F6F5F0]" : "text-[#141414]",
-                  )}
-                >
+              <span className="relative z-10 flex shrink-0 flex-nowrap items-center justify-center gap-x-1.5 whitespace-nowrap text-[9px] font-medium text-[#F6F5F0] min-[390px]:text-[10px] sm:gap-x-2 sm:text-sm">
+                <span className="font-semibold tracking-tight">
                   Trusted by {STATS.founders}+ startups and businesses
                 </span>
                 <span
-                  className="ml-0.5 inline-flex shrink-0 items-center text-[10px] text-orange-500 sm:text-xs"
+                  className="ml-0.5 inline-flex shrink-0 items-center text-[9px] text-orange-400 sm:text-xs"
                   aria-label="Rated 5 out of 5 stars"
                 >
                   ★★★★★
@@ -402,12 +185,9 @@ function Hero({ isNight }: { isNight: boolean }) {
             transition={{
               duration: 0.65,
               delay: 0.16,
-              ease: [0.16, 1, 0.3, 1],
+              ease: [0.16, 1, 0.3, 1] as const,
             }}
-            className={cn(
-              "mb-10 inline-flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-xs select-none transition-colors duration-1000 ease-in-out sm:mb-14",
-              isNight ? "text-[#F6F5F0]/85" : "text-[#5C5A55]",
-            )}
+            className="mb-7 inline-flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-xs select-none text-[#A8A29E] sm:mb-9"
           >
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-500 opacity-75" />
@@ -415,31 +195,29 @@ function Hero({ isNight }: { isNight: boolean }) {
             </span>
             <span>
               Taking new projects for{" "}
-              <strong
-                className={cn(
-                  "font-semibold transition-colors duration-1000 ease-in-out",
-                  isNight ? "text-[#F6F5F0]" : "text-[#141414]",
-                )}
-              >
+              <strong className="font-semibold text-[#F6F5F0]">
                 &apos;{currentMonth}&apos;
               </strong>
             </span>
           </motion.div>
 
-          {/* SEO-Optimized Hero Heading: Websites for Brands & Digital Businesses.
-              Padding + matching negative margin enlarge the clip box so tight
-              leading and negative tracking never shave glyph edges. */}
-          <div className="overflow-hidden max-w-5xl px-3 py-4 sm:px-5 lg:py-7 -my-3 lg:-my-6">
+          {/* SEO-Optimized Hero Heading. Padding + matching negative margin
+              enlarge the clip box so tight leading and negative tracking never
+              shave glyph edges. */}
+          <div className="-my-2 max-w-5xl overflow-hidden px-2 py-3 sm:px-4 lg:-my-4 lg:py-5">
             <motion.h1
               initial={{ y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-              className={cn(
-                "text-[34px] leading-[1.06] font-semibold tracking-[-0.05em] transition-colors duration-1000 ease-in-out sm:tracking-[-0.06em] sm:text-6xl md:text-7xl lg:text-[88px] lg:leading-[0.95]",
-                isNight ? "text-[#F6F5F0]" : "text-[#141414]",
-              )}
+              transition={{
+                duration: 0.75,
+                ease: [0.16, 1, 0.3, 1] as const,
+              }}
+              className="text-balance text-[38px] leading-[0.98] font-semibold tracking-[-0.05em] sm:text-6xl md:text-7xl lg:text-[90px] lg:leading-[0.94]"
             >
-              Websites for Brands &amp; Digital Businesses
+              <span className="block text-[#F6F5F0]">Websites for Brands</span>
+              <span className="block bg-[linear-gradient(96deg,#F6F5F0_0%,#FDBA74_30%,#F97316_62%,#C2410C_100%)] bg-clip-text pb-2 text-transparent">
+                &amp; Digital Businesses
+              </span>
             </motion.h1>
           </div>
 
@@ -448,30 +226,33 @@ function Hero({ isNight }: { isNight: boolean }) {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.14 }}
-            className={cn(
-              "mt-5 sm:mt-6 max-w-2xl px-2 text-sm sm:text-lg md:text-xl font-normal leading-relaxed transition-colors duration-1000 ease-in-out",
-              isNight ? "text-[#F6F5F0]/85" : "text-[#5C5A55]",
-            )}
+            className="mt-4 max-w-xl px-2 text-sm font-normal leading-relaxed text-[#C7C2B8] sm:mt-5 sm:text-lg md:text-xl"
           >
             Get a website or custom business website that fulfils your goals and
             drives sales.
           </motion.p>
 
-          {/* Action Buttons */}
-          <div className="mt-7 sm:mt-8 flex w-full flex-col items-center justify-center gap-3.5 sm:w-auto sm:flex-row">
+          {/* Action Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.65,
+              delay: 0.2,
+              ease: [0.16, 1, 0.3, 1] as const,
+            }}
+            className="mt-7 flex w-full flex-col items-center justify-center gap-3.5 sm:mt-8 sm:w-auto sm:flex-row"
+          >
             <ShinyButton
               href="/meeting"
               label="Book a 45-min call"
-              fillColor="#141414"
-              labelColor="#F6F5F0"
-              aria-label="Book a 45-minute discovery call with Miux Studio"
+              fillColor="#F97316"
+              labelColor="#141414"
+              aria-label="Book a 45-min call — 45-minute discovery call with Miux Studio"
               title="Schedule a consultation call with Miux Studio"
-              className={cn(
-                "w-full max-w-[280px] sm:max-w-none sm:w-auto group shadow-[0_10px_28px_-10px_rgba(20,20,20,0.35)] transition-colors duration-1000 ease-in-out",
-                isNight && "ring-1 ring-[#F6F5F0]/25",
-              )}
+              className="group w-full max-w-[280px] shadow-[0_18px_44px_-18px_rgba(249,115,22,0.65)] sm:w-auto"
             >
-              <span className="inline-flex items-center gap-2 text-[#F6F5F0]">
+              <span className="inline-flex items-center gap-2 text-[#141414]">
                 <span>Book a 45-min call</span>
                 <ArrowUpRight
                   className="size-[18px] shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -479,32 +260,33 @@ function Hero({ isNight }: { isNight: boolean }) {
                 />
               </span>
             </ShinyButton>
-          </div>
+          </motion.div>
 
           {/* Studio location & live Dhaka time — placed after Hero CTA */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
-            className={cn(
-              "mt-4 inline-flex items-center justify-center gap-2 text-xs font-medium select-none transition-colors duration-1000 ease-in-out",
-              isNight ? "text-[#F6F5F0]/85" : "text-[#5C5A55]",
-            )}
+            transition={{
+              duration: 0.6,
+              delay: 0.26,
+              ease: [0.16, 1, 0.3, 1] as const,
+            }}
+            className="mt-4 inline-flex items-center justify-center gap-2 text-xs font-medium text-[#A8A29E] select-none"
           >
             <span>Dhaka</span>
-            <span
-              aria-hidden="true"
-              className={cn(
-                "transition-colors duration-1000 ease-in-out",
-                isNight ? "text-[#F6F5F0]/45" : "text-[#141414]/35",
-              )}
-            >
+            <span aria-hidden="true" className="text-[#F6F5F0]/30">
               ·
             </span>
-            <StudioClock isNight={isNight} />
+            <StudioClock />
           </motion.div>
         </div>
-      </div>
+      </FluxPay>
+
+      {/* Dark-to-cream bridge so the hero dissolves into the next section. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none -mx-2 h-16 bg-[linear-gradient(180deg,#0B0B0C_0%,#0B0B0C_26%,#F6F5F0_100%)] sm:-mx-3 sm:h-24 lg:-mx-4"
+      />
     </section>
   );
 }
@@ -1600,13 +1382,11 @@ export default function HomeContent({
     profileUrl: item.websiteUrl ?? "",
   }));
 
-  const isNight = useHeroNightMode();
-
   return (
     <div className="min-h-screen bg-[#F6F5F0] text-[#141414]">
-      <Navbar heroNight={isNight} />
+      <Navbar heroNight />
       <main>
-        <Hero isNight={isNight} />
+        <Hero />
         <CompanyCardMarquee />
         <About />
         <ServicesSection />
