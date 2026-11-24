@@ -32,18 +32,16 @@ export function FluxPay({ children, stats, className }: FluxPayProps) {
           flow={0.8}
           silk={0.35}
           grainAmount={0.08}
+          lightMode
         />
       </div>
 
-      {/* Dark scrims: the gradient has to read as a deep ember glow, and the
-          hero copy keeps its contrast over the brightest part of the flow. */}
+      {/* Single dark wash: the light-mode grainient turns the panel into a warm
+          cream-to-ember field, and the wash deepens it into a smoky ember so the
+          hero copy keeps its contrast. A second vignette would muddle the hue. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[#0B0B0C]/60"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_42%,transparent_30%,rgba(11,11,12,0.72)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[#0B0B0C]/80"
       />
 
       {/* Dark scrim under the stats row so the numbers stay legible. */}

@@ -578,6 +578,10 @@ export function Footer() {
       name="Miux Studio"
       brandHref="/"
       tagline="Selective creative studio in Dhaka, engineering brand systems and high-converting digital platforms for teams across APAC and the UAE."
+      location="Bangladesh-based — serving APAC and the UAE"
+      email="hello@miux.studio"
+      cta={{ label: "Book a Call", href: "/meeting" }}
+      wordmark="miux"
       columns={FOOTER_COLUMNS}
       socials={socials}
       copyright={`© ${SITE.founded}–${new Date().getFullYear()} ${SITE.name.toUpperCase()}. All rights reserved.`}
@@ -589,9 +593,10 @@ export function Footer() {
         muted: "#5C5A55",
         line: "rgba(20, 20, 20, 0.12)",
       }}
+      grain={0}
       maxWidth="1200px"
       fontFamily="var(--font-geist-sans)"
-      stageMinHeight="320px"
+      stageMinHeight="380px"
     />
   );
 }

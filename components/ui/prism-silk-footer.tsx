@@ -88,6 +88,14 @@ export interface PrismSilkFooterProps {
   logo?: React.ReactNode
   /** The line under the brand. "" hides it. */
   tagline?: string
+  /** Small uppercase location line under the tagline. "" hides it. */
+  location?: string
+  /** Contact email under the tagline. "" hides it. */
+  email?: string
+  /** Primary pill button beside the brand, e.g. a booking link. */
+  cta?: { label: string; href: string }
+  /** Giant wordmark cropped into the bottom edge over the silk. "" hides it. */
+  wordmark?: string
   /** Link columns. */
   columns?: PrismSilkColumn[]
   /** Social chips under the tagline. */
@@ -531,6 +539,53 @@ const PSF_CSS = `
   line-height: 1.5;
   letter-spacing: -0.005em;
 }
+.psf-loc {
+  margin: 16px 0 0;
+  color: var(--psf-muted);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.psf-mail {
+  display: inline-block;
+  margin-top: 16px;
+  padding-bottom: 2px;
+  color: var(--psf-ink);
+  font-size: 14px;
+  text-decoration: none;
+  border-radius: 4px;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  transition: background-size 0.4s cubic-bezier(0.7, 0, 0.2, 1);
+}
+.psf-mail:hover, .psf-mail:focus-visible {
+  background-image: linear-gradient(90deg, var(--psf-c1), var(--psf-c2), var(--psf-c4));
+  background-size: 100% 2px;
+}
+.psf-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  background: var(--psf-ink);
+  color: var(--psf-paper);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
+}
+.psf-cta svg { width: 14px; height: 14px; transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+.psf-cta:hover, .psf-cta:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px -16px rgba(0, 0, 0, 0.5);
+}
+.psf-cta:hover svg, .psf-cta:focus-visible svg { transform: translate(2px, -2px); }
 .psf-socials { display: flex; gap: 8px; margin: 34px 0 0; padding: 0; list-style: none; }
 .psf-soc {
   position: relative;
@@ -594,11 +649,12 @@ const PSF_CSS = `
 }
 .psf-col h3 {
   margin: 0 0 22px;
-  color: var(--psf-ink);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.015em;
+  color: var(--psf-muted);
+  font-size: 11px;
+  font-weight: 600;
   line-height: 1.2;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 .psf-col ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .psf-link {
@@ -778,6 +834,57 @@ const PSF_CSS = `
   margin-top: 28px;
   touch-action: pan-y;
 }
+.psf-sign {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+.psf-word {
+  position: relative;
+  display: block;
+  margin-bottom: -0.02em;
+  color: transparent;
+  background-image: linear-gradient(to bottom, var(--psf-ink), transparent 92%);
+  background-image: linear-gradient(to bottom, var(--psf-ink) 0%, color-mix(in srgb, var(--psf-ink) 60%, transparent) 42%, color-mix(in srgb, var(--psf-ink) 16%, transparent) 78%, transparent 96%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  opacity: 0.3;
+  font-size: clamp(96px, 40cqi, 440px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.07em;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(to bottom, #000 12%, rgba(0, 0, 0, 0.7) 58%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 12%, rgba(0, 0, 0, 0.7) 58%, transparent 96%);
+}
+/* Progressive blur at the bottom edge: masked blurred copies of the word,
+   cheaper than backdrop-filter over the animating silk. */
+.psf-word::before,
+.psf-word::after {
+  content: attr(data-word);
+  position: absolute;
+  inset: 0;
+  background-image: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  pointer-events: none;
+}
+.psf-word::before {
+  filter: blur(0.035em);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 32%, #000 62%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 32%, #000 62%, #000 90%, transparent 100%);
+}
+.psf-word::after {
+  filter: blur(0.09em);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 55%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 55%, #000 88%, transparent 100%);
+}
 .psf-live .psf-stage { cursor: crosshair; }
 .psf-sr {
   position: absolute;
@@ -918,6 +1025,10 @@ export default function PrismSilkFooter({
   brandHref = "#",
   logo,
   tagline,
+  location,
+  email,
+  cta,
+  wordmark,
   columns = DEFAULT_COLUMNS,
   socials = DEFAULT_SOCIALS,
   copyright,
@@ -1350,6 +1461,26 @@ export default function PrismSilkFooter({
                 {tagline ?? "Join thousands of companies already using " + name + " to simplify their workflow."}
               </p>
             ) : null}
+            {location ? (
+              <p className="psf-loc psf-r" style={delay(540)}>
+                {location}
+              </p>
+            ) : null}
+            {email ? (
+              <a className="psf-mail psf-r" style={delay(570)} href={"mailto:" + email}>
+                {email}
+              </a>
+            ) : null}
+            {cta ? (
+              <div className="psf-r" style={delay(600)}>
+                <a className="psf-cta" href={cta.href}>
+                  <span>{cta.label}</span>
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                    <path d="M4.5 11.5 11.5 4.5M5.5 4.5h6v6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+              </div>
+            ) : null}
             {socials.length ? (
               <ul className="psf-socials">
                 {socials.map((s, i) => {
@@ -1450,6 +1581,12 @@ export default function PrismSilkFooter({
       </div>
 
       <div ref={stageRef} className="psf-stage" aria-hidden="true" />
+
+      {wordmark ? (
+        <div className="psf-sign" aria-hidden="true">
+          <span className="psf-word" data-word={wordmark}>{wordmark}</span>
+        </div>
+      ) : null}
     </footer>
   )
 }
