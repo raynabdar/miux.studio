@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import './Grainient.css';
 
 const MAX_COLORS = 8;
 const MAX_STIRS = 24;

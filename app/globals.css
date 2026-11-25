@@ -288,3 +288,20 @@ body::after {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Grainient hero backdrop — kept in the global sheet so the hero shader does
+   not add a second render-blocking stylesheet. */
+.grainient-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.grainient-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}

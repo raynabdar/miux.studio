@@ -513,7 +513,7 @@ function ServicesSection() {
       <div className="relative z-10 mx-auto w-full max-w-[1100px]">
         <div className="mb-10 flex flex-col items-start gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="font-display text-sm italic text-orange-600">
+            <span className="font-display text-sm italic text-orange-700">
               Capabilities
             </span>
             <BlurRevealTitle
@@ -539,7 +539,7 @@ function ServicesSection() {
                 href="/work"
                 className="relative flex items-start gap-4 py-7 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 sm:items-center sm:gap-8 sm:py-9"
               >
-                <span className="font-display text-2xl text-[#141414]/25 transition-colors duration-300 group-hover:text-orange-600 group-focus-within:text-orange-600 sm:text-4xl">
+                <span className="font-display text-2xl text-[#141414]/50 transition-colors duration-300 group-hover:text-orange-700 group-focus-within:text-orange-700 sm:text-4xl">
                   {service.number}
                 </span>
                 <span className="min-w-0 flex-1">
@@ -793,7 +793,7 @@ function Work() {
 
       <div className="relative z-10 mx-auto mb-10 flex w-full max-w-[1180px] flex-col items-start gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <span className="font-display text-sm italic text-orange-600">
+          <span className="font-display text-sm italic text-orange-700">
             01 — Selected
           </span>
           <BlurRevealTitle
@@ -914,7 +914,7 @@ function ApproachSection() {
     >
       <div className="mx-auto grid w-full max-w-[1100px] gap-12 px-4 pb-16 sm:px-5 sm:pb-24 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <span className="font-display text-sm italic text-orange-600">
+          <span className="font-display text-sm italic text-orange-700">
             Method
           </span>
           <BlurRevealTitle
@@ -949,7 +949,7 @@ function ApproachSection() {
               >
                 <span className="size-1.5 rounded-full bg-orange-600" />
               </span>
-              <span className="font-display text-sm text-orange-600">
+              <span className="font-display text-sm text-orange-700">
                 {item.step}
               </span>
               <h3 className="mt-1 text-xl font-semibold tracking-tight text-[#141414] sm:text-2xl">

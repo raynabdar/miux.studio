@@ -155,7 +155,7 @@ export default function FAQs({
               Can&apos;t find what you&apos;re looking for?{' '}
               <Link
                 href="/contact"
-                className="text-orange-600 font-medium hover:text-orange-500 hover:underline transition-colors"
+                className="text-orange-700 font-medium hover:text-orange-600 hover:underline transition-colors"
               >
                 Talk to our team
               </Link>

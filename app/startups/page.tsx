@@ -128,7 +128,7 @@ export default async function StartupsPage() {
               <span className="text-[#141414]">Startups &amp; Businesses</span>
             </nav>
 
-            <p className="mt-10 font-display text-2xl italic text-orange-600">
+            <p className="mt-10 font-display text-2xl italic text-orange-700">
               {startupEntries.length}+ partners
             </p>
             <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">

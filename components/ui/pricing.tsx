@@ -466,7 +466,7 @@ function CustomOfferSection() {
                   aria-label="Slide to choose your custom budget"
                   className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[#141414]/15 accent-orange-500"
                 />
-                <div className="mt-2 flex items-center justify-between text-[11px] font-medium text-[#78756E] tabular-nums">
+                <div className="mt-2 flex items-center justify-between text-[11px] font-medium text-[#6B6862] tabular-nums">
                   <span>$1,000</span>
                   <span>$12,500</span>
                   <span>$25,000+</span>
@@ -483,7 +483,7 @@ function CustomOfferSection() {
                     className={cn(
                       "cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition-all",
                       price === preset
-                        ? "border-orange-500 bg-orange-500 text-white"
+                        ? "border-orange-500 bg-orange-500 text-[#141414]"
                         : "border-[#141414]/[0.12] bg-white text-[#5C5A55] hover:border-orange-400 hover:text-[#141414]"
                     )}
                   >
@@ -588,7 +588,7 @@ function CustomOfferSection() {
                 htmlFor="custom-offer-notes"
                 className="block text-xs font-medium text-[#5C5A55]"
               >
-                Scope &amp; timeline <span className="text-[#78756E]">(optional)</span>
+                Scope &amp; timeline <span className="text-[#6B6862]">(optional)</span>
               </label>
               <textarea
                 id="custom-offer-notes"
@@ -642,7 +642,7 @@ function CustomOfferSection() {
                 {status === "success" ? (
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />
                 ) : (
-                  <AlertCircle className="mt-0.5 size-4 shrink-0 text-orange-600" />
+                  <AlertCircle className="mt-0.5 size-4 shrink-0 text-orange-700" />
                 )}
                 <span>{feedback}</span>
               </div>
@@ -801,12 +801,12 @@ export default function PricingSection5({
                     </div>
                     <p className="mt-1.5 min-h-[20px] text-xs">
                       {isYearly ? (
-                        <span className="font-medium text-orange-600">
+                        <span className="font-medium text-orange-700">
                           Save {Math.round(ANNUAL_DISCOUNT * 100)}% (
                           {usd.format(plan.yearlyPrice * 12)} billed annually)
                         </span>
                       ) : (
-                        <span className="text-[#78756E]">
+                        <span className="text-[#6B6862]">
                           Billed monthly · Pause or cancel anytime
                         </span>
                       )}
@@ -847,7 +847,7 @@ export default function PricingSection5({
                               key={fIdx}
                               className="flex items-center gap-2.5 text-sm text-[#2E2D2A]"
                             >
-                              <span className="shrink-0 text-orange-600">
+                              <span className="shrink-0 text-orange-700">
                                 {feat.icon}
                               </span>
                               <span className="font-medium">{feat.text}</span>
@@ -949,7 +949,7 @@ export default function PricingSection5({
                         {plan.name}
                       </th>
                     ))}
-                    <th scope="col" className="px-2.5 py-3 font-medium text-orange-600">
+                    <th scope="col" className="px-2.5 py-3 font-medium text-orange-700">
                       Custom
                     </th>
                   </tr>
@@ -964,7 +964,7 @@ export default function PricingSection5({
                         {usd.format(plan.price)}
                       </td>
                     ))}
-                    <td className="px-2.5 py-3 font-medium text-orange-600">
+                    <td className="px-2.5 py-3 font-medium text-orange-700">
                       Set your price
                     </td>
                   </tr>
@@ -975,7 +975,7 @@ export default function PricingSection5({
                     {plans.map((plan) => (
                       <td key={plan.name} className="px-2.5 py-3 tabular-nums">
                         {usd.format(plan.yearlyPrice)}
-                        <span className="ml-1 text-xs text-orange-600">
+                        <span className="ml-1 text-xs text-orange-700">
                           save {Math.round(ANNUAL_DISCOUNT * 100)}%
                         </span>
                       </td>

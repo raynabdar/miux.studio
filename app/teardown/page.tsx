@@ -104,7 +104,7 @@ export default function TeardownPage() {
           />
           <div className="relative mx-auto grid max-w-6xl gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
             <div>
-              <p className="font-display text-2xl italic text-orange-600">Free teardown</p>
+              <p className="font-display text-2xl italic text-orange-700">Free teardown</p>
               <h1 className="mt-4 max-w-xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl">
                 Send us your URL. We&apos;ll send back five things to fix.
               </h1>
@@ -162,7 +162,7 @@ export default function TeardownPage() {
         {/* What we look at */}
         <section aria-labelledby="what-we-review" className="border-t border-[#141414]/[0.08] px-5 py-20 sm:py-24">
           <div className="mx-auto max-w-6xl">
-            <p className="font-display text-2xl italic text-orange-600">01 — Scope</p>
+            <p className="font-display text-2xl italic text-orange-700">01 — Scope</p>
             <h2 id="what-we-review" className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
               What the five points cover
             </h2>
@@ -189,7 +189,7 @@ export default function TeardownPage() {
         <section aria-labelledby="teardown-faq" className="border-t border-[#141414]/[0.08] px-5 py-20 sm:py-24">
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
-              <p className="font-display text-2xl italic text-orange-600">02 — Questions</p>
+              <p className="font-display text-2xl italic text-orange-700">02 — Questions</p>
               <h2 id="teardown-faq" className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
                 Before you send it
               </h2>

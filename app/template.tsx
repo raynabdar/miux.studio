@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
-import { SitePreloader } from '@/components/SitePreloader'
 import { registerLenis } from '@/lib/smooth-scroll'
 import { useSkipMountAnimation } from '@/lib/use-skip-mount-animation'
 
@@ -49,9 +48,6 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* ── Glass Preloader (Off-White with Dark Website Logo) ── */}
-      <SitePreloader />
-
       {/* ── Thin dark ink scroll progress bar at the very top ── */}
       <div
         className="fixed left-0 top-0 z-[9990] h-[2px] w-full bg-transparent pointer-events-none"
