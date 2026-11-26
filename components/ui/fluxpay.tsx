@@ -1,6 +1,6 @@
 "use client";
 
-import Grainient from "@/components/Grainient";
+import WavesBackground from "@/components/ui/waves-background";
 import { cn } from "@/lib/utils";
 import { type ReactNode } from "react";
 
@@ -15,8 +15,6 @@ type FluxPayProps = {
   className?: string;
 };
 
-const HERO_PALETTE = ['#120f17', '#2a0f0a', '#9a3412', '#f97316', '#fed7aa'];
-
 export function FluxPay({ children, stats, className }: FluxPayProps) {
   return (
     <div
@@ -26,22 +24,19 @@ export function FluxPay({ children, stats, className }: FluxPayProps) {
       )}
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <Grainient
-          colors={HERO_PALETTE}
-          angle={55}
-          flow={0.8}
-          silk={0.35}
-          grainAmount={0.08}
-          lightMode
-        />
+        <WavesBackground className="absolute inset-0" />
       </div>
 
-      {/* Single dark wash: the light-mode grainient turns the panel into a warm
-          cream-to-ember field, and the wash deepens it into a smoky ember so the
-          hero copy keeps its contrast. A second vignette would muddle the hue. */}
+      {/* Flat wash keeps the ember waves smoky; the centre-weighted radial
+          deepens the field behind the headline so cream copy keeps contrast
+          while the moving colour stays readable towards the panel edges. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[#0B0B0C]/80"
+        className="pointer-events-none absolute inset-0 bg-[#0B0B0C]/52"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,rgba(11,11,12,0.66)_0%,rgba(11,11,12,0.42)_48%,rgba(11,11,12,0.12)_100%)]"
       />
 
       {/* Dark scrim under the stats row so the numbers stay legible. */}

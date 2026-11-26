@@ -33,6 +33,8 @@ interface ItalicSweepScrollTextProps {
   overlap?: number;
   /** Seconds the eased scroll value takes to catch up with the real one. 0 follows the scrollbar exactly. */
   smoothing?: number;
+  /** How blurred a word starts on the way in, in em. It sharpens as the word lands. 0 disables it. */
+  blur?: number;
   /** Lift the words away again at the end of the track. */
   exit?: boolean;
   /** Sweep the emphasis into italic letter by letter. False keeps it italic throughout. */
@@ -217,7 +219,7 @@ function istTimes(
   return [te, tx];
 }
 
-/** One word: [y offset in em, opacity]. It waits low, snaps up, and later lifts away. */
+/** One word: [y offset in em, opacity, landing progress, exit progress]. */
 function istWord(
   plan: IstPlan,
   i: number,
@@ -232,7 +234,7 @@ function istWord(
   const v = istClamp((tx - x.s) / x.d);
   const y = rise * (1 - istInOutExpo(u)) - lift * istOutCubic(v);
   const o = istClamp(u / 0.03) * (1 - istClamp((v - 0.92) / 0.08));
-  return [y, o];
+  return [y, o, u, v];
 }
 
 /**
@@ -299,7 +301,7 @@ const CSS =
   ".ist-root[data-flow] .ist-line{display:inline;white-space:normal}" +
   ".ist-br{display:none}" +
   ".ist-root[data-flow] .ist-br{display:inline}" +
-  ".ist-t{display:inline-block;white-space:nowrap;will-change:transform,opacity}" +
+  ".ist-t{display:inline-block;white-space:nowrap;will-change:transform,opacity,filter}" +
   ".ist-i{font-style:italic;color:var(--ist-emphasis,inherit)}" +
   ".ist-slot{display:inline-flex;align-items:stretch;justify-content:center;height:.66em;vertical-align:baseline}" +
   ".ist-pc{display:block;flex:none;background:currentColor}" +
@@ -322,6 +324,7 @@ export default function ItalicSweepScrollText({
   lift = 0.27,
   overlap = 3.5,
   smoothing = 0.14,
+  blur = 0,
   exit = true,
   sweep = true,
   glyphLoop = true,
@@ -354,6 +357,7 @@ export default function ItalicSweepScrollText({
     links: [] as number[][][],
     tf: [] as string[],
     op: [] as string[],
+    bl: [] as string[],
     it: [] as number[],
     gl: [] as string[],
     sp: 0,
@@ -375,6 +379,7 @@ export default function ItalicSweepScrollText({
     L.slots = Array.from(para.querySelectorAll("[data-g]")) as HTMLElement[];
     L.tf = [];
     L.op = [];
+    L.bl = [];
     L.it = [];
     L.gl = [];
 
@@ -422,10 +427,15 @@ export default function ItalicSweepScrollText({
         let x = 0;
         let y = 0;
         let o = 1;
+        let b = 0;
         if (!final) {
           const w = istWord(plan, i, te, tx, rise, lift);
           y = w[0];
           o = w[1];
+          // Progressive focus: a word arrives out of defocus and sharpens as it
+          // lands, then softens slightly again as it lifts away.
+          const pending = 1 - (w[2] as number);
+          b = blur * pending * pending + blur * 0.35 * Math.pow(w[3] as number, 3);
           for (const link of L.links[i]) {
             const pose = istGlyphPose(seconds, link[0]);
             x +=
@@ -444,6 +454,11 @@ export default function ItalicSweepScrollText({
         if (L.op[i] !== op) {
           L.op[i] = op;
           L.words[i].style.opacity = op;
+        }
+        const bl = b > 0.0015 ? "blur(" + b.toFixed(3) + "em)" : "";
+        if (L.bl[i] !== bl) {
+          L.bl[i] = bl;
+          L.words[i].style.filter = bl;
         }
         const tok = wordTokens[i];
         const ital = L.ital[i];
@@ -495,6 +510,7 @@ export default function ItalicSweepScrollText({
       root.setAttribute("data-flow", "");
       L.tf = [];
       L.op = [];
+      L.bl = [];
       L.it = [];
       L.gl = [];
       const fs = parseFloat(getComputedStyle(para).fontSize) || 16;
@@ -545,6 +561,7 @@ export default function ItalicSweepScrollText({
       else setMeasured({ src: tokens, rows: clean });
       L.tf = [];
       L.op = [];
+      L.bl = [];
       L.it = [];
       L.gl = [];
       paint(reduce ? 2 : 0);
@@ -658,6 +675,7 @@ export default function ItalicSweepScrollText({
     rise,
     lift,
     smoothing,
+    blur,
     exit,
     sweep,
     glyphLoop,

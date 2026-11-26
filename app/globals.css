@@ -289,19 +289,51 @@ body::after {
   }
 }
 
-/* Grainient hero backdrop — kept in the global sheet so the hero shader does
-   not add a second render-blocking stylesheet. */
-.grainient-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+/* ── Hero entrance (typed headline, subtitle stagger, avatar pops) ── */
+
+@keyframes hero-char-in {
+  0% {
+    opacity: 0;
+    transform: translateY(0.26em);
+    filter: blur(0.16em);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
 }
 
-.grainient-canvas {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
+@keyframes hero-word-in {
+  0% {
+    opacity: 0;
+    transform: translateY(0.5em);
+    filter: blur(0.12em);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes hero-caret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }

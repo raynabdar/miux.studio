@@ -849,18 +849,17 @@ const PSF_CSS = `
   display: block;
   margin-bottom: -0.02em;
   color: transparent;
-  background-image: linear-gradient(to bottom, var(--psf-ink), transparent 92%);
-  background-image: linear-gradient(to bottom, var(--psf-ink) 0%, color-mix(in srgb, var(--psf-ink) 60%, transparent) 42%, color-mix(in srgb, var(--psf-ink) 16%, transparent) 78%, transparent 96%);
+  background-image: linear-gradient(to bottom, var(--psf-ink) 0%, var(--psf-ink) 34%, color-mix(in srgb, var(--psf-ink) 62%, transparent) 64%, color-mix(in srgb, var(--psf-ink) 22%, transparent) 84%, transparent 97%);
   -webkit-background-clip: text;
   background-clip: text;
-  opacity: 0.3;
+  opacity: 0.42;
   font-size: clamp(96px, 40cqi, 440px);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.07em;
   white-space: nowrap;
-  -webkit-mask-image: linear-gradient(to bottom, #000 12%, rgba(0, 0, 0, 0.7) 58%, transparent 96%);
-  mask-image: linear-gradient(to bottom, #000 12%, rgba(0, 0, 0, 0.7) 58%, transparent 96%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 26%, rgba(0, 0, 0, 0.88) 56%, rgba(0, 0, 0, 0.36) 84%, transparent 98%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 26%, rgba(0, 0, 0, 0.88) 56%, rgba(0, 0, 0, 0.36) 84%, transparent 98%);
 }
 /* Progressive blur at the bottom edge: masked blurred copies of the word,
    cheaper than backdrop-filter over the animating silk. */
@@ -876,14 +875,14 @@ const PSF_CSS = `
   pointer-events: none;
 }
 .psf-word::before {
-  filter: blur(0.035em);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 32%, #000 62%, #000 90%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 32%, #000 62%, #000 90%, transparent 100%);
+  filter: blur(0.045em);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 30%, #000 60%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 30%, #000 60%, #000 90%, transparent 100%);
 }
 .psf-word::after {
-  filter: blur(0.09em);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 55%, #000 88%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 55%, #000 88%, transparent 100%);
+  filter: blur(0.115em);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 54%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 54%, #000 86%, transparent 100%);
 }
 .psf-live .psf-stage { cursor: crosshair; }
 .psf-sr {

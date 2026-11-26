@@ -1,6 +1,7 @@
 "use client";
 
-import { GLSLHills } from "@/components/GLSLHills";
+import { BookACallButton } from "@/components/ui/book-a-call-button";
+import { GlassPrismHero } from "@/components/ui/glass-prism-hero";
 import { CompanyCardMarquee } from "@/components/LogoMarquee";
 import { ProgressiveBlur } from "@/components/ProgressiveBlur";
 import { Footer, Navbar } from "@/components/site-shell";
@@ -10,6 +11,7 @@ import { BlurRevealTitle } from "@/components/ui/blur-reveal-title";
 import { CareersValues } from "@/components/ui/careers-values";
 import FAQs from "@/components/ui/faqs-component";
 import { FluxPay } from "@/components/ui/fluxpay";
+import { TypedChars, TypewriterSegments, WordStagger } from "@/components/ui/hero-type";
 import Pricing from "@/components/ui/pricing";
 import ProgressMetricCard from "@/components/ui/progress-metric-card";
 import { ShinyButton } from "@/components/ui/shiny-button";
@@ -123,6 +125,8 @@ function Hero() {
     timeZone: "Asia/Dhaka",
   }).format(new Date());
   const skipEntrance = useSkipMountAnimation();
+  const reduceMotion = usePrefersReducedMotion();
+  const animateEntrance = !skipEntrance && !reduceMotion;
 
   return (
     <section
@@ -137,7 +141,7 @@ function Hero() {
         <div className="flex w-full max-w-[920px] flex-col items-center text-center">
           {/* Founder Avatars Pill — matching Navbar liquid glass */}
           <motion.div
-            initial={skipEntrance ? false : { opacity: 0, y: 14 }}
+            initial={skipEntrance || reduceMotion ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.08 }}
             className="mb-5 max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mb-6"
@@ -163,7 +167,12 @@ function Hero() {
                         ? "bg-gradient-to-br from-orange-500 to-amber-600"
                         : "bg-gradient-to-br from-[#2E2D2A] to-[#141414]",
                     )}
-                    style={{ zIndex: FOUNDER_AVATARS.length - index }}
+                    style={{
+                      zIndex: FOUNDER_AVATARS.length - index,
+                      animation: animateEntrance
+                        ? `hero-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) ${(0.26 + index * 0.06).toFixed(3)}s backwards`
+                        : undefined,
+                    }}
                   >
                     {initialsOf(person.name)}
                   </span>
@@ -185,7 +194,7 @@ function Hero() {
 
           {/* Live availability — sits directly beneath the Startups & Founders pill */}
           <motion.div
-            initial={skipEntrance ? false : { opacity: 0, y: 10 }}
+            initial={skipEntrance || reduceMotion ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.65,
@@ -198,11 +207,19 @@ function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-500 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-600" />
             </span>
-            <span>
-              Taking new projects for{" "}
-              <strong className="font-semibold text-[#F6F5F0]">
-                &apos;{currentMonth}&apos;
-              </strong>
+            <span className="min-w-0">
+              <TypewriterSegments
+                animate={animateEntrance}
+                startDelayMs={300}
+                charSpeedMs={24}
+                segments={[
+                  { text: "Taking new projects for " },
+                  {
+                    text: `'${currentMonth}'`,
+                    className: "font-semibold text-[#F6F5F0]",
+                  },
+                ]}
+              />
             </span>
           </motion.div>
 
@@ -211,7 +228,7 @@ function Hero() {
               shave glyph edges. */}
           <div className="-my-2 max-w-5xl overflow-hidden px-2 py-3 sm:px-4 lg:-my-4 lg:py-5">
             <motion.h1
-              initial={skipEntrance ? false : { y: 24, opacity: 0 }}
+              initial={skipEntrance || reduceMotion ? false : { y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{
                 duration: 0.75,
@@ -219,27 +236,55 @@ function Hero() {
               }}
               className="text-balance text-[38px] leading-[0.98] font-semibold tracking-[-0.05em] sm:text-6xl md:text-7xl lg:text-[90px] lg:leading-[0.94]"
             >
-              <span className="block text-[#F6F5F0]">Websites for Brands</span>
-              <span className="block bg-[linear-gradient(96deg,#F6F5F0_0%,#FDBA74_30%,#F97316_62%,#C2410C_100%)] bg-clip-text pb-2 text-transparent">
-                &amp; Digital Businesses
+              <span className="sr-only">
+                Websites for Brands &amp; Digital Businesses
               </span>
+              <span aria-hidden="true" className="block text-[#F6F5F0]">
+                <TypedChars
+                  text="Websites for Brands"
+                  animate={animateEntrance}
+                  delay={0.12}
+                  stagger={0.024}
+                />
+              </span>
+              <motion.span
+                aria-hidden="true"
+                initial={
+                  animateEntrance
+                    ? { opacity: 0, y: 14, filter: "blur(10px)" }
+                    : false
+                }
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.46,
+                  ease: [0.16, 1, 0.3, 1] as const,
+                }}
+                className="block bg-[linear-gradient(96deg,#F6F5F0_0%,#FDBA74_30%,#F97316_62%,#C2410C_100%)] bg-clip-text pb-2 text-transparent"
+              >
+                &amp; Digital Businesses
+              </motion.span>
             </motion.h1>
           </div>
 
           {/* Subtitle */}
           <motion.p
-            initial={skipEntrance ? false : { opacity: 0, y: 14 }}
+            initial={skipEntrance || reduceMotion ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.14 }}
             className="mt-4 max-w-xl px-2 text-sm font-normal leading-relaxed text-[#C7C2B8] sm:mt-5 sm:text-lg md:text-xl"
           >
-            Get a website or custom business website that fulfils your goals and
-            drives sales.
+            <WordStagger
+              text="Get a website or custom business website that fulfils your goals and drives sales."
+              animate={animateEntrance}
+              delay={0.92}
+              stagger={0.028}
+            />
           </motion.p>
 
           {/* Action Button */}
           <motion.div
-            initial={skipEntrance ? false : { opacity: 0, y: 12 }}
+            initial={skipEntrance || reduceMotion ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.65,
@@ -269,7 +314,7 @@ function Hero() {
 
           {/* Studio location & live Dhaka time — placed after Hero CTA */}
           <motion.div
-            initial={skipEntrance ? false : { opacity: 0, y: 8 }}
+            initial={skipEntrance || reduceMotion ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.6,
@@ -313,8 +358,9 @@ function About() {
       <h2 className="sr-only">About Miux Studio</h2>
       <ItalicSweepScrollText
         text={ABOUT_QUOTE}
-        scrollLength="280svh"
-        smoothing={0.16}
+        scrollLength="360svh"
+        smoothing={0.24}
+        blur={0.07}
         className="[--ist-emphasis:#C2410C]"
       />
     </section>
@@ -1039,183 +1085,27 @@ function Stats() {
 /*  8. FINAL CTA                                                         */
 /* ───────────────────────────────────────────────────────────────────── */
 
-const CTA_CORNER_FOG = [
-  "pointer-events-none absolute -bottom-20 -left-20 h-[480px] w-[620px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.22)_0%,rgba(234,88,12,0.09)_45%,transparent_72%)] blur-[90px]",
-  "pointer-events-none absolute -bottom-16 -right-20 h-[500px] w-[640px] rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.20)_0%,rgba(249,115,22,0.08)_46%,transparent_74%)] blur-[100px]",
-];
-
 function FinalCTA() {
-  const [youOpen, setYouOpen] = useState(false);
-
   return (
-    <section
+    <GlassPrismHero
       id="final-cta"
-      aria-label="Call to action"
-      className="relative scroll-mt-24 bg-[#F6F5F0] px-5 py-28 text-center sm:scroll-mt-28 sm:py-36 overflow-hidden"
-    >
-      {/* Animated volumetric mountain/hill field — clearly visible on both PC and mobile */}
-      <GLSLHills
-        className="absolute inset-0 opacity-100 [mask-image:linear-gradient(to_top,transparent_0%,black_10%,black_88%,transparent_100%)]"
-        cameraZ={112}
-        planeSize={256}
-        speed={0.5}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08)_0%,transparent_68%)]"
-      />
-
-      {/* Slow, shining ambient pulsing glow */}
-      <motion.div
-        animate={{
-          scale: [1, 1.14, 1],
-          opacity: [0.16, 0.28, 0.16],
-        }}
-        transition={{
-          duration: 7.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[340px] sm:w-[720px] sm:h-[450px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.18)_0%,rgba(251,146,60,0.08)_40%,transparent_70%)] blur-[72px] sm:blur-[90px] will-change-[transform,opacity]"
-        aria-hidden="true"
-      />
-
-      {/* Soft orange fog drifting in the bottom-left and bottom-right corners */}
-      {CTA_CORNER_FOG.map((className, index) => (
-        <motion.div
-          key={index}
-          aria-hidden="true"
-          animate={{
-            opacity: [0.55, 0.85, 0.55],
-            scale: [1, 1.08, 1],
-            x: index === 0 ? [0, 18, 0] : [0, -18, 0],
-          }}
-          transition={{
-            duration: 11 + index * 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className={className}
+      aria-label="Let’s talk about your project"
+      headline="Let’s Talk About Your Project"
+      accent="#EA580C"
+      fontWeight={600}
+      scrollRotate={false}
+      scrollHint={false}
+      className="scroll-mt-24 sm:scroll-mt-28"
+      description="A focused 45-minute call to see if we’re a good fit. No pressure. Just clarity."
+      actions={
+        <BookACallButton
+          href="/meeting"
+          ariaLabel="Book a 45-minute discovery call with Miux Studio"
+          title="Book a 45-min call with Miux Studio"
+          className="w-full max-w-[280px] sm:w-auto"
         />
-      ))}
-
-      {/* Subtle edge blend keeping the mountain terrain clearly visible */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-20 sm:h-28 bg-gradient-to-b from-[#F6F5F0] via-[#F6F5F0]/45 to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-t from-[#F6F5F0] via-[#F6F5F0]/45 to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-20 bg-gradient-to-r from-[#F6F5F0]/85 to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-20 bg-gradient-to-l from-[#F6F5F0]/85 to-transparent"
-      />
-
-      <div className="relative z-10 mx-auto max-w-4xl text-center flex flex-col items-center">
-        <div className="overflow-hidden">
-          <BlurRevealTitle className="text-4xl font-semibold tracking-[-0.07em] text-[#141414] sm:text-6xl md:text-7xl text-center">
-            Let’s Talk About
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#141414] via-[#4A2511] to-orange-600">
-              Your Project
-            </span>
-          </BlurRevealTitle>
-        </div>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          className="mx-auto mt-7 max-w-xl text-base text-[#5C5A55] sm:text-lg text-center space-y-1.5"
-        >
-          <p>A focused 45-minute call to see if we&apos;re a good fit.</p>
-          <p className="text-[#141414] font-medium">
-            No pressure. Just clarity.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          className="mt-10"
-        >
-          <Link
-            href="/meeting"
-            aria-label="Book a 45-minute discovery call with Miux Studio"
-            title="Book a 45-min call with Miux Studio"
-            onPointerEnter={(event) => {
-              if (event.pointerType === "mouse") setYouOpen(true);
-            }}
-            onPointerLeave={(event) => {
-              if (event.pointerType === "mouse") setYouOpen(false);
-            }}
-            onFocus={() => {
-              if (window.matchMedia("(hover: hover)").matches) setYouOpen(true);
-            }}
-            onBlur={() => setYouOpen(false)}
-            className="group relative inline-flex items-center gap-3.5 rounded-full bg-[radial-gradient(ellipse_at_top_left,#ffffff_0%,#fed7aa_35%,#f97316_70%,#ea580c_100%)] px-7 py-3.5 sm:px-8 sm:py-4 text-base font-semibold text-[#141414] ring-1 ring-inset ring-white/40 transition-all duration-300 hover:scale-[1.02] select-none active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600"
-          >
-            <span className="flex shrink-0 items-center">
-              <span
-                className="relative flex size-8 shrink-0 items-center justify-center sm:size-9"
-                onClick={(event) => {
-                  if (window.matchMedia("(hover: none)").matches) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setYouOpen((open) => !open);
-                  }
-                }}
-              >
-                <Image
-                  src="/founder.jpg"
-                  alt="Founder of Miux Studio"
-                  width={36}
-                  height={36}
-                  className="relative z-10 size-full rounded-full object-cover"
-                />
-              </span>
-              <motion.span
-                aria-hidden="true"
-                initial={false}
-                animate={youOpen ? "open" : "closed"}
-                variants={{
-                  closed: { width: 0, opacity: 0 },
-                  open: { width: "auto", opacity: 1 },
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 30,
-                  mass: 0.7,
-                }}
-                className="flex h-8 items-center overflow-hidden sm:h-9"
-              >
-                <span className="flex shrink-0 items-center">
-                  <span className="mx-1.5 inline-flex items-center justify-center text-sm font-bold leading-none text-[#141414] sm:mx-2 sm:text-base">
-                    +
-                  </span>
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/50 bg-white text-[9px] font-bold uppercase leading-none tracking-[0.04em] text-[#141414] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_1px_rgba(20,20,20,0.06)] sm:size-9 sm:text-[10px]">
-                    YOU
-                  </span>
-                </span>
-              </motion.span>
-            </span>
-
-            <span>Book a 45-min call</span>
-            <ArrowUpRight aria-hidden="true" className="size-[18px] shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:size-5" />
-          </Link>
-        </motion.div>
-      </div>
-    </section>
+      }
+    />
   );
 }
 
