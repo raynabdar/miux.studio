@@ -13,6 +13,7 @@ import { FluxPay } from "@/components/ui/fluxpay";
 import Pricing from "@/components/ui/pricing";
 import ProgressMetricCard from "@/components/ui/progress-metric-card";
 import { ShinyButton } from "@/components/ui/shiny-button";
+import ItalicSweepScrollText from "@/components/ui/italic-sweep-scroll-text";
 import Testimonials from "@/components/ui/testimonial";
 import { faqs, projects, STATS, type Project } from "@/lib/data";
 import { testimonials, type TestimonialItem } from "@/lib/testimonials";
@@ -22,9 +23,7 @@ import { useSkipMountAnimation } from "@/lib/use-skip-mount-animation";
 import {
   motion,
   useInView,
-  useMotionValueEvent,
   useScroll,
-  useSpring,
   useTransform,
   type Variants,
 } from "framer-motion";
@@ -73,20 +72,6 @@ function initialsOf(name: string) {
 }
 
 const FOUNDER_AVATARS = testimonials.slice(0, 4);
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px), (pointer: coarse)");
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
-  return isMobile;
-}
 
 /* ───────────────────────────────────────────────────────────────────── */
 /*  2. HERO (id="home")                                                  */
@@ -315,153 +300,23 @@ function Hero() {
 /*  3. ABOUT (id="about")                                                */
 /* ───────────────────────────────────────────────────────────────────── */
 
-const ABOUT_STATEMENT_WORDS = [
-  "We",
-  "are",
-  "a",
-  "creative",
-  "studio",
-  "based",
-  "in",
-  "Bangladesh,",
-  "working",
-  "with",
-  "teams",
-  "across",
-  "APAC",
-  "and",
-  "the",
-  "UAE.",
-  "We",
-  "connect",
-  "premium",
-  "visual",
-  "design",
-  "with",
-  "technical",
-  "excellence.",
-];
+const ABOUT_QUOTE =
+  "We are a *creative studio* based in Bangladesh, working with teams across APAC and the UAE. We connect premium visual design with *technical excellence*.";
 
 function About() {
-  const isMobile = useIsMobile();
-  const aboutRef = useRef<HTMLElement>(null);
-  const [revealedCount, setRevealedCount] = useState(0);
-  // Keep the statement at full contrast until it nears the viewport, otherwise the
-  // dimmed pre-reveal words sit in the page-load DOM at ~1.6:1 contrast (WCAG 1.4.3).
-  const [revealArmed, setRevealArmed] = useState(false);
-
-  const { scrollYProgress } = useScroll({
-    target: aboutRef,
-    offset: ["start end", "end start"],
-  });
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 150,
-    damping: 26,
-    mass: 0.35,
-  });
-
-  // Update discrete word reveal threshold so each word animates its progressive blur
-  // natively on the GPU compositor via CSS transitions (zero per-frame JS filter thrash on mobile & PC).
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const total = ABOUT_STATEMENT_WORDS.length;
-    const normalized = Math.max(0, Math.min(1, (latest - 0.14) / 0.48));
-    const nextCount = Math.round(normalized * total);
-    setRevealedCount((prev) => (prev === nextCount ? prev : nextCount));
-  });
-
-  useEffect(() => {
-    const el = aboutRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setRevealArmed(true);
-          io.disconnect();
-        }
-      },
-      { rootMargin: "0px 0px 20% 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  // Dynamic zoom: scale increases as user approaches the section center, and scales back as they scroll away
-  const zoomScale = useTransform(
-    smoothProgress,
-    [0.08, 0.48, 0.58, 0.95],
-    isMobile ? [0.97, 1.03, 1.03, 0.97] : [0.92, 1.1, 1.1, 0.92],
-  );
-  const glowOpacity = useTransform(
-    smoothProgress,
-    [0.05, 0.3, 0.7, 0.95],
-    [0, 1, 1, 0],
-  );
-  const glowScale = useTransform(
-    smoothProgress,
-    [0.05, 0.5, 0.95],
-    [0.85, 1.15, 0.85],
-  );
-
   return (
     <section
-      ref={aboutRef}
       id="about"
       aria-label="About Miux Studio"
-      className="relative scroll-mt-24 bg-[#F6F5F0] px-4 sm:scroll-mt-28 sm:px-5 py-20 sm:py-36 overflow-hidden"
+      className="relative scroll-mt-[-100svh] bg-[#F6F5F0]"
     >
-      <div className="relative z-10 mx-auto max-w-[1200px]">
-        <h2 className="sr-only">About Miux Studio</h2>
-        {/* Ambient warm orange glow */}
-        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 overflow-visible">
-          <motion.div
-            style={{ opacity: glowOpacity, scale: glowScale }}
-            aria-hidden="true"
-            className="pointer-events-none will-change-[transform,opacity]"
-          >
-            <div className="h-[320px] w-[320px] sm:h-[500px] sm:w-[500px] rounded-full bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.16)_0%,rgba(249,115,22,0.04)_50%,transparent_70%)] blur-[72px] sm:blur-[90px]" />
-          </motion.div>
-        </div>
-
-        {/* Zooming statement with GPU-composited word-by-word progressive blur on all devices */}
-        <motion.div
-          style={{ scale: zoomScale }}
-          className="mx-auto max-w-4xl text-center text-2xl leading-[1.32] font-semibold tracking-[-0.04em] will-change-transform sm:text-5xl md:text-6xl lg:text-[62px] lg:leading-[1.18] text-[#141414]"
-        >
-          {ABOUT_STATEMENT_WORDS.map((word, i) => {
-            const revealed = !revealArmed || i < revealedCount;
-            const isGradient =
-              word.includes("creative") ||
-              word.includes("Bangladesh") ||
-              word.includes("APAC") ||
-              word.includes("UAE") ||
-              word.includes("excellence");
-
-            return (
-              <span
-                key={`${word}-${i}`}
-                style={{
-                  opacity: revealed ? 1 : 0.22,
-                  transform: revealed
-                    ? "translate3d(0, 0, 0)"
-                    : "translate3d(0, 10px, 0)",
-                  filter: revealed ? "blur(0px)" : "blur(9px)",
-                  transitionProperty: "opacity, transform, filter",
-                  transitionDuration: "0.55s",
-                  transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-                }}
-                className={cn(
-                  "inline-block mr-[0.24em] transform-gpu will-change-[transform,opacity,filter]",
-                  isGradient
-                    ? "text-transparent bg-clip-text bg-gradient-to-r from-[#141414] via-[#4A2511] via-55% to-orange-600 font-semibold"
-                    : "text-[#141414]",
-                )}
-              >
-                {word}
-              </span>
-            );
-          })}
-        </motion.div>
-      </div>
+      <h2 className="sr-only">About Miux Studio</h2>
+      <ItalicSweepScrollText
+        text={ABOUT_QUOTE}
+        scrollLength="280svh"
+        smoothing={0.16}
+        className="[--ist-emphasis:#C2410C]"
+      />
     </section>
   );
 }
